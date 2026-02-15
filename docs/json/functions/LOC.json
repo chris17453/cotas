@@ -1,0 +1,44 @@
+{
+  "name": "LOC",
+  "signature": "LOC(1,2,3,4,5,6)",
+  "platform": null,
+  "purpose": "This is an ‘instring’ function. It will return the location of a string of characters (A type field) within\nanother A type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Field to check for, must be A type."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Field to check within, must be A type."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The character position where the function will start checking. The first position (far left)\nis 1. If this value isn’t provided the default value is 1."
+    },
+    {
+      "number": "4",
+      "type": "f/c/e",
+      "description": "The number of characters to check. If this value isn’t provided the function will check the\nthe entire field (part 2)."
+    },
+    {
+      "number": "5",
+      "type": "f/c/e",
+      "description": "If this is set to Y, the function will ignore differences in case (upper or lower). Default is\nN."
+    },
+    {
+      "number": "6",
+      "type": "f/c/e",
+      "description": "The memory area number. This may be from 1 through 4. If this is set properly, you do\nnot have to specify part 2, the field to check within. However, you do still need to put the\ncomma in for place keeping, i.e., =loc('abc',,10,300,,4)"
+    }
+  ],
+  "return_type": "I The first character position of the matched field. If no match is found the return is 0.",
+  "comments": null,
+  "example": "x = ‘ABCDEFGHIJ’\n? loc(‘CD’,x)\n3\n? loc(‘CD’,x,4,5)\n0\ndefine srch_fld type a size 10\nsrch_fld=’CD’\n? loc(trim(srch_fld,’t’),x)\n3",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

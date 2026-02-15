@@ -1,0 +1,17 @@
+{
+  "name": "CLIK_SRCH_LIMIT",
+  "abbreviation": null,
+  "platform": "Windows only",
+  "description": "This command will limit how far the field search process will go in your program before it stops.",
+  "syntax": "CLIK_SRCH_LIMIT\nNo options",
+  "parameters": [],
+  "comments": "For a detailed explanation of the field search process please see Chapter 11 - Windows Programming.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Win Commands -> cLik Srch Limit",
+  "see_also": [
+    "UPAR"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

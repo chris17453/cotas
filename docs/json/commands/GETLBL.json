@@ -1,0 +1,28 @@
+{
+  "name": "GETLBL",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "This command will return the line number of a label for future use in the GOTOL (Goto Line) or GOSUBL (Gosub Line) command.",
+  "syntax": "GETLBL label_name FLD receiving_field",
+  "parameters": [
+    {
+      "name": "label_name",
+      "type": "label",
+      "required": true,
+      "description": "The label name you want to convert to a line number."
+    },
+    {
+      "name": "receiving_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that will receive the line number. Must be of type I."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

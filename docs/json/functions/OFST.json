@@ -1,0 +1,24 @@
+{
+  "name": "OFST",
+  "signature": "OFST(1,2)",
+  "platform": "DOS Only",
+  "purpose": "This function returns the offset for a field or memory area. This is the position of the first character in memory.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "fn/v",
+      "description": "Field to use."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The memory area number. If this is set properly, you do not have to specify part 1. However, you do still need to put the comma in for place keeping, i.e., =loc(,1)"
+    }
+  ],
+  "return_type": "R This returns the absolute (flat) memory location.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

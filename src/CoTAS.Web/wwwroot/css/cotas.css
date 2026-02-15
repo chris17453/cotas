@@ -1,0 +1,128 @@
+/* Terminal Screen */
+.terminal-screen {
+    font-family: 'Consolas', 'Courier New', 'Lucida Console', monospace;
+    font-size: 14px;
+    line-height: 1.2;
+    background: #000;
+    color: #00ff00;
+    padding: 4px;
+    border: 1px solid #333;
+    white-space: pre;
+    user-select: text;
+    width: calc(80ch + 8px);
+    height: calc(25 * 1.2em + 8px);
+    overflow: hidden;
+    position: relative;
+}
+
+.terminal-row {
+    height: 1.2em;
+    display: block;
+}
+
+/* Input field overlay */
+.terminal-input {
+    font-family: 'Consolas', 'Courier New', 'Lucida Console', monospace;
+    font-size: 14px;
+    line-height: 1.2;
+    background: #001a00;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    outline: none;
+    padding: 0 2px;
+    position: absolute;
+    z-index: 10;
+}
+
+.terminal-input:focus {
+    background: #002200;
+    box-shadow: 0 0 4px rgba(0, 255, 0, 0.3);
+}
+
+/* Program list */
+#program-list .list-group-item {
+    background: transparent;
+    color: #ccc;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Consolas', monospace;
+}
+
+#program-list .list-group-item:hover {
+    background: #2a2a3a;
+    color: #fff;
+}
+
+#program-list .list-group-item.active {
+    background: #1a3a5a;
+    color: #fff;
+}
+
+/* Sidebar */
+#sidebar {
+    min-width: 200px;
+    max-width: 300px;
+}
+
+/* Ask dialog */
+.ask-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+}
+
+.ask-dialog {
+    background: #1a1a2e;
+    border: 1px solid #00ff00;
+    padding: 16px 24px;
+    color: #00ff00;
+    font-family: 'Consolas', monospace;
+    text-align: center;
+}
+
+.ask-dialog button {
+    margin: 8px;
+    padding: 4px 16px;
+    font-family: 'Consolas', monospace;
+    background: #002200;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    cursor: pointer;
+}
+
+.ask-dialog button:hover {
+    background: #003300;
+}
+
+/* Status indicator */
+#status-indicator.running {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Scrollbar styling for sidebar */
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 3px;
+}

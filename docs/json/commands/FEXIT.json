@@ -1,0 +1,21 @@
+{
+  "name": "FEXIT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "",
+  "syntax": "FEXIT",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "FOR",
+    "FLOOP",
+    "FLOOP_IF",
+    "FEXIT_IF",
+    "NEXT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

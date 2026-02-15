@@ -1,0 +1,29 @@
+{
+  "name": "STR(1,2,3)",
+  "signature": "STR(1,2,3)",
+  "platform": null,
+  "purpose": "This function will return a numeric (B, I or N type) value as a string (A type).",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The numeric field value. The original field is unchanged."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The number of characters in the final field."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The number of decimal characters in the final field."
+    }
+  ],
+  "return_type": "A The size of this field depends on part 2.",
+  "comments": null,
+  "example": "? str(195.32596,6,2)\n195.33",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

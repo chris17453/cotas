@@ -1,0 +1,24 @@
+{
+  "name": "TEST",
+  "signature": "TEST(1,2)",
+  "platform": null,
+  "purpose": "This function will determine whether a bit or bits are set in a byte.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "fn/v",
+      "description": "Field to check. The function will only test the first byte/character."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "This value determines which bits to check. To set the proper value use the following\\nguide:\nBit#\nValue\n\n7 128\n\n6 64\n\n5 32\n\n4 16\n\n3 8\n\n2 4\n\n1 2\n\n0 1\n"
+    }
+  ],
+  "return_type": "L If the bit(s) is (are) set (1 not 0), the function will return .T. Otherwise it will return .F.",
+  "comments": null,
+  "example": "SAMPLE PROGRAM\nCAPSLOCK.SRC",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

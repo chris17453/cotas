@@ -1,0 +1,21 @@
+{
+  "name": "NO RESTART",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Normally in the LISTF (List File) commands when the program returns to the command from an enter_udf option the record just accessed becomes the active record at the top of the list. Use this command to keep this from happening.",
+  "syntax": "NORSTRT",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Lists -> no reStart",
+  "see_also": [
+    "LISTF",
+    "LISTM",
+    "LIST_EXIT",
+    "AUTOINC",
+    "NOREDSP"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

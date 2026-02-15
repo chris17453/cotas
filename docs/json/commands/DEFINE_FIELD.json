@@ -1,0 +1,112 @@
+{
+  "name": "DEFINE FIELD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to ‘create’ a field that will be used only within the current program (or subsequent programs that are called from this program). This is not a field that is part of a standard TAS Professional 5.1 file.",
+  "syntax": "DEFINE FIELD\nDEFINE field_name_list TYPE type SIZE display_size DEC decimal_chrs\nARRAY num_array_elements PICT picture DUP dup_field UP RESET LOCAL INIT\ninit_val",
+  "parameters": [
+    {
+      "name": "field_name_list",
+      "type": "sac",
+      "required": true,
+      "description": "The name or names of the field(s) being defined. Must conform to standard field name requirements. You may define a maximum of 10 fields in one DEFINE command. Each of the fields will have the same specifications."
+    },
+    {
+      "name": "TYPE",
+      "type": "sac",
+      "required": false,
+      "description": "Optional - The type of the field being added. Must conform to standard field type requirements. If you don’t specify a field type, the default value is N. The field name types are:\nA Alphanumeric\nN Numeric\nD Date\nT Time\nI Integer\nB Byte\nF F type pointer\nP P type pointer\nR Record number"
+    },
+    {
+      "name": "SIZE",
+      "type": "display_size",
+      "required": false,
+      "description": "The size of the field being defined."
+    },
+    {
+      "name": "DEC",
+      "type": "sac",
+      "required": false,
+      "description": "The number of decimal characters to allocate for the field."
+    },
+    {
+      "name": "decimal_chrs",
+      "type": "n",
+      "required": false,
+      "description": "The number of decimal characters to display (used with numeric fields)."
+    },
+    {
+      "name": "ARRAY",
+      "type": "sac",
+      "required": false,
+      "description": "ARRAY num_array_elements - The array feature allowing multiple elements of the field."
+    },
+    {
+      "name": "num_array_elements",
+      "type": "n",
+      "required": false,
+      "description": "The number of elements in the array."
+    },
+    {
+      "name": "PICT",
+      "type": "sac",
+      "required": false,
+      "description": "PICT picture - The editing picture for the field."
+    },
+    {
+      "name": "picture",
+      "type": "sac",
+      "required": false,
+      "description": "The PICTURE specification for the field."
+    },
+    {
+      "name": "DUP",
+      "type": "sac",
+      "required": false,
+      "description": "DUP dup_field - Duplicate the field for alignment."
+    },
+    {
+      "name": "dup_field",
+      "type": "sac",
+      "required": false,
+      "description": "The field to be duplicated."
+    },
+    {
+      "name": "UP",
+      "type": "sac",
+      "required": false,
+      "description": "UP - Indicates the field or operation involves upper-level or upward referencing."
+    },
+    {
+      "name": "RESET",
+      "type": "sac",
+      "required": false,
+      "description": "RESET - Cares the reset of the field."
+    },
+    {
+      "name": "LOCAL",
+      "type": "sac",
+      "required": false,
+      "description": "LOCAL - Local field scope."
+    },
+    {
+      "name": "INIT",
+      "type": "sac",
+      "required": false,
+      "description": "INIT - Initialization for the field."
+    },
+    {
+      "name": "init_val",
+      "type": "sac",
+      "required": false,
+      "description": "init_val - The initial value for the field."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

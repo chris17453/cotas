@@ -1,0 +1,28 @@
+{
+  "name": "FEXIT_IF",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will control whether to exit from a FOR/NEXT loop. This is one part of a complete command structure.",
+  "syntax": "FEXIT_IF expression",
+  "parameters": [
+    {
+      "name": "expression",
+      "type": "e",
+      "required": true,
+      "description": "lexpr - Required - If the expression resolves to .T., then the program will transfer control to the line following the appropriate NEXT command. The counter value will remain at the last value."
+    }
+  ],
+  "comments": "For more information on the different structured programming commands, and the FEXIT_IF command in particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "FOR",
+    "FLOOP",
+    "FLOOP_IF",
+    "FEXIT",
+    "NEXT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

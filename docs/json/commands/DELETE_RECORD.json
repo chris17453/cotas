@@ -1,0 +1,42 @@
+{
+  "name": "DELETE RECORD",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Delete an active record for a specific TAS Pro 5.1 file.",
+  "syntax": "DEL filename/@file_number NOCNF GOTO goto_if_no_del ERR error_label",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name or number of the file that contains the record to be deleted."
+    },
+    {
+      "name": "NOCNF",
+      "type": "flag",
+      "required": false,
+      "description": "If this option is included in the command, the record is deleted without asking for confirmation from the user. The default action is to ask before deleting the record. This would be useful when you want to ask more than just 'Delete? Y or N,' or if you’re deleting records from multiple files and want to ask the Delete question only once."
+    },
+    {
+      "name": "goto_if_no_del",
+      "type": "label",
+      "required": false,
+      "description": "If the user answers N to the Delete question (NOCNF is not included), you can put a line label here signifying where the program should transfer control. If this is not provided the program will continue with the next line."
+    },
+    {
+      "name": "error_label",
+      "type": "label",
+      "required": false,
+      "description": "If you specify a label here the program will transfer control to the appropriate line if an error occurs during the command. If you don't put a label here and an error occurs it will be displayed on the screen for the user. If you don't want an error to be displayed then specify NO_ERR as the error_label."
+    }
+  ],
+  "comments": "This command will only work with regular TAS Professional 5.1 files. Also, the record to be deleted must be active. This means that it cannot have been cleared either through the CLR (Clear Record Buffer) command or SAVE command.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "DALL"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

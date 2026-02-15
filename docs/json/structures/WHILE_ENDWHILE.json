@@ -1,0 +1,29 @@
+{
+  "name": "WHILE/ENDWHILE",
+  "description": "WHILE\nThis structure is a loop that will continue until the WHILE lexpr returns .F. or the loop is exited. The\ngeneral layout of the structure is :\nWHILE lexpr\nEXIT\nEXIT_IF lexpr\nLOOP\nLOOP_IF lexpr\nENDW\n\nWHILE lexpr\nThe lexpr in this command must be in the form of a comparison expression. For example:\nWHILE x = 1\nIf this expression resolves to .T., the line after the WHILE command will be executed;\notherwise control will be transferred to the line after the ENDW command. This expression is\nchecked each time the loop is executed.\nThe programmer can stay in the loop until an EXIT or EXIT_IF command is executed by\nmaking sure this command will always return .T. This can be accomplished easily by the following:\nWHILE .T.\n\nIf an EXIT or EXIT_IF command is never executed the loop will continue on and will never quit. (Unless, of course, an error occurs.)\n\nEXIT\nEXIT_IF lexpr\nThese elements of the WHILE/ENDW loop will allow you to exit the loop. The EXIT option\nexits the loop immediately. The EXIT_IF lexpr will exit the loop if the expression resolves to\n.T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression.\nFor example:\nEXIT_IF x = 1\nThe EXIT and EXIT_IF (assuming the lexpr resolves to .T.) will transfer control to the next\nline after the ENDW command.\nAs many EXIT and EXIT_IF commands may be included in a single WHILE/ENDW loop as you desire.\n\nLOOP\nLOOP_IF lexpr\nThese elements of the WHILE/ENDW loop will allow you to transfer control to the beginning of\nthe loop (WHILE command) without having to reach the ENDW command. The LOOP option transfers control immediately. The LOOP_IF lexpr will transfer control if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a\ncomparison expression. For example:\nLOOP_IF x = 1\nThe WHILE comparison expression is executed and then, if the expression resolves to .T., the\nloop will continue.\nAs many LOOP, LOOP_IF commands may be included in a single WHILE/ENDW loop as you desire.\n\nENDW\nThis is the final step in the WHILE/END loop. When this command is executed control is returned to the WHILE command line. Each WHILE must have a ENDW to finish the loop.\nIf the ENDW is not included an error message will be displayed during compilation.",
+  "syntax": "WHILE lexpr\nEXIT\nEXIT_IF lexpr\nLOOP\nLOOP_IF lexpr\nENDW",
+  "keywords": [
+    {
+      "keyword": "EXIT",
+      "description": "EXIT\nThis exits the loop immediately."
+    },
+    {
+      "keyword": "EXIT_IF lexpr",
+      "description": "EXIT_IF lexpr will exit the loop if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression."
+    },
+    {
+      "keyword": "LOOP",
+      "description": "LOOP transfers control to the beginning of the loop immediately."
+    },
+    {
+      "keyword": "LOOP_IF lexpr",
+      "description": "LOOP_IF lexpr transfers control to the beginning of the loop if the expression resolves to .T.; otherwise nothing will happen."
+    },
+    {
+      "keyword": "ENDW",
+      "description": "ENDW is the final step in the WHILE/ENDW loop. When this command is executed control is returned to the WHILE command line."
+    }
+  ],
+  "max_nesting": "20 deep",
+  "example": "WHILE x = 1\n...\nIF x = 1 ...\nENDW\n\nWHILE .T.\nEXIT_IF x = 5\nLOOP\n...\nENDW"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "?",
+  "abbreviation": null,
+  "platform": "Windows",
+  "description": "Please see the PRINT MESSAGE command.",
+  "syntax": "?",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "PRINT MESSAGE"
+}

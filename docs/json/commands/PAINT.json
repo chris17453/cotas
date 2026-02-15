@@ -1,0 +1,49 @@
+{
+  "name": "PAINT",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Use this command to ‘paint’ a block of color on the screen.",
+  "syntax": "PAINT color FROM up_lt_col,up_lt_row THRU low_rt_col,low_rt_row",
+  "parameters": [
+    {
+      "name": "color",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The color to paint. Must be a value from 1 through 255."
+    },
+    {
+      "name": "up_lt_col",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The upper left column value. Together with the upper left row value defines the upper left corner of the block. The upper left corner of any window is 1,1."
+    },
+    {
+      "name": "up_lt_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The upper left row value. Together with the upper left column value defines the upper left corner of the block. The upper left corner of any window is 1,1."
+    },
+    {
+      "name": "low_rt_col",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The lower right column value. Together with the lower right row value defines the lower right corner of the block. If the values are beyond the current window they will be truncated to those values."
+    },
+    {
+      "name": "low_rt_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The lower right row value. Together with the lower right column value defines the lower right corner of the block. If the values are beyond the current window they will be truncated to those values."
+    }
+  ],
+  "comments": "The same effect can also be accomplished using the MOUNT command. Please see Chapter 8,\nScreen/Report Format Information for more information about specifying color blocks in a screen\nformat.",
+  "example": null,
+  "sample_program": "PAINTSCR",
+  "program_editor": "User interface -> Color control -> Paint",
+  "see_also": [
+    "OPEN",
+    "OPENV"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,28 @@
+{
+  "name": "REWRAP",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will re-word wrap a field that has been previously set up with the WRAP command.",
+  "syntax": "REWRAP starting_line_number",
+  "parameters": [
+    {
+      "name": "starting_line_number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "starting_line_number - f/c/e - Required - The line number at which to start the word wrap"
+    }
+  ],
+  "comments": "By starting at a different line than the first you can speed up the word wrap process. Also, the program already knows what the field is, where it’s located, and has done all the preliminary work which also speeds up the process.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> rewrAp",
+  "see_also": [
+    "WRAP",
+    "WRAP()",
+    "WRAPO()",
+    "WRAPL()",
+    "WRAPS()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,5 +1,0 @@
-# DOM()
-
-## Summary
-Function Reference
-

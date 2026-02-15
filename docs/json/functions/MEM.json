@@ -1,0 +1,13 @@
+{
+  "name": "MEM",
+  "signature": "MEM()",
+  "platform": null,
+  "purpose": "This function returns the number of kbytes (each kbyte is 1024 bytes) of memory not currently being used and available.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": "? mem()\n264\n\n&& 264k or 270,336 bytes",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

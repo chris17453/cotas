@@ -1,0 +1,24 @@
+{
+  "name": "JUST",
+  "signature": "JUST(1,2)",
+  "platform": null,
+  "purpose": "This function will return the field with the non-space characters moved to the left, right, or center.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The field to be justified, must be A type."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Which direction: ‘L’ - Left, ‘R’ - Right, or ‘C’ - Center."
+    }
+  ],
+  "return_type": "A The original field remains unchanged.",
+  "comments": null,
+  "example": "x = ‘ABCD ’\n? just(x,’r’)\n‘ ABCD’\n? just(x,’C’)\n‘ ABCD ’",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

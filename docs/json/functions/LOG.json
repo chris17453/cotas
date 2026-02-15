@@ -1,0 +1,19 @@
+{
+  "name": "LOG",
+  "signature": "LOG(1)",
+  "platform": null,
+  "purpose": "This function will return the log base e of the numeric value specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The numeric value to use."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": "? log(9000.000)\n9.105",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

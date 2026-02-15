@@ -1,0 +1,34 @@
+{
+  "name": "ELOC",
+  "signature": "ELOC(1,2,3,4)",
+  "platform": null,
+  "purpose": "This is an ‘instring’ function. It will return the location of a string of characters (A type field) within another A type field, starting at the end of the field and working towards the beginning.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Field to check for, must be A type."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Field to check within, must be A type."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The character position to start checking at. The first position (far left) is 1. If this isn’t provided the default value is the end of the field."
+    },
+    {
+      "number": "4",
+      "type": "f/c/e",
+      "description": "The number of characters to check. If this isn’t provided the function will check the entire field (part 2)."
+    }
+  ],
+  "return_type": "I The first character position of the matched field. If no match is found the value returned is 0.",
+  "comments": "x = ‘ABCDEFGHCDIJ’\n? loc(‘CD’,x)\n9\n? loc(‘CD’,x,3)\n0",
+  "example": "x = ‘ABCDEFGHCDIJ’\n? loc(‘CD’,x)\n9\n? loc(‘CD’,x,3)\n0",
+  "sample_program": "LOCTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

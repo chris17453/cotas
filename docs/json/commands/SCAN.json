@@ -1,0 +1,76 @@
+{
+  "name": "SCAN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command, together with the other parts of the control structure, could easily become your most used command when accessing records in any file. With just two commands, SCAN and ENDS (Endscan) you can create a loop that will automatically provide to the commands within that loop just the records necessary for the operation and no others. When the last record in the file, or the last appropriate record, has been read, the program will automatically transfer control to the line after the appropriate ENDS command and continue with the program. The SLOOP, and SLOOP_IF commands will transfer control back to the beginning of the loop and the next record will be found without any other Find command! This single structure can replace many lines of code in your programs. The Report Writer uses this command to a large extent when creating code for multiple record reports. If you are interested in learning more, just generate a report and take a look at the code.",
+  "syntax": "keyname/@key_number - key_expr - Optional - Set this to the appropriate value to read the records in the file in a particular correct order. If you do not include this option, the program will look for a default key specified in the SRCH (Search File) command. If a default key hasn’t been previously set the program will report an error and the command will be skipped. This entry will override any default value set in the SRCH command.\nstart_value - f/c/e1,f/c/e2,...,f/c/ex - Optional - The value to use as the beginning record. This is similar to doing a FIND before the command. If the index you’re searching on has multiple segments you may list the proper values for each of the segments, separating them with commas. This will allow you to specify the exact type for each of the segments. For example, suppose you’re searching on an index that has two segments:\na 5 character alpha and an I type field. Each record you want has the same alpha but I field will change, and is in order. In the first record the I type field has a value of\n0. The following would find the first record for that group, if it exists:\nstart ‘ABCDE’,0!\nNotice that we separate the values with a comma. The only requirement is that the values be of the same type (and size) as the segments in the key. In this case we put the I type constant specifier (!) after the 0 to make sure that it is passed as an I type field.\nscope - Optional - This option may help determine how many records are scanned. For more information about the scope specifier please see the general information at the beginning of this chapter.\nscope_value - f/c/e - Optional - If scope is set to N or F this is the number of records to scan.\nfor_filter_expression - lexpr - Optional - You would use this option to restrict the records scanned in this command. If the expression did not resolve to .T. the search would continue until the program reached the end of file and then would quit.\nwhile_filter_expression - lexpr - Optional - This option also restricts the records scanned. However, the first time the expression resolves to .F., the program stops reading records and continues to the command immediately following the corresponding ENDS (Endscan). Therefore, if the program is reading records in a certain order (by a specific key) and the expression returns .F., then the program knows that all the appropriate records have been read and there is no need to continue reading. For example: suppose you want to find/read all the invoice records for a specific customer. The first record for that customer is found in the invoice file either by using the start_value option within this command, or through the FIND command before executing this command. Then the while_filter_expression would be:\nINV_CUST_CODE = CUSTOMER_CODE\n(This assumes that there is a field called INV_CUST_CODE in the invoice file and a similar field in the customer file called CUSTOMER_CODE. The keyname/@key_number option must be set to the proper value so that the records are read in CUSTOMER_CODE order, or you must have set the default key using SRCH previous to this command.) When the first invoice record for the next customer is read the program will stop reading records.\nNOTE: If there is no start_value you must set the scope value to R or N xxx. If this is not done, the program will find the first record in the file and the\n\n5-136\n\nTAS Professional 5.1\nCopyright ©Business Tools, Inc. 1985-1996 All Rights Reserved\n\n",
+  "parameters": [
+    {
+      "name": "keyname/@key_number",
+      "type": "key_expr",
+      "required": false,
+      "description": "Optional - Set this to the appropriate value to read the records in the file in a particular correct order. If you do not include this option, the program will look for a default key specified in the SRCH (Search File) command. If a default key hasn’t been previously set the program will report an error and the command will be skipped. This entry will override any default value set in the SRCH command."
+    },
+    {
+      "name": "start_value",
+      "type": "f/c/e1,f/c/e2,...,f/c/ex",
+      "required": false,
+      "description": "The value to use as the beginning record. This is similar to doing a FIND before the command. If the index you’re searching on has multiple segments you may list the proper values for each of the segments, separating them with commas. This will allow you to specify the exact type for each of the segments. For example, suppose you’re searching on an index that has two segments:\na 5 character alpha and an I type field. Each record you want has the same alpha but I field will change, and is in order. In the first record the I type field has a value of\n0. The following would find the first record for that group, if it exists:\nstart ‘ABCDE’,0!\nNotice that we separate the values with a comma. The only requirement is that the values be of the same type (and size) as the segments in the key. In this case we put the I type constant specifier (!) after the 0 to make sure that it is passed as an I type field."
+    },
+    {
+      "name": "scope",
+      "type": "Optional",
+      "required": false,
+      "description": "This option may help determine how many records are scanned. For more information about the scope specifier please see the general information at the beginning of this chapter."
+    },
+    {
+      "name": "scope_value",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If scope is set to N or F this is the number of records to scan."
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "You would use this option to restrict the records scanned in this command. If the expression did not resolve to .T. the search would continue until the program reached the end of file and then would quit."
+    },
+    {
+      "name": "while_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "This option also restricts the records scanned. However, the first time the expression resolves to .F., the program stops reading records and continues to the command immediately following the corresponding ENDS (Endscan). Therefore, if the program is reading records in a certain order (by a specific key) and the expression returns .F., then the program knows that all the appropriate records have been read and there is no need to continue reading. For example: suppose you want to find/read all the invoice records for a specific customer. The first record for that customer is found in the invoice file either by using the start_value option within this command, or through the FIND command before executing this command. Then the while_filter_expression would be:\nINV_CUST_CODE = CUSTOMER_CODE\n(This assumes that there is a field called INV_CUST_CODE in the invoice file and a similar field in the customer file called CUSTOMER_CODE. The keyname/@key_number option must be set to the proper value so that the records are read in CUSTOMER_CODE order, or you must have set the default key using SRCH previous to this command.) When the first invoice record for the next customer is read the program will stop reading records.\nNOTE: If there is no start_value you must set the scope value to R or N xxx. If this is not done, the program will find the first record in the file and the"
+    },
+    {
+      "name": "DISP",
+      "type": "Optional",
+      "required": false,
+      "description": "Either display the fields on the screen while reading or not; see text in the command description for details."
+    },
+    {
+      "name": "NLOCK",
+      "type": "Optional",
+      "required": false,
+      "description": "If this option is included in the command the program will NOT lock the record upon finding it as it would normally do in a multi-user situation. The default operation is to place a lock on the record upon reading it."
+    },
+    {
+      "name": "REV",
+      "type": "Optional",
+      "required": false,
+      "description": "If this option is included, the SCAN will be performed in reverse order."
+    }
+  ],
+  "comments": "This command, together with the other parts of the control structure, could easily become your most used command when accessing records in any file. With just two commands, SCAN and ENDS (Endscan) you can create a loop that will automatically provide to the commands within that loop just the records necessary for the operation and no others. When the last record in the file, or the last appropriate record, has been read, the program will automatically transfer control to the line after the appropriate ENDS command and continue with the program. The SLOOP, and SLOOP_IF commands will transfer control back to the beginning of the loop and the next record will be found without any other Find command! This single structure can replace many lines of code in your programs. The Report Writer uses this command to a large extent when creating code for multiple record reports. If you are interested in learning more, just generate a report and take a look at the code.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Mult rec cmds -> Scan -> Scan",
+  "see_also": [
+    "SEXIT",
+    "SEXIT_IF",
+    "SLOOP",
+    "SLOOP_IF",
+    "ENDS"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

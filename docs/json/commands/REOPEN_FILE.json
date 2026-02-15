@@ -1,0 +1,22 @@
+{
+  "name": "REOPEN FILE",
+  "abbreviation": null,
+  "platform": "System",
+  "description": "Use this command to ‘attach’ a file opened in a previous program to the current program.",
+  "syntax": "ROPEN file_number",
+  "parameters": [
+    {
+      "name": "file_number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the number of the file in the previous program. This\nvalue can be passed to a subsequent program through the use of the reset option in the\nDEFINE command or as a PARAM (Parameter). Once the subsequent program has\nthe file_number value this command can be executed and the new program will be\nable to access the file completely and in its current state."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

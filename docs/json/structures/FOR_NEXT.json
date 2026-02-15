@@ -1,0 +1,45 @@
+{
+  "name": "FOR/NEXT",
+  "description": "FOR/NEXT\nThis is a loop that will continue until the stop level is reached. The general layout of the structure is :\nFOR(counter;start_value;stop_value;step_value)\nFEXIT\nFEXIT_IF lexpr\nFLOOP\nFLOOP_IF lexpr\nNEXT\n\nFOR etc.\nThere are four different sections to this command. They are the counter field, a starting value, a stop value and a step value.\ncounter\nThe name of the field used as a loop counter. The counter can be I or R type.\nstart_value\nThe first value to be used in the loop. The counter field is initialized to this value the first\ntime through.\n\nTAS Professional 5.1\nCopyright  Business Tools, Inc. 1985-1996 All Rights Reserved\n\nstop_value\nWhen the counter reaches this value the program knows to exit the loop at the NEXT command.\nstep_value\nHow much to add or subtract from counter each time through the loop. If you wish to\nsubtract from counter (i.e., decrement), precede the value with the minus sign. For example,\na step_value of -1 will reduce the counter value by 1 each time the loop is executed.\nEach time through the loop (except the first time) the program adds (or subtracts if step_value\nis negative) the step_value. If the result is greater than the stop_value (in the case of a\npositive step_value) or less than the stop_value (in the case of a negative step_value), the\nprogram will transfer control to the line after the appropriate NEXT command.\nIn TAS Professional 3.0, if you pressed the UP ARROW key (assuming no traps), and the\nprogram encountered a FOR/NEXT loop, the counter would be decremented or incremented\nas appropriate. This feature is also available in TAS Professional 5.1. You do not need to set\nthe #PRO3 compiler directive to activate this feature. Please be aware that in TAS Professional 5.1, the counter is always +1 (or -1) greater (or less) than the stop_value at the end of\nthe loop. If the #PRO3 directive is set, the counter will be equal to the stop_value when the\nloop is finished.\n\nFEXIT\nFEXIT_IF lexpr\nThese elements of the FOR/NEXT loop will allow you to exit the loop before the counter\nreaches the stop_value. The FEXIT option exits the loop immediately. The FEXIT_IF lexpr\nwill exit the loop if the expression resolves to .T.; otherwise nothing will happen. The lexpr\nmust be in the form of a comparison expression. For example:\nFEXIT_IF x = 1\nThe FEXIT and FEXIT_IF (assuming the lexpr resolves to .T.) will transfer control to the\nnext line after the NEXT command.\nAs many FEXIT and FEXIT_IF commands may be included in a single FOR/NEXT loop as\nthe programmer desires.\n\nFLOOP\nFLOOP_IF lexpr\nThese elements of the FOR/NEXT loop will allow the program to transfer control to the\nbeginning of the loop (FOR command) without having to reach the NEXT command. The\nFLOOP option transfers control immediately. The FLOOP_IF lexpr will transfer control if\nthe expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form\nof a comparison expression. For example:\nFLOOP_IF x = 1\nAs many FLOOP and FLOOP_IF commands may be included in a single FOR/NEXT loop\nas the programmer desires.\n\nNEXT\nThis is the final step in the FOR/NEXT loop. When this command is executed control is\nreturned to the FOR command line. Each FOR must have a NEXT to finish the loop. If the\nNEXT is not included an error message will be displayed during compilation.",
+  "syntax": "FOR(counter;start_value;stop_value;step_value)\nFEXIT\nFEXIT_IF lexpr\nFLOOP\nFLOOP_IF lexpr\nNEXT",
+  "keywords": [
+    {
+      "keyword": "counter",
+      "description": "The name of the field used as a loop counter. The counter can be I or R type."
+    },
+    {
+      "keyword": "start_value",
+      "description": "The first value to be used in the loop. The counter field is initialized to this value the first time through."
+    },
+    {
+      "keyword": "stop_value",
+      "description": "When the counter reaches this value the program knows to exit the loop at the NEXT command."
+    },
+    {
+      "keyword": "step_value",
+      "description": "How much to add or subtract from counter each time through the loop. If you wish to subtract from counter (i.e., decrement), precede the value with the minus sign. For example, a step_value of -1 will reduce the counter value by 1 each time the loop is executed. Each time through the loop (except the first time) the program adds (or subtracts if step_value is negative) the step_value. If the result is greater than the stop_value (in the case of a positive step_value) or less than the stop_value (in the case of a negative step_value), the program will transfer control to the line after the appropriate NEXT command. In TAS Professional 3.0, if you pressed the UP ARROW key (assuming no traps), and the program encountered a FOR/NEXT loop, the counter would be decremented or incremented as appropriate. This feature is also available in TAS Professional 5.1. You do not need to set the #PRO3 compiler directive to activate this feature. Please be aware that in TAS Professional 5.1, the counter is always +1 (or -1) greater (or less) than the stop_value at the end of the loop. If the #PRO3 directive is set, the counter will be equal to the stop_value when the loop is finished."
+    },
+    {
+      "keyword": "FEXIT",
+      "description": "These elements of the FOR/NEXT loop will allow you to exit the loop before the counter reaches the stop_value. The FEXIT option exits the loop immediately."
+    },
+    {
+      "keyword": "FEXIT_IF lexpr",
+      "description": "The FEXIT_IF lexpr will exit the loop if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression. For example: FEXIT_IF x = 1"
+    },
+    {
+      "keyword": "FLOOP",
+      "description": "These elements of the FOR/NEXT loop will allow the program to transfer control to the beginning of the loop (FOR command) without having to reach the NEXT command. The FLOOP option transfers control immediately."
+    },
+    {
+      "keyword": "FLOOP_IF lexpr",
+      "description": "The FLOOP_IF lexpr will transfer control if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression. For example: FLOOP_IF x = 1"
+    },
+    {
+      "keyword": "NEXT",
+      "description": "This is the final step in the FOR/NEXT loop. When this command is executed control is returned to the FOR command line. Each FOR must have a NEXT to finish the loop. If the NEXT is not included an error message will be displayed during compilation."
+    }
+  ],
+  "max_nesting": "20 deep",
+  "example": null
+}

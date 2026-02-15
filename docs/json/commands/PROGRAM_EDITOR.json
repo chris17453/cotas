@@ -1,0 +1,21 @@
+{
+  "name": "PROGRAM EDITOR",
+  "abbreviation": null,
+  "platform": null,
+  "description": "User Interface -> Lists -> Exit list",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "LISTF",
+    "LISTM",
+    "AUTOINC",
+    "NOREDSP",
+    "NORSTRT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

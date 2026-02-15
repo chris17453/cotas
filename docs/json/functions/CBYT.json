@@ -1,0 +1,19 @@
+{
+  "name": "CBYT",
+  "signature": "CBYT(1)",
+  "platform": null,
+  "purpose": "This function will return the given field as a B type (1 byte integer) field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The field to be converted to B type."
+    }
+  ],
+  "return_type": "B The original field is not changed.",
+  "comments": "F, P, T, and D type fields cannot be converted to B; however, all others can. If an L type field is converted, a .T. value will be converted to 1, a .F. to 0. If the value of the field to be converted is larger than the maximum value of a B type field (255), the converted value will not be accurate.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,27 @@
+{
+  "name": "MOUSE",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "This command turns the mouse on and off.",
+  "syntax": "MOUSE ON/OFF",
+  "parameters": [
+    {
+      "name": "ON/OFF",
+      "type": "e",
+      "required": true,
+      "description": "ON/OFF - Required - If this option is ON the program will display the mouse on the screen and allow the user to take advantage of the features relating to the mouse. To return to normal mode the option would be OFF."
+    }
+  ],
+  "comments": "Other commands within TAS Professional 5.1 will take advantage of the mouse if it has been turned on.\nWith some commands this is more or less automatic; with others you have to set up some supporting\nmouse commands. The various traps that work with the mouse (e.g., for detecting movement) are\ncovered under the TRAP command. Current mouse location is available using two functions and there\nis also a function for determining what the mouse is doing. See the documentation in Chapter 6,\nFunction Reference for more information on MCOL(), MROW() and MOUSE_ACT().\nTo turn the mouse on automatically you can set the Mouse On value to Y in the Set Configuration\nprogram (Utilities-G). Please refer to the Set Configuration documentation in Chapter 3, Main Menu\nPrograms. If you have that value set to Y you do not need to use this command.\nIf there is no mouse connected to the computer this command will be ignored.\n\nUSER INTERFACE\nUse of the mouse is fully integrated with the LISTF, LISTM and MENU commands automatically. For\nmore information about this please refer to the Introduction - Mouse Control in Chapter 3, Main Menu\nPrograms .",
+  "example": "MOUSETST",
+  "sample_program": null,
+  "program_editor": "System -> Mouse",
+  "see_also": [
+    "TRAP",
+    "MCOL()",
+    "MROW()",
+    "MOUSE_ACT()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

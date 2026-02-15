@@ -1,0 +1,28 @@
+{
+  "name": "POINTER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "You can use this command to get the internal ‘pointer’ value for the field.",
+  "syntax": "receiving_field -> target_field",
+  "parameters": [
+    {
+      "name": "receiving_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The receiving field. The internal ‘pointer’ value for target_field will be saved into receiving_field. If you are saving the pointer for a non-array field it may be saved into either a type F or P field. However, if the pointer is for an array field, the result must be saved into a type P field or an inaccurate value will be saved."
+    },
+    {
+      "name": "target_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field being pointed at."
+    }
+  ],
+  "comments": "The difference in receiving fields comes from the way fields are accessed in TAS Professional 5.1. An\nF type pointer keeps track of the field type and address in the field list buffer. Only 5 bytes are required\nfor this type of field. The P type pointer uses the actual location in memory and keeps track of the type,\nsize, decimal characters, etc. of the field being pointed to. The P type is necessary when pointing to an\narray field since the array value is not kept in an F type pointer. For more information about the layout,",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

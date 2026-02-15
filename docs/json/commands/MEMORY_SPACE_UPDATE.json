@@ -1,0 +1,46 @@
+{
+  "name": "MEMORY SPACE UPDATE",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "This is a TAS Professional 3.0 command here for compatibility. There is no preferred TAS Professional 5.1 command/function.",
+  "syntax": "MEM_SPC mem_area# START start_val STOP stop_val NCHR #_of_chrs DOwhat_to_do",
+  "parameters": [
+    {
+      "name": "mem_area#",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the memory area to use. This must resolve to a value of 1 through 4."
+    },
+    {
+      "name": "start_val",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The character position of the beginning of the block of characters. The first character in the memory area is at position 1."
+    },
+    {
+      "name": "stop_val",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The character position of the end of the block of characters."
+    },
+    {
+      "name": "NCHR #_of_chrs",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of characters to add or subtract."
+    },
+    {
+      "name": "DOwhat_to_do",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This must resolve to either A (add) or S (subtract)."
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Memory Space Update.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

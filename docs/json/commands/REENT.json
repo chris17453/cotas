@@ -1,0 +1,15 @@
+{
+  "name": "REENT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "No options",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "REENTER"
+}

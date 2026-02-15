@@ -1,0 +1,19 @@
+{
+  "name": "RTOT",
+  "signature": "RTOT(1)",
+  "platform": null,
+  "purpose": "This function will convert a value in an R type field to a time (T type) value.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The R type value to convert. The original field is not changed."
+    }
+  ],
+  "return_type": "T",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

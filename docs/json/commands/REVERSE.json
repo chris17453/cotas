@@ -1,0 +1,24 @@
+{
+  "name": "REVERSE",
+  "abbreviation": null,
+  "platform": "DOS only",
+  "description": "This will change the display color to the color you have set as reverse.",
+  "syntax": "REV",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Color control -> Reverse",
+  "see_also": [
+    "COLOR",
+    "BKG",
+    "FRG",
+    "CC()",
+    "CCE()",
+    "CCF()",
+    "CCH()",
+    "CCR()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

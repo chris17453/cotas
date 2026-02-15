@@ -1,0 +1,42 @@
+{
+  "name": "RECORD NUMBER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will either return the record number (position) of an active record, or will use the value supplied to read a record.",
+  "syntax": "RCN filename/@file_number RCN record_number_field GET/SET NLOCK",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "The name or number of the file to use."
+    },
+    {
+      "name": "record_number_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that will either hold the results of a GET or provide the value for a SET. This must be an R type field."
+    },
+    {
+      "name": "GET/SET",
+      "type": "sac",
+      "required": true,
+      "description": "GET the current record number, or SET the value in the record_number_field into the appropriate location and read the record."
+    },
+    {
+      "name": "NLOCK",
+      "type": "n",
+      "required": false,
+      "description": "Normally, in multi-user mode, when a record is read it is automatically locked so that other users cannot read it until you are finished with it. If this is a SET operation and you don’t want to lock the record upon reading it then include this option in the command. NOTE: If you include this option and another user reads the record and then you try to save the record back to disk you will get an error message telling you that this has occurred. You need to read the record again before saving it back to disk."
+    }
+  ],
+  "comments": "This command will work with both TAS Pro 5.1 and non-TAS files. The screen will not be automatically refreshed when this command executes. If you need to refresh data on the screen you should execute the SCRN R command immediately after a GET operation.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Find -> Record number",
+  "see_also": [
+    "RCN()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

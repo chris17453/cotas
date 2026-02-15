@@ -1,0 +1,13 @@
+{
+  "name": "PRINT_CANCEL",
+  "signature": "PRINT_CANCEL()",
+  "platform": "Windows Only",
+  "purpose": "When the user is given the choices of where to print under Windows one of those choices is Cancel. If they choose to cancel the output then this function will return .T. By itself, this function will NOT cancel the report. It is up to the programmer to add the 1 or 2 lines of code necessary to actually exit the report. This will just notify the programmer of the user's choice.",
+  "parts": [],
+  "return_type": "L If the user chooses Cancel in the Choose Output options this function will return .T.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

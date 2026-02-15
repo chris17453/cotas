@@ -1,0 +1,13 @@
+{
+  "name": "WIN_LASER_PRT",
+  "signature": "WIN_LASER_PRT() (Windows Only)",
+  "platform": "Windows",
+  "purpose": "In some programs it is important for the report to know whether it is being printed on a laser printer or not. Since laser printers will only print 60 lines normally you may need to tighten up the output. This function will return the value set for this printer in the TP5WIN.INI file.",
+  "parts": [],
+  "return_type": "L If the current (active) printer is set as type laser this will return .T.",
+  "comments": "For more information about printing in Windows please refer to Chapter 11 - Windows Programming.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

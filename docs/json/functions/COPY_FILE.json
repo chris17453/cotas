@@ -1,0 +1,24 @@
+{
+  "name": "COPY_FILE",
+  "signature": "COPY_FILE(1,2) (Windows Only)",
+  "platform": "Windows Only",
+  "purpose": "You must use this function to copy a file in Windows. You cannot use standard DOS commands.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "From file name. Must be type A."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "To file name. Must be type A."
+    }
+  ],
+  "return_type": "L If the copy is complete the function returns .T., otherwise it returns .F..",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

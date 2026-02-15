@@ -1,0 +1,20 @@
+{
+  "name": "AUTO ENTER LIST",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is used in connection with the LISTM (List Array) and LISTF (List File) commands either prior to the command being executed the first time or upon return from an ENTER UDF. This command will cause the program to automatically execute the ENTER UDF again without waiting for the user to press the ENTER key. Generally this command is used in conjunction with the AUTOINC or AUTODEC command.",
+  "syntax": "AUTO ENTER LIST",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "AUTODEC",
+    "AUTOINC",
+    "LISTF",
+    "LISTM"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

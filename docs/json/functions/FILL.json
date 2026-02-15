@@ -1,0 +1,24 @@
+{
+  "name": "FILL",
+  "signature": "FILL(1,2)",
+  "platform": null,
+  "purpose": "This function will return an A type field of a specific size and made up entirely of a specific character.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The size of the field to be returned."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The fill character to be used. This must be an A type field and only the first character of that field will be used."
+    }
+  ],
+  "return_type": "A An A type field made up of the specified fill character and of the requested size.",
+  "comments": null,
+  "example": "? FILL(10,’*’)",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

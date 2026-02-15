@@ -1,0 +1,19 @@
+{
+  "name": "ISAL",
+  "signature": "ISAL(1)",
+  "platform": null,
+  "purpose": "This function will determine whether the first character of a field is an alphanumeric character (A-Z), or\nsomething else.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Field to check, must be of type A."
+    }
+  ],
+  "return_type": "L If the first character is from A-Z (upper or lower case), the function will return .T., otherwise .F.",
+  "comments": null,
+  "example": "x = ‘SAMPLE’\n? isal(x)\n.T.\nx = ‘!SAMPLE’\n? isal(x)\n.F.",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

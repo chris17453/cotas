@@ -1,0 +1,15 @@
+{
+  "name": "AUTO RUN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "",
+  "syntax": "",
+  "parameters": [],
+  "comments": "For an example of this process see AUTOTEST.SRC in the SAMPLE\\ sub-directory. Also the support files, AUTOTEST.CHR and AUTOTEST.ARN",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Auto_run",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

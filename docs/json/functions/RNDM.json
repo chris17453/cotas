@@ -1,0 +1,13 @@
+{
+  "name": "RNDM",
+  "signature": "RNDM()",
+  "platform": null,
+  "purpose": "This function will generate a random number.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": "SAMPLE PROGRAM\nRANDTEST.SRC",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

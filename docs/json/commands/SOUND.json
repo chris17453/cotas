@@ -1,0 +1,40 @@
+{
+  "name": "SOUND",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will use an array of notes and beats (number of clock ticks to keep sound on) to make noise come out of the PC speaker.",
+  "syntax": "SOUND note_array BEAT beat_array NUM num_of_notes FILE wav_file",
+  "parameters": [
+    {
+      "name": "note_array",
+      "type": "sac",
+      "required": true,
+      "description": "An array of values that represent notes. Each note is the number 1,193,180/frequency desired. Must be an I type array."
+    },
+    {
+      "name": "beat_array",
+      "type": "sac",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "num_of_notes",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "wav_file",
+      "type": "FILE",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

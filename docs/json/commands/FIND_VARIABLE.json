@@ -1,0 +1,106 @@
+{
+  "name": "FIND VARIABLE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to find a record in any file, either TAS (opened with the OPENV (Open Variable) command) or non-TAS.",
+  "syntax": "FINDV find_type FNUM file_number KEY keyname/@key_number VAL search_value ERR error_label FOR for_filter_expression NLOCK KEYO NOCLR",
+  "parameters": [
+    {
+      "name": "find_type",
+      "type": "mgflnp",
+      "required": true,
+      "description": "mgflnp - Required - This is the type of find you want to execute. The options are: M - matching - Find the exact record based on the search_value option. You can also set the appropriate key fields with the EQUAL command and then the search_value option need not be used."
+    },
+    {
+      "name": "FNUM",
+      "type": "string",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "file_number",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "KEY",
+      "type": "sac",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "keyname",
+      "type": "sac",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "@key_number",
+      "type": "n",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "VAL",
+      "type": "v",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "search_value",
+      "type": "v",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "ERR",
+      "type": "string",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "error_label",
+      "type": "string",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "FOR",
+      "type": "string",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "for_filter_expression - lexpr - Optional - You would use this option to restrict the records read in this command. If the expression did not resolve to .T. the record would not be found. In this option, the search continues until the program reaches the end of file (EOF = .T.) and then will quit."
+    },
+    {
+      "name": "NLOCK",
+      "type": "option",
+      "required": false,
+      "description": "NLOCK - Optional - If this option is included in the command the program will NOT lock the record upon finding it as it would normally do in a multi-user situation. The default operation is to place a lock on the record upon reading it."
+    },
+    {
+      "name": "KEYO",
+      "type": "option",
+      "required": false,
+      "description": "KEYO - Optional - If this option is included in the command the program will search only for the key. The result is that you can use this method for checking if a key value exists without having to find the entire record. This will preserve the values in your record until you are ready to save it. To test whether or not the record exists use the FLERR() function without specifying the file number."
+    },
+    {
+      "name": "NOCLR",
+      "type": "option",
+      "required": false,
+      "description": "NOCLR - Optional - Normally, during a M (match) type FIND, if a record is not found the program will clear the record buffer. If you don’t want this to happen then include this option. If a record was active before the FIND it will still be active. If you had data as part of a new record then that data will still be there."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

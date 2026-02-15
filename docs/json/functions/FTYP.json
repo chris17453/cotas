@@ -1,0 +1,19 @@
+{
+  "name": "FTYP",
+  "signature": "FTYP(1)",
+  "platform": null,
+  "purpose": "This function will return the type of a specific field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the field being checked."
+    }
+  ],
+  "return_type": "A A single character representing the field type will be returned. If no field is found the function will return a blank.",
+  "comments": null,
+  "example": null,
+  "sample_program": "FLDTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

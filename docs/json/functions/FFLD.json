@@ -1,0 +1,24 @@
+{
+  "name": "FFLD",
+  "signature": "FFLD(1,2)",
+  "platform": null,
+  "purpose": "This function will return the pointer (P or F) for a field. The function can also return a logical value to indicate that the field was not found.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name or number of the field to search for."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "What to return. ‘P’ returns a P type pointer, ‘F’ returns an F type pointer, and ‘L’ returns a logical value."
+    }
+  ],
+  "return_type": "P, F or L",
+  "comments": "If the return type is P or F, and you use a number and it is out of range, or the field name is not found, the program will return an error. If the return type is L the function will return .F.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

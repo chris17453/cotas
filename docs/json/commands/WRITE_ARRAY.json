@@ -1,0 +1,66 @@
+{
+  "name": "WRITE ARRAY",
+  "abbreviation": null,
+  "platform": "TAS",
+  "description": "This command is used for writing to a group of records from array fields in memory. Within this single command you can accomplish many tasks that would normally take many more lines of code and more time to execute.",
+  "syntax": "WRTA from_field_list TO to_field_list RECA record_number_array MAXA number_of_elements\nCNTR counter_field FILE filename/@file_number FOR for_filter_expression DISP",
+  "parameters": [
+    {
+      "name": "from_field_list",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The fields in the array whose values are to be written. You may also create expressions that can be transferred to the receiving (to_field_list) fields. The first from_field_list field is paired to the first to_field_list field, the second to the second, etc. There must be the same number of from_field_list fields as to_field_list fields."
+    },
+    {
+      "name": "to_field_list",
+      "type": "fn/v",
+      "required": true,
+      "description": "These are the recipient fields in the record to be written. They must be of the same type as the respective from_field_list fields. The first from_field_list field is paired with the first to_field_list field, the second to the second, etc. There must be the same number of to_field_list fields as from_field_list fields."
+    },
+    {
+      "name": "record_number_array",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - If you want to update current records then you must provide an array of record numbers so this command can read the appropriate record before updating the fields and saving it back. The record number can be obtained through the use of the RCN() function."
+    },
+    {
+      "name": "number_of_elements",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The number of array elements (or records) to be written."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "This value is updated by the program during operation so that you may use expressions in the from_field_list. Use this field as the array specifier where appropriate. Must be of type I."
+    },
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": false,
+      "description": "The name or number of the file to be used. If you do not include this option, the program will look for a default search file set in the SRCH (Search File) command. If a default file hasn’t been previously set, the program will report an error and the command will be skipped. This entry will override any default value set in the SRCH command."
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - You would use this option to restrict the records written in this command. If the expression did not resolve to .T., the record would not be written and the program would continue to the next array element. The process continues until all array elements (number_of_elements) have been checked and written if appropriate."
+    },
+    {
+      "name": "DISP",
+      "type": "disp",
+      "required": false,
+      "description": "Optional - If you include this option, each time a record is ready to be written the program will redisplay the screen fields as appropriate. This will slow down the operation of this command, with the amount of slow-down depending on how many fields are displayed on the screen. The net effect will probably be negligible unless you are reading through a very large file."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": "WRTARRAY",
+  "program_editor": "PROGRAM EDITOR",
+  "see_also": [
+    "RDA"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

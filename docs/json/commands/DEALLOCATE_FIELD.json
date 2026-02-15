@@ -1,0 +1,25 @@
+{
+  "name": "DEALLOCATE FIELD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will deallocate (remove from memory and allow reuse of previously allocated space) a field previously allocated using any of the allocation commands or functions.",
+  "syntax": "DEALOC fieldname",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field being deallocated. The field must have been allocated using one of the appropriate commands or functions."
+    }
+  ],
+  "comments": "Once this command has been used the field being deallocated will not be able to be used in a program until it is allocated again.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> Create/chg -> dEallocate",
+  "see_also": [
+    "ALLOC",
+    "ALOCARY()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,19 @@
+{
+  "name": "DTOS",
+  "signature": "DTOS(1)",
+  "platform": null,
+  "purpose": "This function will return a date value as a string in the form YYYYMMDD.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Date value to use."
+    }
+  ],
+  "return_type": "A An 8 character string is always returned.",
+  "comments": null,
+  "example": "? dtos(date())\n19940623",
+  "sample_program": "LOCTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

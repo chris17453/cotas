@@ -1,5 +1,0 @@
-# CDOW()
-
-## Summary
-Function Reference
-

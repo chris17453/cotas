@@ -1,0 +1,29 @@
+{
+  "name": "MID_REC",
+  "signature": "MID_REC(1,2,3)",
+  "platform": null,
+  "purpose": "This function will return a portion of an active record in a specified file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to use."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The starting character position. The first character of a record is position 1."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The number of characters to return. If the value given would go beyond the end of the record, only those characters up to the end of the record will be passed."
+    }
+  ],
+  "return_type": "A If the receiving field is too short, the remaining characters will be truncated.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

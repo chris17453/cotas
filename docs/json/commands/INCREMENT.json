@@ -1,0 +1,22 @@
+{
+  "name": "INCREMENT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Increment an I or R type field.",
+  "syntax": "INC fieldname",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field being incremented. Must be of I or R type."
+    }
+  ],
+  "comments": "This is the same as adding 1 to the field. That is:\nINC CNTR\nis equivalent to:\nCNTR = CNTR + 1",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

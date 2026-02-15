@@ -1,0 +1,52 @@
+{
+  "name": "RELATE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "REL invoice KEY inv_cust_code MSTR customer FLDLST cust_code (This assumes that inv_cust_code is a keyname; that there is only one field in the index; and that the index is the same size and type as cust_code.) This command would need to be executed only once, after the appropriate files have been opened. Each time a new customer is found the program will attempt to find the related record in the invoice file. If a record is not found, the appropriate error will be saved in the invoice file information buffer and can be checked, if needed, by the program through the use of the FLERR() function. You could also find a matching slave record explicitly by setting an equality between indexes and then doing a FIND. For example, to find an invoice record given the customer code key value, you might do the following:\ninv_cust_code = cust_code\nFIND record in INVOICE file\nThe major difference is that in using the REL command, the first find is event driven and can occur anytime within the program, regardless of how the master record is found.",
+  "syntax": "REL invoice KEY inv_cust_code MSTR customer FLDLST cust_code",
+  "parameters": [
+    {
+      "name": "invoice",
+      "type": "f",
+      "required": true,
+      "description": "The file to be used as the Invoice file."
+    },
+    {
+      "name": "inv_cust_code",
+      "type": "sac",
+      "required": true,
+      "description": "The keyname inv_cust_code. This is the value used to locate related records in the invoice file."
+    },
+    {
+      "name": "MSTR",
+      "type": "sac",
+      "required": true,
+      "description": "Keyword indicating the master relationship. (Reserved word in the syntax.)"
+    },
+    {
+      "name": "customer",
+      "type": "sac",
+      "required": true,
+      "description": "Master file name (customer) to relate to."
+    },
+    {
+      "name": "FLDLST",
+      "type": "sac",
+      "required": true,
+      "description": "Keyword introducing the field list to be retrieved from the related/master file."
+    },
+    {
+      "name": "cust_code",
+      "type": "sac",
+      "required": true,
+      "description": "Field list value specifying the field from the master file to use for the relation."
+    }
+  ],
+  "comments": null,
+  "example": "inv_cust_code = cust_code\nFIND record in INVOICE file",
+  "sample_program": null,
+  "program_editor": "fiLe -> Find -> rElate",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,28 @@
+{
+  "name": "EQUAL (=)",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to set the receiving field to the value of an expression.",
+  "syntax": "receiving_field = expression",
+  "parameters": [
+    {
+      "name": "receiving_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that is going to be changed."
+    },
+    {
+      "name": "expression",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The expression that is providing the data. This can be as simple as a numeric constant, 1, or a very complex expression that uses functions and UDFs."
+    }
+  ],
+  "comments": "If the two field types are not the same the program will attempt to convert the expression to the type of the receiving_field.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> Equal",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

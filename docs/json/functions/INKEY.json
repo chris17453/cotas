@@ -1,0 +1,19 @@
+{
+  "name": "INKEY",
+  "signature": "INKEY(1)",
+  "platform": null,
+  "purpose": "This function will check the keyboard and see if a character is waiting.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Normally, this function would just check the keyboard and then return. However, if you\nwant the program to wait until a key is pressed then ‘W’ must be included here."
+    }
+  ],
+  "return_type": "I If you have not included the wait (‘W’) option and no character is waiting at the keyboard the value\nreturned will be 0.",
+  "comments": "If a character is waiting or one is entered, the ASCII representation value will be returned.\nOnce a key is pressed it will stay in the keyboard buffer until it is accessed by some procedure. The\nprocedure could be a function such as this one or the normal TAS Professional 5.1 process, which\nchecks the keyboard before each command is executed.",
+  "example": "? inkey()\n0\n&& no character was waiting\n(This will return as soon as the keyboard is checked.)\n? inkey(‘w’)\n32\n&& space bar was pressed\n(This will return after a key was pressed.)",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

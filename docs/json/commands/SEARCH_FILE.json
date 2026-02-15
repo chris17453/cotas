@@ -1,0 +1,28 @@
+{
+  "name": "SEARCH FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will set the default search file and key.",
+  "syntax": "SRCH filename/@file_number KEY keyname/@key_number",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "This is the name or number of the file to be used."
+    },
+    {
+      "name": "keyname/@key_number",
+      "type": "key_expr",
+      "required": true,
+      "description": "Set this to the appropriate value to read the records in the file in a particular order."
+    }
+  ],
+  "comments": "By using this command the programmer can set the default values to be used by any other command that\naccesses data in files. This also includes the user operated file keys (F9 - Find, F5- First, F6 - Last, etc.).\nIf default values have not been set and the cursor is not on a key field that has the same name as a key,\nthe user will not be able to use the file keys. However, if you set the defaults, the program will use the\nvalues for file key searches no matter where the cursor is. Using this process you can make sure that\nonly the file and key you want is used for searching. For more information on the file keys please refer\nto Chapter 1, Installation and General Information.\nTo reset the SRCH value execute the command without a file or key specified. For example:\nSRCH",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

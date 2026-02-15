@@ -1,5 +1,0 @@
-# RTOD()
-
-## Summary
-Function Reference
-

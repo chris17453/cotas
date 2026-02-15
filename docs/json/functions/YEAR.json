@@ -1,0 +1,19 @@
+{
+  "name": "YEAR",
+  "signature": "YEAR(1)",
+  "platform": null,
+  "purpose": "This function returns the year of a date value (type D) as a string (type A).",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The date value to use."
+    }
+  ],
+  "return_type": "A This function returns a 4 character string.",
+  "comments": null,
+  "example": "? year(date())\n1994",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ARRAY SORT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Please see the SORT ARRAY command.",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "SORT ARRAY"
+}

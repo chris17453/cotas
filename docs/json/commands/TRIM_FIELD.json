@@ -1,0 +1,30 @@
+{
+  "name": "TRIM FIELD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This will change the leading or trailing spaces in an A type field to binary 0s.",
+  "syntax": "TRIM fieldname TRAIL/LEAD",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field to be trimmed."
+    },
+    {
+      "name": "TRAIL/LEAD",
+      "type": "e",
+      "required": false,
+      "description": "Optional - Trim the TRAIL - trailing, or LEAD - leading spaces in the field. Default is TRAIL."
+    }
+  ],
+  "comments": "When you use the function TRIM() the program puts the ‘trimmed’ field in the temporary data space. If you are trying to TRIM a field that is larger than that space you will get the message that the program is out of room in the temporary data area. This command is provided to you so that you can TRIM a field larger than the temporary data area within its own space. Using this command you will not run out of memory.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> alpha Fld cmds -> Trim",
+  "see_also": [
+    "TRIM()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

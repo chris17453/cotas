@@ -1,0 +1,24 @@
+{
+  "name": "LIKE",
+  "signature": "LIKE(1,2)",
+  "platform": null,
+  "purpose": "This function will return a logical value indicating whether the two fields are alike. You may use the\nskeleton characters ? and * in the first field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Comparison field 1. If you are going to use the skeleton characters (variable character\nspecifiers) ? or *, they must be in this field. Must be an A type value."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Comparison field 2. Must be an A type field."
+    }
+  ],
+  "return_type": "L If the fields match the function will return .T., otherwise .F.",
+  "comments": "The character ? will match any other single character in that same position in field 2. The character *\nwill match all following characters from that position on. If comparison field 1 is shorter than field 2\nand the last character in field 1 is NOT * the fields will not match and .F. will be returned. Differences\nin upper and lower case are treated as differences in characters.",
+  "example": ":? like(‘ABC’,’abc’)\n.F.\n\n&& same characters, different case\n\n? like(‘this*’,’this is a test’)\n.T.\n\n&& last character in\n&& comp fld1 is ‘*’ and\n&& first chrs match\n\n? like(‘th?s’,’this’)\n.T.\n\n&& ? will match any single chr.",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

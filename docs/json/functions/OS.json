@@ -1,0 +1,13 @@
+{
+  "name": "OS",
+  "signature": "OS()",
+  "platform": null,
+  "purpose": "This function returns the operating system name and version number.",
+  "parts": [],
+  "return_type": "A The size of the returned value depends on the name of the operating system and the version number.",
+  "comments": null,
+  "example": "? OS()\nDOS 5.1",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

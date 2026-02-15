@@ -1,0 +1,15 @@
+{
+  "name": "UNLOCK ALL",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to easily unlock all locked records or files.",
+  "syntax": "ULKALL",
+  "parameters": [],
+  "comments": "If no records/files are locked, nothing will be done.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Unlock all",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

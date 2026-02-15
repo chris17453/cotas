@@ -1,0 +1,22 @@
+{
+  "name": "WRAP FIELD 3.0",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. There is no direct replacement for this command.",
+  "syntax": "WRAP3 start_col_position",
+  "parameters": [
+    {
+      "name": "start_col_position",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The column where the next line of text begins. If this number is zero, wrap printing is turned off."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "WRAP3"
+}

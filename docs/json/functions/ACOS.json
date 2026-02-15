@@ -1,0 +1,19 @@
+{
+  "name": "ACOS",
+  "signature": "ACOS(1)",
+  "platform": null,
+  "purpose": "This function returns the arccosine of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The result will be from 0 to PI in radians.",
+  "comments": "The value specified must be between -1 and 1.",
+  "example": "? acos(-0.539)\n2.14004577",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

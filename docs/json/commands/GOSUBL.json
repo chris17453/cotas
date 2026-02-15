@@ -1,0 +1,22 @@
+{
+  "name": "GOSUBL",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "A subroutine ‘called’ through this approach must use the RET (Return) command when finished.\nUnlike a function, no data may be returned. The program will continue with the next line after the\noriginal GOSUBL (once the RET command has been executed from the subroutine).\nNOTE: It is up to you to be sure that you pass a legal line number. If you do not the results are\nuncertain and may stop the program entirely.",
+  "syntax": "GOSUBL gosub_line_number",
+  "parameters": [
+    {
+      "name": "gosub_line_number",
+      "type": "label",
+      "required": true,
+      "description": "label - Required - Transfer program control to the line as specified by the number value."
+    }
+  ],
+  "comments": "A subroutine ‘called’ through this approach must use the RET (Return) command when finished.\nUnlike a function, no data may be returned. The program will continue with the next line after the\noriginal GOSUBL (once the RET command has been executed from the subroutine).\nNOTE: It is up to you to be sure that you pass a legal line number. If you do not the results are\nuncertain and may stop the program entirely.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> Goto/gosub -> gosub linE",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

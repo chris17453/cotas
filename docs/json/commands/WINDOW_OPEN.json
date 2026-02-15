@@ -1,0 +1,102 @@
+{
+  "name": "WINDOW OPEN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used for ‘opening’ a window on the screen. From the program's perspective, once this command is executed the screen becomes the window. Thus, the screen is the same size as the window, and the upper left hand corner of the window is column 1, row 1 for commands that display data to the screen. This will apply until a previously saved screen is redisplayed, or the SCRN R (Screen Reset) command is run.\nWINDOW AT starting_column,starting_row LEN length WDT width\nWCOLOR window_color TTLW title_where TTL title BOX box\nBCOLOR box_color SHD shadow_where SCOLOR shadow_color\nWTXT_COLOR window_text_color BTXT_COLOR border_text_color USE_COLORS\nstarting_column - f/c/e - Required - Upper left corner of the window, column value.\nstarting_row - f/c/e - Required - Upper left corner of the window, row value.",
+  "syntax": "WINDOW OPEN\nThis command is used for ‘opening’ a window on the screen. From the program's perspective, once this\ncommand is executed the screen becomes the window. Thus, the screen is the same size as the window,\nand the upper left hand corner of the window is column 1, row 1 for commands that display data to the\nscreen. This will apply until a previously saved screen is redisplayed, or the SCRN R (Screen Reset)\ncommand is run.\nWINDOW AT starting_column,starting_row LEN length WDT width\nWCOLOR window_color TTLW title_where TTL title BOX box\nBCOLOR box_color SHD shadow_where SCOLOR shadow_color\nWTXT_COLOR window_text_color BTXT_COLOR border_text_color USE_COLORS\nstarting_column - f/c/e - Required - Upper left corner of the window, column value.\nstarting_row - f/c/e - Required - Upper left corner of the window, row value.",
+  "parameters": [
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the window, column value."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the window, row value."
+    },
+    {
+      "name": "LEN",
+      "type": "length",
+      "required": true,
+      "description": "length"
+    },
+    {
+      "name": "WDT",
+      "type": "width",
+      "required": true,
+      "description": "width"
+    },
+    {
+      "name": "WCOLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": "window_color"
+    },
+    {
+      "name": "TTLW",
+      "type": "f/c/e",
+      "required": false,
+      "description": "title_where"
+    },
+    {
+      "name": "TTL",
+      "type": "f/c/e",
+      "required": false,
+      "description": "title"
+    },
+    {
+      "name": "BOX",
+      "type": "f/c/e",
+      "required": false,
+      "description": "box"
+    },
+    {
+      "name": "BCOLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": "box_color"
+    },
+    {
+      "name": "SHD",
+      "type": "f/c/e",
+      "required": false,
+      "description": "shadow_where"
+    },
+    {
+      "name": "SCOLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": "shadow_color"
+    },
+    {
+      "name": "WTXT_COLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": "window_text_color"
+    },
+    {
+      "name": "BTXT_COLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": "border_text_color"
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "f/c/e",
+      "required": false,
+      "description": "USE_COLORS"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "WINACT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

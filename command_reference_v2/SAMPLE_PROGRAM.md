@@ -1,5 +1,0 @@
-# SAMPLE PROGRAM
-
-## Summary
-RUNTEST, RUNTEST1
-

@@ -1,0 +1,19 @@
+{
+  "name": "INT",
+  "signature": "INT(1)",
+  "platform": null,
+  "purpose": "This function will return the integer portion only of a N type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N type field to use. The original field is unchanged."
+    }
+  ],
+  "return_type": "N",
+  "comments": "The decimal value is not rounded up but just eliminated. The decimal characters are still there; it's just\nthat the value of those characters will be 0.",
+  "example": "? int(2.935)\n2.000",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

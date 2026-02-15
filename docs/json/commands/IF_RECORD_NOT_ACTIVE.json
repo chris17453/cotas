@@ -1,0 +1,36 @@
+{
+  "name": "IF RECORD NOT ACTIVE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will control whether a command, or group of commands, will be executed. This is one part of a complete command structure.",
+  "syntax": "IFNA filename/@file_number what_to_do goto_gosub_label",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "The name or number of the file to be checked."
+    },
+    {
+      "name": "what_to_do",
+      "type": "e",
+      "required": true,
+      "description": "The action to take if the record is not active. Possible actions include: DO - Do the following commands until the program reaches an ELSE, ELSE_IF or ENDIF command. This is the default value and doesn’t have to be specified. THEN - Execute the following command. The command to execute in this case must follow on the same physical line."
+    },
+    {
+      "name": "goto_gosub_label",
+      "type": "s",
+      "required": false,
+      "description": "label - Required - If the what_to_do option is GOTO or GOSUB then you must specify the label name here."
+    }
+  ],
+  "comments": "IF RECORD NOT ACTIVE\nThis is a process control command, i.e., it will control whether a command, or group of commands, will be executed. This is one part of a complete command structure.\nIFNA filename/@file_number what_to_do goto_gosub_label\nfilename/@file_number - file_expr - Required - The name or number of the file to be checked.\nwhat_to_do - Required - The action to take if the record is not active. Possible actions include:\nDO - Do the following commands until the program reaches an ELSE, ELSE_IF or ENDIF command. This is the default value and doesn’t have to be specified.\nTHEN - Execute the following command. The command to execute in this case must\nfollow on the same physical line.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    ""
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

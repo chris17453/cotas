@@ -1,0 +1,15 @@
+{
+  "name": "CLOSE PRINT TO DISK FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will close the file used for printer output during a specific program operation. This will allow you to print to the disk and then load that file during the same program.",
+  "syntax": "CLSPF",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

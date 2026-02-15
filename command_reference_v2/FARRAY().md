@@ -1,5 +1,0 @@
-# FARRAY()
-
-## Summary
-Function Reference
-

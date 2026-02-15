@@ -1,0 +1,28 @@
+{
+  "name": "PRINT BLANK LINES",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to print a certain number of blank lines or spaces to the printer, disk file or screen.",
+  "syntax": "PBLNK number PTW print_to",
+  "parameters": [
+    {
+      "name": "number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The number of blank lines to print."
+    },
+    {
+      "name": "print_to",
+      "type": "SPD",
+      "required": false,
+      "description": "You can use this option to specify where to print the blank lines. The option ASK (a regular print_to option) is not available. The only options available are S - screen, P - printer or D - default."
+    }
+  ],
+  "comments": "This command accomplishes its task through the repeated use of the CR/LF pair (carriage return/line feed - 0Dh/0Ah).",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "PROGRAM EDITOR",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

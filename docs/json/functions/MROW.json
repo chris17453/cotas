@@ -1,0 +1,13 @@
+{
+  "name": "MROW",
+  "signature": "MROW()",
+  "platform": null,
+  "purpose": "This function returns the row number for the mouse's current location.",
+  "parts": [],
+  "return_type": "I The row number relative to the current window.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

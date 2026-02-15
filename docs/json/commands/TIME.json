@@ -1,0 +1,22 @@
+{
+  "name": "TIME",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Get the current system time, or reset it to a new value.",
+  "syntax": "TIME time_field GET/SET",
+  "parameters": [
+    {
+      "name": "time_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The T type field that will either receive the current time (GET) or contain the value to be used in setting the time (SET). GET/SET - Required - GET means to obtain the current time and put it into time_field. SET means to set the time using the value in time_field."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,40 @@
+{
+  "name": "PRINTER SET",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will allow you to change the default printer sizes.",
+  "syntax": "PSET WDT width TLNES total_lines PLNES printable_lines PWHR print_where",
+  "parameters": [
+    {
+      "name": "width",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The maximum number of printable columns. The default is 80."
+    },
+    {
+      "name": "total_lines",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The maximum number of lines to a page. The default is 66."
+    },
+    {
+      "name": "printable_lines",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The maximum number of printable lines on a page. The default is 60."
+    },
+    {
+      "name": "print_where",
+      "type": "f/c/e",
+      "required": false,
+      "description": "You can redirect the output to any of the standard devices with this option without using the MOUNT or PON (print to) command. This option will"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

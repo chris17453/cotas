@@ -1,0 +1,25 @@
+{
+  "name": "PARAMETER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is the command used to ‘receive’ values from a previous program in which the with option was set in the CHAIN command.",
+  "syntax": "PARAM field_list",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "fn/v",
+      "required": true,
+      "description": "The names of the fields that will be used to receive the values from the with option in the CHAIN command. If the receiving field type does not match the type of the ‘giving’ field, the value will be converted to the receiving field type. Fields are separated by commas."
+    }
+  ],
+  "comments": "If this program is run directly or there are no values to pass, the fields in the PARAM command will remain blank.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Other programs -> Parameters",
+  "see_also": [
+    "CHAIN",
+    "RAP"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,29 @@
+{
+  "name": "SIZE",
+  "signature": "SIZE(1,2,3)",
+  "platform": null,
+  "purpose": "This function will return the size of a specified field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The field being checked."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "‘I’ - Return the internal size.\n‘D’ - Return the display size.\n‘A’ - Return the actual size only if the field being checked is type A."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The memory area number. This may be from 1 through 4. If this is set properly, you do\nnot have to specify part 1, the field to check. However you do still need to put the\ncomma in for place keeping, i.e., =size(,'a',3)"
+    }
+  ],
+  "return_type": "I",
+  "comments": null,
+  "example": "EXAMPLE\ndefine x type n size 12 dec 2\nx = 100.10\n? size(x,’i’)\n8\n? size(x,’d’)\n12\n? size(x,’a’)\n0\ndefine x type a size 20\nx = ‘ABCD’\n? size(x,’i’)\n20\n? size(x,’d’)\n20\n? size(x,’a’)\n4",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

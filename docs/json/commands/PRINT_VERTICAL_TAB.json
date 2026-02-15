@@ -1,0 +1,30 @@
+{
+  "name": "PRINT VERTICAL TAB",
+  "abbreviation": "PVERT",
+  "platform": null,
+  "description": "The command will move the next output to the line specified in the command.",
+  "syntax": "PVERT line_number PTW print_to",
+  "parameters": [
+    {
+      "name": "line_number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The line number to move to. If the value specifies a row before (or above) the current row location, this command will be ignored."
+    },
+    {
+      "name": "print_to",
+      "type": "SPD",
+      "required": false,
+      "description": "Optional - You can use this option to specify the output device. The option ASK (a regular print_to option) is not available. The only options available are S screen, P - printer or D - default."
+    }
+  ],
+  "comments": "The column value is automatically reset to column 1 after this command is executed. The command does a series of CR/LF's (0dh/0ah) until the appropriate row is reached.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Reports -> Vert tab",
+  "see_also": [
+    "LD_PDRV"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,30 @@
+{
+  "name": "SET LINE",
+  "abbreviation": null,
+  "platform": "PROGRAM EDITOR",
+  "description": "This command will set up the fields to be used in a LISTF/LISTM command as a First Line (FLINE).",
+  "syntax": "SETLINE recv_fld WITH title_list",
+  "parameters": [
+    {
+      "name": "recv_fld",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field that will be used to hold the title list."
+    },
+    {
+      "name": "title_list",
+      "type": "f/c/e,f/c/e,...f/c/e",
+      "required": true,
+      "description": "The list of fields, constants, and/or expressions that will make up this title line."
+    }
+  ],
+  "comments": "This command will only work in conjunction with the LISTF command.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "LISTF"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,15 @@
+{
+  "name": "RAP",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Please see the description under \"RUN ANYTIME PROGRAM.\"",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "RUN ANYTIME PROGRAM"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "DELF",
+  "signature": "DELF(1)",
+  "platform": null,
+  "purpose": "This function will attempt to delete a file. If the deletion is successful, a logical .T. will be returned.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the file to be deleted. This must include the path and extension in standard notation."
+    }
+  ],
+  "return_type": "L If the file is found and deleted the function will return a value of .T.; otherwise the returned value is .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

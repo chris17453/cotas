@@ -1,0 +1,13 @@
+{
+  "name": "ACS",
+  "signature": "ACS()",
+  "platform": null,
+  "purpose": "This function will return the name of the current alternate collating sequence file, if any.",
+  "parts": [],
+  "return_type": "A If there is no ACS file active the function will return NONE.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

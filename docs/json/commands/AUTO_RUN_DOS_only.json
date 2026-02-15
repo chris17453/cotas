@@ -1,0 +1,34 @@
+{
+  "name": "AUTO RUN (DOS only)",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "This command can be used to record characters from the keyboard or play back those recorded earlier.",
+  "syntax": "AUTO_RUN ARN field DELAY f/c/e RECORD",
+  "parameters": [
+    {
+      "name": "ARN field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that contains the characters to be used as input. This field should contain the values in the .ARN file created either by the RECORD option or with the Convert .CHR to .ARN program (see Chapter 3, Main Menu - Convert .CHR to .ARN)"
+    },
+    {
+      "name": "DELAY",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you are playing back characters this is the number of 64k loops you want the system to do between each character. The higher the number the slower the program will run. You would set this value only if you wanted the user to be able to watch the progress of the play back. Otherwise, do not set this value and the program will run as fast as possible."
+    },
+    {
+      "name": "RECORD",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you are recording characters entered from the keyboard then you would set this value."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

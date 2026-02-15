@@ -1,0 +1,94 @@
+{
+  "name": "REPLACE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "The programmer can use this command to change the values in fields in a file in some or all records.",
+  "syntax": "REPL field_list WITH with_list MEM NUM number CNTR counter_field FILE filename/@file_number KEY keyname/@key_number START start_value SCOPE scope\nscope_value FOR for_filter_expression WHILE while_filter_expression DISP\nfield_list - fn/v1, fn/v2,..., fn/vx - Required - This is the list of fields whose values will be replaced in this command.\nIf the MEM option is set then the program assumes that each field is an array field. In\nthis command you must use regular array fields. When used in this option you would\nuse just the FIELD portion, with no array element specified. The program will\nautomatically increment the array element number. You can specify the beginning\narray element number by setting this value in the counter_field.\nA maximum of 80 fields/expressions/constants or any combination thereof may be\nincluded in a single field_list group.\nwith_list - f/c/e1, f/c/e2,..., f/c/ex - Required - These are the values that will be used as\nreplacements.\nMEM - Optional - If you are replacing from an array in memory instead of a standard file\ninclude this option in the command line.\nnumber - fn/v - If the MEM option is included, this is Required - If MEM is specified then this\nis the number of elements in the array to be replaced.\ncounter_field - fn/v - Optional - This is an I type field that will be used for passing the number\nof records read, and the current array number, to your program. You can also use this\nto count the number of records replaced.\nfilename/@file_number - file_expr - Optional - The name or number of the file to be used. If\nyou do not include this option, the program will look for a default search file set in the",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "fn/v1, fn/v2,..., fn/vx",
+      "required": true,
+      "description": "This is the list of fields whose values will be replaced in this command."
+    },
+    {
+      "name": "with_list",
+      "type": "f/c/e1, f/c/e2,..., f/c/ex",
+      "required": true,
+      "description": "These are the values that will be used as replacements."
+    },
+    {
+      "name": "MEM",
+      "type": "Optional",
+      "required": false,
+      "description": "If you are replacing from an array in memory instead of a standard file include this option in the command line."
+    },
+    {
+      "name": "number",
+      "type": "fn/v",
+      "required": false,
+      "description": "If MEM is included, this is Required - If MEM is specified then this is the number of elements in the array to be replaced."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This is an I type field that will be used for passing the number of records read, and the current array number, to your program. You can also use this to count the number of records replaced."
+    },
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": false,
+      "description": "Optional - The name or number of the file to be used. If you do not include this option, the program will look for a default search file set in the"
+    },
+    {
+      "name": "KEY",
+      "type": "keyname/@key_number",
+      "required": true,
+      "description": "This is the key for the replacement operation."
+    },
+    {
+      "name": "START",
+      "type": "start_value",
+      "required": true,
+      "description": "start_value"
+    },
+    {
+      "name": "scope",
+      "type": "scope",
+      "required": true,
+      "description": "scope_value"
+    },
+    {
+      "name": "scope_value",
+      "type": "scope_value",
+      "required": true,
+      "description": "scope_value"
+    },
+    {
+      "name": "FOR",
+      "type": "for_filter_expression",
+      "required": false,
+      "description": "for_filter_expression"
+    },
+    {
+      "name": "WHILE",
+      "type": "while_filter_expression",
+      "required": false,
+      "description": "while_filter_expression"
+    },
+    {
+      "name": "DISP",
+      "type": "DISP",
+      "required": false,
+      "description": "DISP"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,13 @@
+{
+  "name": "LROW",
+  "signature": "LROW()",
+  "platform": null,
+  "purpose": "This function will return the current row from within a LISTF (List File) or LISTM (List Array)\ncommand.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,5 +1,0 @@
-# TRC()
-
-## Summary
-Function Reference
-

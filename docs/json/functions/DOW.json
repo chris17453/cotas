@@ -1,0 +1,19 @@
+{
+  "name": "DOW",
+  "signature": "DOW(1)",
+  "platform": null,
+  "purpose": "This function will return the day of the week as a number.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The date value to use, must be of D type."
+    }
+  ],
+  "return_type": "I The number range returned is from 1 thru 7, Sunday thru Saturday.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

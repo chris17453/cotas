@@ -1,0 +1,19 @@
+{
+  "name": "FLDATE",
+  "signature": "FLDATE(1)",
+  "platform": null,
+  "purpose": "This function returns the update date of the file named in the function.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the file to be checked. You must include the path and extension in standard notation."
+    }
+  ],
+  "return_type": "D",
+  "comments": "If the file isn’t found the returned date will be 0.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

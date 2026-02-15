@@ -1,0 +1,13 @@
+{
+  "name": "LSTCHR",
+  "signature": "LSTCHR()",
+  "platform": null,
+  "purpose": "This function will return the ASCII value of the last character entered by the user.",
+  "parts": [],
+  "return_type": "I Returns an integer value.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

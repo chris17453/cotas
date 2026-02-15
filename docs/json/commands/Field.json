@@ -1,0 +1,15 @@
+{
+  "name": "Field",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Field -> pUsh field",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "PUSHF"
+}

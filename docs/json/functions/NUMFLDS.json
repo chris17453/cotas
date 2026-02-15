@@ -1,0 +1,13 @@
+{
+  "name": "NUMFLDS",
+  "signature": "NUMFLDS()",
+  "platform": null,
+  "purpose": "This function will return the actual number of fields in a program.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

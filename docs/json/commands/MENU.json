@@ -1,0 +1,94 @@
+{
+  "name": "MENU",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Display a bar-type menu and prompt for a valid choice. The NMENU command is an alternative for accomplishing the same thing.",
+  "syntax": "MENU AT starting_column,starting_row LEN length WDT width CPC choices_per_column FLD menu_lines_field CNTR counter_field NCH maximum_number_of_choices MCW choice_print_width ESC esc_key_label HELP help_label TTL menu_title HOLD",
+  "parameters": [
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the menu, column value."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the menu, row value."
+    },
+    {
+      "name": "length",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of rows long, including box around the menu. If there are two lines within the menu the length is 4."
+    },
+    {
+      "name": "width",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of columns wide, including box around the menu. If the choices are 10 columns wide within the menu the total width is 12."
+    },
+    {
+      "name": "choices_per_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "If there are multiple columns in the menu this is the number of choices within a single column."
+    },
+    {
+      "name": "menu_lines_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The array field that contains the menu lines. Each menu line is made up of 2 parts. The first is the displayed portion; this is what your user will see. The second is the control information. This consists of 5 characters. The first two characters indicate the starting column value for this line within the"
+    },
+    {
+      "name": "CNTR",
+      "type": "unknown",
+      "required": true,
+      "description": "counter_field"
+    },
+    {
+      "name": "NCH",
+      "type": "unknown",
+      "required": true,
+      "description": "maximum_number_of_choices"
+    },
+    {
+      "name": "MCW",
+      "type": "unknown",
+      "required": true,
+      "description": "choice_print_width"
+    },
+    {
+      "name": "ESC",
+      "type": "unknown",
+      "required": true,
+      "description": "esc_key_label"
+    },
+    {
+      "name": "HELP",
+      "type": "unknown",
+      "required": true,
+      "description": "help_label"
+    },
+    {
+      "name": "TTL",
+      "type": "unknown",
+      "required": true,
+      "description": "menu_title"
+    },
+    {
+      "name": "HOLD",
+      "type": "unknown",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "comments": "Display a bar-type menu and prompt for a valid choice. The NMENU command is an alternative for accomplishing the same thing.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

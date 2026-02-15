@@ -1,0 +1,19 @@
+{
+  "name": "ABS",
+  "signature": "ABS(1)",
+  "platform": null,
+  "purpose": "This function returns the absolute value of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N type value."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": "? abs(-535.25)\n535.25",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "FARRAY",
+  "signature": "FARRAY(1)",
+  "platform": null,
+  "purpose": "This function returns the number of array elements for a specific field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the field being checked."
+    }
+  ],
+  "return_type": "I The number of array elements. If the field is not an array or doesn’t have any elements the function will return 0.",
+  "comments": null,
+  "example": null,
+  "sample_program": "FLDTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

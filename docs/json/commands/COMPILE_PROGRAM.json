@@ -1,0 +1,46 @@
+{
+  "name": "COMPILE PROGRAM",
+  "abbreviation": null,
+  "platform": "DOS only",
+  "description": "Use this command to compile a TAS Pro 5.1 source code file from within another TAS Pro 5.1 program.",
+  "syntax": "COMPRG source_code_file PTO messages_where ERR error_field DEBUG DICTIONARY",
+  "parameters": [
+    {
+      "name": "source_code_file",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name of the source file to be compiled. If the file isn’t in the current path, the proper path must be part of the file name. For example:\nCOMPRG ‘D:\\TAS50\\CUSTCODE’.....\nwhere the program being compiled is CUSTCODE.SRC\nNOTE: If you are compiling an EDT file you must include the extension or the\nprogram will think it is an SRC type source file. In the example above it would be:\nCOMPRG ‘D:\\TAS50\\CUSTCODE.EDT’"
+    },
+    {
+      "name": "messages_where",
+      "type": "pd",
+      "required": false,
+      "description": "This will tell the compiler to print the results somewhere other than the screen. If you choose D (disk) the program will create a file with the same name as the program being compiled, using the same path, with an extension of\n.ERR. If the INT option is set the file name will be set to INTERNAL. If you choose\nP (printer) the information will be sent to the default printer as set in TAS50.OVL."
+    },
+    {
+      "name": "error_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "The program will return the number of errors that occur during\nthe compile process into this field. Must be of I type."
+    },
+    {
+      "name": "DEBUG",
+      "type": "",
+      "required": false,
+      "description": "If this option is part of the command, the compiler will include information so that finished program can display the program name and actual line number\nduring any error or help message."
+    },
+    {
+      "name": "dictionary",
+      "type": "f/c/e",
+      "required": false,
+      "description": "You may specify an alternate dictionary path here if desired. It\nwill override all others, including that in the TAS50.OVL file."
+    }
+  ],
+  "comments": "Each program must be compiled before it can be executed by the TAS Pro 5.1 runtime. By being able to compile a ‘field’ and return it to another ‘field’ you can create ‘one time use’ programs on the fly.\nThrough the ability to read and write non-TAS files using the standard OPENV (Open Variable)\ncommand, etc., you can create programs and still save them to disk, if desired.",
+  "example": null,
+  "sample_program": "COMPTST, COMPTST2",
+  "program_editor": "System -> Programming -> compile Prog",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

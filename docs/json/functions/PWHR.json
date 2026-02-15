@@ -1,0 +1,13 @@
+{
+  "name": "PWHR",
+  "signature": "PWHR()",
+  "platform": null,
+  "purpose": "This function will return a character representing the current default output device.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

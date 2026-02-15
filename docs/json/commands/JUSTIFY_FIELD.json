@@ -1,0 +1,24 @@
+{
+  "name": "JUSTIFY FIELD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "LEFT/RIGHT/CENTER - Optional - Move the characters to the LEFT in the field, to the RIGHT, or CENTER them.",
+  "syntax": "JUSTIFY FIELD LEFT/RIGHT/CENTER",
+  "parameters": [
+    {
+      "name": "alignment",
+      "type": "sac",
+      "required": false,
+      "description": "Specifies how the field's contents are aligned. Allowed values are LEFT, RIGHT, and CENTER. Optional."
+    }
+  ],
+  "comments": "When you use the function JUST() the program puts the field in the temporary data space. If you are trying to JUST a field that is larger than that space you will get the message that the program is out of room in the temporary data area. This command is provided to you so that you can JUST a field larger than the temporary data area within its own space. Using this command you will not run out of memory.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> alpha Fld cmds -> Justify",
+  "see_also": [
+    "TRIM()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

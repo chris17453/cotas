@@ -1,0 +1,13 @@
+{
+  "name": "PCOL",
+  "signature": "PCOL()",
+  "platform": null,
+  "purpose": "This function returns the current column from the printer.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": "? ‘’ print_to printer\n? ‘abcd’ print_to printer no_cr\n? pcol()\n5",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

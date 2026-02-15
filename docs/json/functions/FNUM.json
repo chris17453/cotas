@@ -1,0 +1,19 @@
+{
+  "name": "FNUM",
+  "signature": "FNUM(1)",
+  "platform": null,
+  "purpose": "This function returns the file_number for a file opened with the OPENV (Open Variable) command.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the file. This needs to be in standard alpha notation or as an A type field (e.g., ‘BKARCUST’)."
+    }
+  ],
+  "return_type": "I Will return the file_number if found. If it is not found, the function will return 0.",
+  "comments": "This function will allow you to use the old form OPEN command and still make use of certain functions that require the file_number instead of the file name.",
+  "example": "This function can be embedded in any other function so that you don’t need to keep the file_number in another field. For example:\n? flerr(fnum(‘BKARCUST’))\n0\n? eof(fnum(‘BKARCUST’))\n.F.",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

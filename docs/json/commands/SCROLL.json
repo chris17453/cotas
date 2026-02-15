@@ -1,0 +1,52 @@
+{
+  "name": "SCROLL",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will move a set of characters on the screen as a block.",
+  "syntax": "SCROLL AT starting_column,starting_row\nLEN number_of_rows\nWDT number_of_columns NUM how_many_to_move\nUP/DN/LEFT/RIGHT",
+  "parameters": [
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The upper left column value. Together with the starting_row value defines the upper left corner of the block. The upper left corner of any window is 1,1."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The upper left row value. Together with the starting_column value defines the upper left corner of the block. The upper left corner of any window is 1,1."
+    },
+    {
+      "name": "number_of_rows",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The number of rows in the block. If this is not included the block will be 1 row long."
+    },
+    {
+      "name": "number_of_columns",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The number of columns in the block. If this is not included the block will be 1 column wide."
+    },
+    {
+      "name": "how_many_to_move",
+      "type": "f/c/e",
+      "required": false,
+      "description": "How many rows/columns to move the block of characters. If this is not included the program will clear the entire block."
+    },
+    {
+      "name": "UP/DN/LEFT/RIGHT",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Which direction to move the block of characters."
+    }
+  ],
+  "comments": "This command will not move the background colors, only the characters displayed on the screen.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Screen control -> Scroll",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

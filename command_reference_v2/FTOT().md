@@ -1,5 +1,0 @@
-# FTOT()
-
-## Summary
-Function Reference
-

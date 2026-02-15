@@ -1,0 +1,13 @@
+{
+  "name": "ESC",
+  "signature": "ESC()",
+  "platform": null,
+  "purpose": "If the user presses the ESC key at a message and the appropriate ESC traps are set to ignore then the internal esc_pressed flag is set to 1. You can test for that flag being set using this function.",
+  "parts": [],
+  "return_type": "L If the user pressed the ESC key this will be .T..",
+  "comments": "Once this flag is checked it will be reset to .F.. It is also cleared before the next MESSAGE or ENTER command.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

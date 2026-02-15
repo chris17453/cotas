@@ -1,0 +1,24 @@
+{
+  "name": "AEV",
+  "signature": "AEV(1,2)",
+  "platform": null,
+  "purpose": "This function will return an element value from an array field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "fn/v",
+      "description": "The array field itself. You may use a P type field to point to the array field."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The element number."
+    }
+  ],
+  "return_type": "The function will return the same type of field as the array field (option 1).",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

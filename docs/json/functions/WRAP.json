@@ -1,0 +1,29 @@
+{
+  "name": "WRAP",
+  "signature": "WRAP(1)",
+  "platform": null,
+  "purpose": "This function will wrap a long string value (type A) so that it may be output to the screen or printer as a\nblock of characters. As opposed to the WRAP command this function would be used in a report format\nor in a PRINT MESSAGE command.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The string value to use. The original field remains unchanged."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "How many columns (characters) wide to make the block."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "WRAP()\n\nWhether or not to trim the trailing spaces at the end of the block. This will allow the next\nline to be output immediately after the end of the last non-space line.\n‘Y’ - trim trailing spaces. This is the default value.\n‘N’ - don’t trim spaces."
+    }
+  ],
+  "return_type": "A If the receiving field is too short, the remaining characters will be truncated.",
+  "comments": null,
+  "example": "field1 = ‘abcd’\nfield2 = ‘now is the time for all good men to come to the aid of their party.’\nfield3 = 100.00\n? field1,’ ‘,wrap(field2,20),’ ‘,field3\nabcd now is the time for 100.00\nall good men to come\nto the aid of their\nparty.\n\nSAMPLE PROGRAMS\nWRAPTEST.SRC, WRPTEST2.SRC",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

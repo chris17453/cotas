@@ -1,0 +1,19 @@
+{
+  "name": "SNDX",
+  "signature": "SNDX(1)",
+  "platform": null,
+  "purpose": "This function returns a 4 character value representing the ‘sound’ of the field. These values can be used in comparing fields (see the DIFF() function also).",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The A type field to be converted. The original value is unchanged."
+    }
+  ],
+  "return_type": "A A 4 character string is returned.",
+  "comments": null,
+  "example": "? sndx(‘translate’)\nT652\n? sndx(‘trnslt’)\nT652\n? sndx(‘John’)\nJ500\n? sndx(‘Paul’)\nP400",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

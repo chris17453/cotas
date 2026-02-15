@@ -1,0 +1,78 @@
+{
+  "name": "REDEFINE",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "",
+  "syntax": "REDEFINE",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field being redefined. Must be a ‘standard’ TAS Professional 5.1 field name."
+    },
+    {
+      "name": "type",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The new type value. May be:\nName\n—————————\nA Alphanumeric\nN Numeric\nD Date\nT Time\nI Integer\nB Byte\nF F type pointer\nP P type pointer\nR Record number\nL Logical\nO TAS Pro 3.0 BCD\n\nInternal size\n———————————————\nmaximum 4 gbytes\n8 bytes\n4 bytes\n4 bytes\n2 bytes\n1 byte\n5 bytes\n14 bytes\n4 bytes\n1 bytes\nmax of 10 bytes"
+    },
+    {
+      "name": "size",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The new display size. If the type is A then this is required and is both the display and internal size."
+    },
+    {
+      "name": "decimal_characters",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If the type is N then you can also define the number of decimal characters. The maximum number is 8 and must be at least 2 less than the size value."
+    },
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": false,
+      "description": "If the field being redefined is part of a TAS Professional 5.1 file then this is the name or number of that file. The file must be opened before a field can be redefined."
+    },
+    {
+      "name": "offset_in_file",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If the field being redefined is part of a TAS Professional 5.1 file then you can specify the new offset within the file buffer. The first character of the record is number 0."
+    },
+    {
+      "name": "key_number",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If this field is a key you can specify the key number here. Then if this field is used in the ENTER command the user will be able to search for records using the file search keys (F5-F9).\nNOTE: If the SRCH (Set Search File) command has been executed setting a specific search file and key it will override any other key fields."
+    },
+    {
+      "name": "picture",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The new picture value to be used with this field. If this is a type ‘A’ field, you can use this option to enter a field into a space that is shorter than the defined length of the field. This is called a slider field. A slider is a field that shows fewer characters on the screen than actually exist in the field. The user can see the other characters by pressing the LEFT and RIGHT ARROW keys and the characters will appear to ‘slide’ back and forth across the available space. This is very useful when you have several large fields and want them all to fit on the same screen. A slider field is specified with an alpha constant of \"Sxx\", where xx is the number of columns to display."
+    },
+    {
+      "name": "set_up_case",
+      "type": "f/c/e",
+      "required": false,
+      "description": "This value must resolve to Y or N. If the value is Y, then any entries made to this field will be forced to upper case characters."
+    },
+    {
+      "name": "location",
+      "type": "fn/v",
+      "required": false,
+      "description": "If you specify a fieldname here, the program will use the location (offset) of that field for this one."
+    }
+  ],
+  "comments": "The original size (internal) of the field being redefined must be enough to cover the size of the new field.\nThe program does not check that this is true, and you can end up crossing from one field to another.\nThe program does not check that this is true, and you can end up crossing from one field to another.\nThe program does not check that this is true, and you can end up crossing from one field to another.\nThe program does not check that this is true, and you can end up crossing from one field to another.\nYou should consider using the ADD command before using this one. It is much more flexible and doesn’t have the restrictions on original size.",
+  "example": null,
+  "sample_program": "REDEFINE",
+  "program_editor": "Field -> Create/chg -> Redefine",
+  "see_also": [
+    "DEFINE"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

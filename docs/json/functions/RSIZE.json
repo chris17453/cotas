@@ -1,0 +1,19 @@
+{
+  "name": "RSIZE",
+  "signature": "RSIZE(1)",
+  "platform": null,
+  "purpose": "This function will return the record size for a specified file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number for the specified file."
+    }
+  ],
+  "return_type": "I This is the maximum record size.",
+  "comments": null,
+  "example": "define hndl type i\nopenv ‘errmsg’ fnum hndl\n? rsize(hndl)\n324",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

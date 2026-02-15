@@ -1,0 +1,19 @@
+{
+  "name": "CDOW",
+  "signature": "CDOW(1)",
+  "platform": null,
+  "purpose": "The function returns the character day of week value (e.g., MONDAY, TUESDAY, etc.) for a particular date.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The date value to use, must be of D type."
+    }
+  ],
+  "return_type": "A The function will return the name of the day. If the receiving field is too small to hold the entire name only the portion that will fit will be returned.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

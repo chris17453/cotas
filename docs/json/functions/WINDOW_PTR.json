@@ -1,0 +1,13 @@
+{
+  "name": "WINDOW_PTR",
+  "signature": "WINDOW_PTR() (Windows Only)",
+  "platform": "Windows",
+  "purpose": "This function will return the handle or pointer to the currently active window.",
+  "parts": [],
+  "return_type": "R",
+  "comments": "The value returned by this function can be used in conjuction with the WINACT command. By getting the window handle you can use the WINACT command even though you didn't set the window up with the WINDEF command. If you are manipulating several windows on the screen at the same time you may find this more convenient. For more information about windows in Windows please refer to Chapter 11 - Windows Programming.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

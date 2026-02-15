@@ -1,0 +1,30 @@
+#udx
+; CoTAS Phase 1 test
+define name type A size 30
+define counter type I size 5
+define total type N size 10 dec 2
+
+clrscr
+say 'CoTAS Test Program' at 1,1
+name = 'World'
+say 'Hello, ' at 1,3
+say name at 8,3
+
+counter = 1
+if counter = 1 then say 'Counter is one' at 1,5
+
+counter = 0
+while counter < 5
+    counter = counter + 1
+endw
+say str(counter) at 1,7
+
+gosub SHOW_TOTAL
+msg 'Program complete!'
+quit
+
+SHOW_TOTAL:
+    total = 123.45
+    say 'Total: ' at 1,9
+    say str(total) at 9,9
+    ret

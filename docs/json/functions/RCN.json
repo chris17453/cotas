@@ -1,0 +1,19 @@
+{
+  "name": "RCN",
+  "signature": "RCN(1)",
+  "platform": null,
+  "purpose": "This function returns the record number for a specified file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to use."
+    }
+  ],
+  "return_type": "R",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

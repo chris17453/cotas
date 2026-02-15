@@ -1,0 +1,19 @@
+{
+  "name": "FLDNME",
+  "signature": "FLDNME(1)",
+  "platform": null,
+  "purpose": "This function will return the field name for the F type pointer value given.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The fptr value of the field name to be found."
+    }
+  ],
+  "return_type": "A The name of the field.",
+  "comments": "This will only work with F type pointers. Do NOT preface the pointer with the redirector symbol ‘&’.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

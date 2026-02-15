@@ -1,0 +1,52 @@
+{
+  "name": "READ",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will cause the program to read a specific number of characters from a non-TAS file at a certain location.",
+  "syntax": "READ file_number START start NCHR number_of_characters TO to MEM_AREA mem_area#\nOFST offset_within_mem_area",
+  "parameters": [
+    {
+      "name": "file_number",
+      "type": "n",
+      "required": true,
+      "description": "The file number from which to read."
+    },
+    {
+      "name": "start",
+      "type": "n",
+      "required": true,
+      "description": "The starting location within the file."
+    },
+    {
+      "name": "number_of_characters",
+      "type": "n",
+      "required": true,
+      "description": "The number of characters to read."
+    },
+    {
+      "name": "to",
+      "type": "n",
+      "required": true,
+      "description": "The destination in memory where the read characters are stored."
+    },
+    {
+      "name": "mem_area#",
+      "type": "n",
+      "required": true,
+      "description": "The memory area number."
+    },
+    {
+      "name": "offset_within_mem_area",
+      "type": "n",
+      "required": true,
+      "description": "Offset within the memory area."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

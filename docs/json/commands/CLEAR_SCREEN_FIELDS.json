@@ -1,0 +1,15 @@
+{
+  "name": "CLEAR SCREEN FIELDS",
+  "abbreviation": "CLRSF",
+  "platform": null,
+  "description": "This command will remove the active screen fields added either through the MOUNT or SAY command.",
+  "syntax": "CLRSF",
+  "parameters": [],
+  "comments": "Each time a record is found or the screen is refreshed the program redisplays all fields (if any) in the screen field buffer. If you want to eliminate this redisplay, then you must use this command. Once the",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,33 @@
+{
+  "name": "DATE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will get or set the computer system date.",
+  "syntax": "DATE date_field GET/SET",
+  "parameters": [
+    {
+      "name": "date_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The date field that either contains the new date value or will be the holder."
+    }
+  ],
+  "comments": "This command will affect just the workstation it is running on and no others if you are running on a network. This has the same effect on the computer as if you typed in DATE at the DOS prompt and entered the value.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Date/time -> Date",
+  "see_also": [
+    "DATE()",
+    "DTOC()",
+    "CTOD()",
+    "DMY()",
+    "MDY()",
+    "DOM()",
+    "YEAR()",
+    "CMNTH()",
+    "MNTH()",
+    "CDOW()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

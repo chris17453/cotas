@@ -1,0 +1,196 @@
+{
+  "name": "LIST FILE",
+  "abbreviation": "LISTF",
+  "platform": null,
+  "description": "This command will generate a list of records directly from a file. The user can scroll through the list using the UP and DOWN ARROW keys, PgUp and PgDn, or enter a single character, and depending on your options, find a value in the list. You can also display lines wider than the window; the user shifts the display right or left using the RIGHT or LEFT ARROW keys.\nAll of the lookup windows in the TAS Professional 5.1 utilities use either this command or the LISTM (List Array) command.",
+  "syntax": "LISTF field_list ENTER enter_udf SRCH search_udf CHSE chse_expr HELP help_udf\nOTH other_udf FILE filename/@file_number KEY keyname/@key_number\nSTART start_value FOR for_filter_expression WHILE while_filter_expression\nON_MOVE move_udf ECOLOR enter_color CCOLOR choice_color STYP search_type\nFLINE first_line_fields CBF chrs_btwn_fields BLNES num_of_blank_lines\nETXT_COLOR enter_text_color CTXT_COLOR choice_text_color RND NOWAIT MENU\nNOADD UP NOSHIFT END USE_TRAPS INS_AT_END USE_COLORS",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The file fields, constants or expressions to be used in the list. The fields can be from other files (generally related).\nNOTE: You can separate the fields on the list by putting spaces between the fields.\nFor example:\nfield1,’ ‘,field2,’ ‘,field3"
+    },
+    {
+      "name": "enter_udf",
+      "type": "udf",
+      "required": false,
+      "description": "If you specify this option the program will execute the UDF each time the user presses the ENTER or RETURN key (Change or Add a record), the DEL key (Delete a record) or INS (Insert a record). The type of entry is passed to the routine through the ETYP() function. The record is active in the normal record buffer and can be accessed using the standard field names."
+    },
+    {
+      "name": "SRCH",
+      "type": "udf",
+      "required": false,
+      "description": "If this is specified the program will execute this UDF if the user presses the F2 key. If you want to reset the display to a specific record then leave that record active and return a .T. value; return .F. if you want to leave everything as it is."
+    },
+    {
+      "name": "CHSE",
+      "type": "expression",
+      "required": false,
+      "description": "Using this option you can specify the field to be used as the choice field for this command. The program will use the first character of the field"
+    },
+    {
+      "name": "HELP",
+      "type": "udf",
+      "required": false,
+      "description": "help_udf"
+    },
+    {
+      "name": "OTH",
+      "type": "udf",
+      "required": false,
+      "description": "OTH other_udf"
+    },
+    {
+      "name": "FILE",
+      "type": "filename/@file_number",
+      "required": false,
+      "description": "FILE filename/@file_number"
+    },
+    {
+      "name": "KEY",
+      "type": "keyname/@key_number",
+      "required": false,
+      "description": "KEY keyname/@key_number"
+    },
+    {
+      "name": "START",
+      "type": "start_value",
+      "required": false,
+      "description": "START start_value"
+    },
+    {
+      "name": "FOR",
+      "type": "for_filter_expression",
+      "required": false,
+      "description": "FOR for_filter_expression"
+    },
+    {
+      "name": "WHILE",
+      "type": "while_filter_expression",
+      "required": false,
+      "description": "WHILE while_filter_expression"
+    },
+    {
+      "name": "ON_MOVE",
+      "type": "move_udf",
+      "required": false,
+      "description": "ON_MOVE move_udf"
+    },
+    {
+      "name": "ECOLOR",
+      "type": "enter_color",
+      "required": false,
+      "description": "ECOLOR enter_color"
+    },
+    {
+      "name": "CCOLOR",
+      "type": "choice_color",
+      "required": false,
+      "description": "CCOLOR choice_color"
+    },
+    {
+      "name": "STYP",
+      "type": "search_type",
+      "required": false,
+      "description": "STYP search_type"
+    },
+    {
+      "name": "FLINE",
+      "type": "first_line_fields",
+      "required": false,
+      "description": "FLINE first_line_fields"
+    },
+    {
+      "name": "CBF",
+      "type": "chrs_btwn_fields",
+      "required": false,
+      "description": "CBF chrs_btwn_fields"
+    },
+    {
+      "name": "BLNES",
+      "type": "num_of_blank_lines",
+      "required": false,
+      "description": "BLNES num_of_blank_lines"
+    },
+    {
+      "name": "ETXT_COLOR",
+      "type": "enter_text_color",
+      "required": false,
+      "description": "ETXT_COLOR enter_text_color"
+    },
+    {
+      "name": "CTXT_COLOR",
+      "type": "choice_text_color",
+      "required": false,
+      "description": "CTXT_COLOR choice_text_color"
+    },
+    {
+      "name": "RND",
+      "type": "RND",
+      "required": false,
+      "description": "RND"
+    },
+    {
+      "name": "NOWAIT",
+      "type": "NOWAIT",
+      "required": false,
+      "description": "NOWAIT"
+    },
+    {
+      "name": "MENU",
+      "type": "MENU",
+      "required": false,
+      "description": "MENU"
+    },
+    {
+      "name": "NOADD",
+      "type": "NOADD",
+      "required": false,
+      "description": "NOADD"
+    },
+    {
+      "name": "UP",
+      "type": "UP",
+      "required": false,
+      "description": "UP"
+    },
+    {
+      "name": "NOSHIFT",
+      "type": "NOSHIFT",
+      "required": false,
+      "description": "NOSHIFT"
+    },
+    {
+      "name": "END",
+      "type": "END",
+      "required": false,
+      "description": "END"
+    },
+    {
+      "name": "USE_TRAPS",
+      "type": "USE_TRAPS",
+      "required": false,
+      "description": "USE_TRAPS"
+    },
+    {
+      "name": "INS_AT_END",
+      "type": "INS_AT_END",
+      "required": false,
+      "description": "INS_AT_END"
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "USE_COLORS",
+      "required": false,
+      "description": "USE_COLORS"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

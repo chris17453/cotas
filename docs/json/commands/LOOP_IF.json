@@ -1,0 +1,28 @@
+{
+  "name": "LOOP_IF",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will control whether to loop back to the beginning in a WHILE/ENDW loop. This is one part of a complete command structure.",
+  "syntax": "LOOP_IF expression",
+  "parameters": [
+    {
+      "name": "expression",
+      "type": "lexpr",
+      "required": true,
+      "description": "If the expression resolves to .T. then the program will transfer control to the appropriate WHILE line. This would be the equivalent of executing the ENDW command."
+    }
+  ],
+  "comments": "For more information on the different structured programming commands, and the LOOP_IF command in particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> While -> loop_If",
+  "see_also": [
+    "WHILE",
+    "LOOP",
+    "EXIT",
+    "EXIT_IF",
+    "ENDW"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

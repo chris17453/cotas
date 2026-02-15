@@ -1,0 +1,19 @@
+{
+  "name": "WRAPO",
+  "signature": "WRAPO(1)",
+  "platform": null,
+  "purpose": "This function will return the offset of the beginning of a line from a field that has been previously set up with the WRAP command.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The line number."
+    }
+  ],
+  "return_type": "I The first character of any field is position 1.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

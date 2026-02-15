@@ -1,0 +1,28 @@
+# EDIT(1)
+
+| | |
+|---|---|
+| **Category** | Function |
+| **Name** | `EDIT` |
+| **Platform** | Windows Only |
+| **Returns** | `L` |
+
+## Purpose
+
+This function will edit an existing note or create a new one. It handles word wrap automatically and
+provides all the normal Windows editing capabilities including marking a block of text, saving that
+block to the clipboard, and inserting a block of text from the clipboard to the note.
+
+## Parts
+
+| # | Type | Description |
+|---|------|-------------|
+| 1 | `fn/v` | Field name that contains the current note or will contain the new one. |
+
+## Return Type
+
+L If the user presses the SAVE button (or F10) then .T. will be returned. If the user presses the ESC key or button then .F. will be returned.
+
+## Comments
+
+This function replaces the TASEDIT.RUN program in DOS. It expects to have a field that contains the text for the entire note. CR/LFs are ok and are preserved by the function. Before you call this function be sure to create a window where the editing will take place. If you haven't created a window the function will use the entire base window. At the bottom of the window the function creates two buttons, one is F10 To Save Memo, and the other is ESC Exit without Saving. If the user clicks on the F10 button or presses the F10 key the function will put the new note/memo in the field provided and returns .T. If the user presses the ESC key (or button) the function will not change the field provided and returns .F.

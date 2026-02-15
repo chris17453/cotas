@@ -1,0 +1,46 @@
+{
+  "name": "MOVE DATA IN MEMORY",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will move a specified number of characters from one location to another without concern to type or individual field sizes.",
+  "syntax": "XFER FROM from_field TO to_field NCHR number_of_characters FMEM from_mem_area#\nTMEM to_mem_area#",
+  "parameters": [
+    {
+      "name": "from_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The from field."
+    },
+    {
+      "name": "to_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The to field or recipient."
+    },
+    {
+      "name": "number_of_characters",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The number of characters to move."
+    },
+    {
+      "name": "FMEM",
+      "type": "f/c/e",
+      "required": false,
+      "description": "from_mem_area# - f/c/e - Optional - The memory area number to transfer from. This must resolve to a value from 1 through 4. If you specify this value then the from_field is evaluated as the offset within this area."
+    },
+    {
+      "name": "TMEM",
+      "type": "f/c/e",
+      "required": false,
+      "description": "to_mem_area# - f/c/e - Optional - The memory area number to transfer to."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

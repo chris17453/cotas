@@ -1,0 +1,38 @@
+{
+  "name": "IF",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "IF This is a process control command, i.e., it will control whether a command, or group of commands, will be executed. This is one part of a complete command structure.",
+  "syntax": "IF if_expression what_to_do goto_gosub_label",
+  "parameters": [
+    {
+      "name": "if_expression",
+      "type": "lexpr",
+      "required": true,
+      "description": "- lexpr - Required - If the if_expression resolves to .T., the what_to_do action will be taken. If it is .F. and the what_to_do action is not THEN, the program will look for the next ELSE_IF or ELSE command. If one is not found the program will transfer control to the line following the appropriate ENDIF command."
+    },
+    {
+      "name": "what_to_do",
+      "type": "enum",
+      "required": true,
+      "description": "- Required - The action to take if the expression resolves to .T. Possible actions include:\nDO - Do the following commands until the program reaches an ELSE, ELSE_IF or ENDIF command. This is the default value and doesn’t have to be specified.\nTHEN - Execute the following command. The command to execute in this case must follow on the same physical line.\nGOTO - Goto the line label specified in the command.\nGOSUB - Gosub the line label specified in the command.\nREENT - Reenter the last ENTER command.\nRET - Return."
+    },
+    {
+      "name": "goto_gosub_label",
+      "type": "label",
+      "required": true,
+      "description": "- label - Required - If the what_to_do option is GOTO or GOSUB then you must specify the label name here."
+    }
+  ],
+  "comments": "For more information on the different structured programming commands, and the IF command in particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> If -> If",
+  "see_also": [
+    "ELSE",
+    "ELSE_IF",
+    "ENDIF"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

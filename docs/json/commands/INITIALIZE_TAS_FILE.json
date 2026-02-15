@@ -1,0 +1,34 @@
+{
+  "name": "INITIALIZE TAS FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to create (initialize) TAS Professional 5.1 files.",
+  "syntax": "INIFLE filename SPECS specifications CNF",
+  "parameters": [
+    {
+      "name": "filename",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name of the file to be created. The file name must include the standard file name, the extension, and the file path, if any."
+    },
+    {
+      "name": "specifications",
+      "type": "fn/v",
+      "required": true,
+      "description": "This is the field containing the information Btrievetm will use to create the data file."
+    },
+    {
+      "name": "CNF",
+      "type": "sac",
+      "required": false,
+      "description": "If this option is included in the command the program will confirm that the user wants to create the file before trying to create it. However, if the file already exists, the program will alert the user that the file exists and confirm that they wish to initialize it irregardless of this option."
+    }
+  ],
+  "comments": "You must have a full copy of the developer’s version of Btrievetm available from Novell before attempting to use this command. The requirements for properly setting up the specifications buffer are beyond the scope of this document.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> File commands -> Init File",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,34 @@
+{
+  "name": "CLEAR FILE BUFFER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will clear the internal record buffer for a particular file. It can also be used to clear the record number holder.",
+  "syntax": "CLR filename/@file_number BUFF/REC",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "The name or number of the file to be cleared."
+    },
+    {
+      "name": "BUFF/REC",
+      "type": "option",
+      "required": false,
+      "description": "What to clear. If the option is REC the program will clear just the record number holder, effectively setting the record internally as not active. If you saved the record in that situation, it would be treated as though it were a new record. If the option is BUFF, both the record number holder and the record buffer are cleared. The default value is BUFF."
+    },
+    {
+      "name": "filename/@number",
+      "type": "file_expr",
+      "required": true,
+      "description": "The name or number of the file to be cleared."
+    }
+  ],
+  "comments": "If a record is active in memory, there is data in both the buffer and record number holder. If this record is saved to disk it will update the record currently at that record number. If the record number holder is cleared, the program will save a new record. Through the use of this command, if you clear just the",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

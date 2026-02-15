@@ -1,0 +1,20 @@
+{
+  "name": "AUTO INCREMENT LIST",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is used in connection with the LISTM (List Array) and LISTF (List File) commands. If you are executing one of those commands and are in a routine ‘outside’ of the command (e.g., an enter process), you can use this command to automatically force the cursor to go to the next line in the list when you return to it.",
+  "syntax": "AUTO INCREMENT LIST",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "AUTODEC",
+    "LISTF",
+    "LISTM",
+    "AUTOENTER"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

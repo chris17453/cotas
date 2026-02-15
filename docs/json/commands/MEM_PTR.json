@@ -1,0 +1,58 @@
+{
+  "name": "MEM_PTR",
+  "abbreviation": null,
+  "platform": "DOS only",
+  "description": "MEMORY POINTER UPDATE (DOS only) This is a TAS Professional 3.0 command here for compatibility. There is no preferred TAS Professional 5.1 command/function.",
+  "syntax": "MEM_PTR mem_area# START start_val OCCURS #of_chrs_before_next SIZE size_of_ptr VAL\nchg_value TIMES #_ptrs_to_chg DOwhat_to_do",
+  "parameters": [
+    {
+      "name": "mem_area#",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the memory area to use. This must resolve to a value of 1 through 4."
+    },
+    {
+      "name": "start_val",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The character position of the first pointer to be changed. The first character in the memory area is at position 1."
+    },
+    {
+      "name": "#_of_chrs_before_next",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The total number of characters before the next pointer. If there are a total of 10 characters per element in the memory area and the pointer is part of that element then this would be 10."
+    },
+    {
+      "name": "size_of_ptr",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the internal or csize of the pointer itself. If the pointer is O type (old form BCD) and has a display size of 5 then this would be 3 (5/2+rounding)."
+    },
+    {
+      "name": "chg_value",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The amount to add to or subtract from each pointer. NOTE: The size and type of this field must be the same as the pointer."
+    },
+    {
+      "name": "#_ptrs_to_chg",
+      "type": "f/c/e",
+      "required": true,
+      "description": "How many pointers do you want to change."
+    },
+    {
+      "name": "what_to_do",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This must resolve to either A (add) or S (subtract)."
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Memory Pointer Update.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "3.0 Commands -> Mem ptr",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

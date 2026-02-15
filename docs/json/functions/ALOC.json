@@ -1,0 +1,29 @@
+{
+  "name": "ALOC",
+  "signature": "ALOC(1,2,3)",
+  "platform": null,
+  "purpose": "You can use this function to find an array element number based on a value you specify.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The field value to search for."
+    },
+    {
+      "number": "2",
+      "type": "fn/v",
+      "description": "The array field to search."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The array element value to start with. If none is provided the program will start with the first."
+    }
+  ],
+  "return_type": "I The element number if found.",
+  "comments": "If there is a match for the search field value the program will return the array element number. If no match is found the return value will be 0. NOTE: Do not specify an array element in the array field to search for (part 2). If you wish to start with an element other than 1 specify that value in part 3.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

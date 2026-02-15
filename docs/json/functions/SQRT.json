@@ -1,0 +1,19 @@
+{
+  "name": "SQRT",
+  "signature": "SQRT(1)",
+  "platform": null,
+  "purpose": "This function will return the square root of the value specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to use. Must be of N type."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": "? sqrt(4)\n2\n? sqrt(99.325)\n9.966",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

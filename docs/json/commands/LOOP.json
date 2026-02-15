@@ -1,0 +1,21 @@
+{
+  "name": "LOOP",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will loop back to the beginning in a WHILE/ENDW loop.\nThis is one part of a complete command structure.\nLOOP",
+  "syntax": "LOOP",
+  "parameters": [],
+  "comments": "For more information on the different structured programming commands, and the LOOP command in particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> While -> Loop",
+  "see_also": [
+    "WHILE",
+    "LOOP_IF",
+    "EXIT",
+    "EXIT_IF",
+    "ENDW"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

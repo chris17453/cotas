@@ -1,0 +1,30 @@
+# STR()
+
+| | |
+|---|---|
+| **Category** | Function |
+| **Name** | `STR` |
+| **Returns** | `A` |
+
+## Purpose
+
+This function will return a numeric (B, I or N type) value as a string (A type).
+
+## Parts
+
+| # | Type | Description |
+|---|------|-------------|
+| 1 | `f/c/e` | The numeric field value. The original field is unchanged. |
+| 2 | `f/c/e` | The number of characters in the final field. |
+| 3 | `f/c/e` | The number of decimal characters in the final field. |
+
+## Return Type
+
+A The size of this field depends on part 2.
+
+## Example
+
+```tas
+? str(195.32596,6,2)
+195.33
+```

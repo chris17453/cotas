@@ -1,0 +1,40 @@
+{
+  "name": "CLOCK",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to display a real-time clock on the screen.\nCLOCK ON/OFF AT starting_column,row MIL\nON/OFF - Optional - If you set this option to ON the clock will be displayed on the screen,\nOFF and it will be removed.\n\nstarting_column - f/c/e - Optional - The number of the column at which to start the display.\nThe first column on the screen (far left position) is number 1. The default value, if none is provided, is column 40.\nrow - f/c/e - Optional - The row or line number to use in displaying the clock. The first row on the screen (top) is number 1. The default value, if none is provided, is row 1.\nMIL - Optional - If this option is included, the clock will display in 24 hour time instead of am/pm.",
+  "syntax": "CLOCK ON/OFF AT starting_column,row MIL",
+  "parameters": [
+    {
+      "name": "ON/OFF",
+      "type": "e",
+      "required": false,
+      "description": "ON/OFF - Optional - If you set this option to ON the clock will be displayed on the screen, OFF and it will be removed."
+    },
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": false,
+      "description": "starting_column - f/c/e - Optional - The number of the column at which to start the display.\nThe first column on the screen (far left position) is number 1. The default value, if none is provided, is column 40."
+    },
+    {
+      "name": "row",
+      "type": "f/c/e",
+      "required": false,
+      "description": "row - f/c/e - Optional - The row or line number to use in displaying the clock. The first row on the screen (top) is number 1. The default value, if none is provided, is row 1."
+    },
+    {
+      "name": "MIL",
+      "type": "f/c/e",
+      "required": false,
+      "description": "MIL - Optional - If this option is included, the clock will display in 24 hour time instead of am/pm."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

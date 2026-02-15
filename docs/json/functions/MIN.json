@@ -1,0 +1,24 @@
+{
+  "name": "MIN",
+  "signature": "MIN(1,2)",
+  "platform": null,
+  "purpose": "This function returns the minimum value of the two specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The first value to check, may be of any type other than P or F."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The second value to check, may be of any type other than P or F. Part 2 must be the same type as part 1."
+    }
+  ],
+  "return_type": "? This depends on the type of fields specified. The value returned will be of the same type.",
+  "comments": null,
+  "example": "? min(100,200)\n100\n? min(‘ABC’,’DEF’)\nABC",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

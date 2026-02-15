@@ -1,0 +1,24 @@
+{
+  "name": "LCKD",
+  "signature": "LCKD(1,2)",
+  "platform": null,
+  "purpose": "LCKD()\nLCKD(1,2)\nPURPOSE\nThis function will allow you to check if a record is locked by another user for a specific file/key value\nwithout having to actually read the record.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to be checked."
+    },
+    {
+      "number": "2",
+      "type": "lexpr",
+      "description": "The key number to be used."
+    }
+  ],
+  "return_type": "L If the record is locked the function will return .T., otherwise .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "TTOC",
+  "signature": "TTOC()",
+  "platform": null,
+  "purpose": "This function will convert a time (type T) value to a string (type A).",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The time value to use. The original field is left unchanged."
+    }
+  ],
+  "return_type": "A If the receiving field is not long enough the remaining characters will be truncated.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

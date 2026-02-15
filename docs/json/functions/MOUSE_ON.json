@@ -1,0 +1,13 @@
+{
+  "name": "MOUSE_ON",
+  "signature": "MOUSE_ON()",
+  "platform": null,
+  "purpose": "This function returns whether or not the mouse is turned on in a program.",
+  "parts": [],
+  "return_type": "L If the mouse is on this function returns .T.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

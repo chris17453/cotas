@@ -1,0 +1,15 @@
+{
+  "name": "NO VALID MESSAGE",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "This command will turn off the valid message that would normally appear during an ENTER command when the vld option returns .F.",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

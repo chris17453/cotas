@@ -1,0 +1,31 @@
+{
+  "name": "CLOSE FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to close both TAS and non-TAS files that have been previously opened using the OPEN or OPENV (Open Variable) command.",
+  "syntax": "CLOSE filename/@file_number DEL",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "filename/@file_number - file_expr - Required - The name or number of the file to be closed."
+    },
+    {
+      "name": "DEL",
+      "type": "flag",
+      "required": false,
+      "description": "DEL - Optional - If the file being closed is non-TAS, you can include this option and the program will delete the file from the disk."
+    }
+  ],
+  "comments": "If you don’t close the files before the program exits, it will be done automatically. Once a file is closed, its ‘position’ can be used again; i.e., if one is closed another can be opened.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Open/close -> Close",
+  "see_also": [
+    "OPEN",
+    "OPENV"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

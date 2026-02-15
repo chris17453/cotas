@@ -1,0 +1,22 @@
+{
+  "name": "EXECUTE PROGRAM",
+  "abbreviation": null,
+  "platform": null,
+  "description": "You would use this command to execute a non-TAS Professional 5.1 program.",
+  "syntax": "EXEC program_name WITH with",
+  "parameters": [
+    {
+      "name": "program_name",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the name of the program to be run. This must include any path if applicable."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

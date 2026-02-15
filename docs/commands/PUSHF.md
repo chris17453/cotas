@@ -1,0 +1,30 @@
+# PUSHF
+
+| | |
+|---|---|
+| **Category** | Command |
+| **Platform** | TAS Professional 5.1 |
+
+## Description
+
+Save a value in a field or group of fields to the internal TAS Pro 5.1 stack so that they may be restored later with the POPF (Pop Field) command.
+
+## Syntax
+
+```text
+PUSHF field_list
+```
+
+## Parameters
+
+- **`field_list`** · `fn/v1,fn/v2,...,fn/vx` · *Required*
+
+  field_list - fn/v1,fn/v2,...,fn/vx - Required - The list of fields to save.
+
+## Comments
+
+When you use the PUSHF command, the field values are saved on an internal stack. This stack, just like all others used in microcomputers, is a Last In-First Out process. That means that the last value pushed on the stack must be the first value popped out. The TAS Professional 5.1 stack, however, is different from a ‘normal’ stack in that it is intelligent. It knows the sizes of the values being pushed/ popped and automatically allows for the differences. The standard internal stack size is 1024 bytes. Each field put on the stack using PUSHF requires or takes up a number of bytes equal to the internal size of that field; i.e., A type fields - display size, I type fields - 2 bytes, N type fields - 8 bytes, R/T/D type fields 4 bytes, F type fields - 3 bytes, L/B type field 1 byte, and P type fields 10 bytes. This is a powerful but potentially dangerous command. When a programmer does a GOSUB or a UDF/UDC within a program, the return address is also placed on this same stack, and if an unbalanced number of PUSHx/POPx commands have been used the program will not return to the proper location. Also, if the POPx items are not in the exact reverse order from the PUSHx list, the incorrect values will be restored. This could cause untold problems. For these reasons, the PUSHx/POPx commands should be used with the greatest of care. However, it is the existence of these commands that helps to make TAS Professional 5.1 a very powerful development tool.
+
+## See Also
+
+- [POPF](POPF.md)

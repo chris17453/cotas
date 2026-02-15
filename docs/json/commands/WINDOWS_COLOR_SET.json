@@ -1,0 +1,30 @@
+{
+  "name": "WINDOWS COLOR SET",
+  "abbreviation": null,
+  "platform": "Windows",
+  "description": "This command will set the appropriate Windows color.",
+  "syntax": "WIN_COLOR color_name VAL color_value",
+  "parameters": [
+    {
+      "name": "color_name",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name of the color type. The acceptable names are:\nNormalBkg, NormalText, BoxBkg, BoxText, EnterBkg, EnterText, MsgBkg,\nMsgText, WindowBkg, WindowTextSet, MenuBkg, MenuTextSet, ButtonBkg,\nButtonText, ChoiceBkg, ChoiceText, EcolorBkg and EcolorText."
+    },
+    {
+      "name": "color_value",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The new color value. Must by a type R field."
+    }
+  ],
+  "comments": "This command will reset the internal value for a particular default color. For more information on colors in Windows please refer to Chapter 11 - Windows Programming.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Win Commands -> Win Color",
+  "see_also": [
+    "GET_WIN_COLOR()"
+  ],
+  "is_alias": true,
+  "alias_target": "WIN_COLOR"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "CHAIN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to execute another TAS Professional 5.1 program.",
+  "syntax": "CHAIN program_name WITH with NOBASEWIND",
+  "parameters": [
+    {
+      "name": "program_name",
+      "type": "f/c/e",
+      "required": true,
+      "description": "program_name - f/c/e - Required - The name of the program to run. This needs to include the path also, if any."
+    },
+    {
+      "name": "with",
+      "type": "fn/v1,fn/v2,...,fn/vx",
+      "required": false,
+      "description": "with - fn/v1,fn/v2,...,fn/vx - Optional - A list of field values to be passed to the program. The receiving program can test for these with the PARAM (Parameters) command. NOTE: Do not use constants or expressions in this command since TAS Pro 5.1 clears that information out before chaining to the next program. You can, however, pass pointers (P type only) to the receiving program so that you can access a value"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

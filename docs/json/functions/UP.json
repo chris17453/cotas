@@ -1,0 +1,19 @@
+{
+  "name": "UP",
+  "signature": "UP(1)",
+  "platform": null,
+  "purpose": "This function returns the string value (type A) specified in upper case characters.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to use. The original value remains unchanged."
+    }
+  ],
+  "return_type": "A If the receiving field is too short, the remaining characters will be truncated.",
+  "comments": null,
+  "example": "? up(‘abcdEFG’)\nABCDEFG",
+  "sample_program": "LUPTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

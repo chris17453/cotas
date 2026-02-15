@@ -1,0 +1,13 @@
+{
+  "name": "TPATH",
+  "signature": "TPATH()",
+  "platform": null,
+  "purpose": "This function will return the default TAS Professional 5.1 path value as set in the DOS SET TAS50= process.",
+  "parts": [],
+  "return_type": "A",
+  "comments": "If the SET TAS50= command has not been executed at the DOS prompt (meaning there is no default path), the function will return a null string.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

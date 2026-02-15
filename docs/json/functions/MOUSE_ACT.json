@@ -1,0 +1,19 @@
+{
+  "name": "MOUSE_ACT",
+  "signature": "MOUSE_ACT()",
+  "platform": "DOS only",
+  "purpose": "This function returns information about mouse actions. Once you test for a specific action that flag is cleared until it happens again.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Mouse action to check.\n0 - movement\n1 - Left button down\n2 - Left button up\n3 - Right button down\n4 - Right button up"
+    }
+  ],
+  "return_type": "L If the action you are testing for has happened since the last time you checked the function will return\n.T. Once you check it clears that flag, so if you checked immediately again and no action had occurred\nsince your last check the function would return .F.",
+  "comments": "There are many situations where use of the mouse traps won't be effective and you need a different\nmethod for determining actions. You would use this function in those cases. A good example of this\nuse is in the programming utilities for TAS Professional 5.1, i.e, TASEDPRG.SRC (editor),\nTASEDSCR.SRC (screen painter), TASEDRPT.SRC (report writer) and TASRPT.SRC (report/2\nwriter).",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

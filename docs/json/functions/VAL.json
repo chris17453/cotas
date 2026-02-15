@@ -1,0 +1,19 @@
+{
+  "name": "VAL",
+  "signature": "VAL(1)",
+  "platform": null,
+  "purpose": "This function converts a string value (type A) to a numeric value (type N).",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to be converted. The original value remains unchanged."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": "? val(‘100.2’)\n100.20\n? val(‘abcd’)\n0.00",
+  "sample_program": "TRANSTST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

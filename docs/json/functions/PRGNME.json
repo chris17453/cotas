@@ -1,0 +1,13 @@
+{
+  "name": "PRGNME",
+  "signature": "PRGNME()",
+  "platform": null,
+  "purpose": "This function returns the name of the source file (or library routine) that contains the line that will be executed next.",
+  "parts": [],
+  "return_type": "A",
+  "comments": "This function will work properly only if the program has been compiled with the -D (debug) flag.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

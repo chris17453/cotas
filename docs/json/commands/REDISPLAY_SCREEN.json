@@ -1,0 +1,22 @@
+{
+  "name": "REDISPLAY SCREEN",
+  "abbreviation": "REDSP",
+  "platform": "TAS Professional 5.1",
+  "description": "This command will redisplay a screen that was previously saved using the SAVES (Save Screen) command.",
+  "syntax": "REDSP screen_holder_name",
+  "parameters": [
+    {
+      "name": "screen_holder_name",
+      "type": "fn/v",
+      "required": false,
+      "description": "The name of the field that was used in the SAVES (Save Screen) command. If you did not specify a field name in that command (i.e., you saved the screen to an internal buffer), then you should not specify one here.\nNOTE: If you do specify a field name it must be large enough to hold the entire screen and certain information about the current screen environment. This is approximately 4300 bytes."
+    }
+  ],
+  "comments": "",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

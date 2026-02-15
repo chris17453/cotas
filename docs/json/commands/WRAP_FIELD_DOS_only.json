@@ -1,0 +1,34 @@
+{
+  "name": "WRAP FIELD (DOS only)",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "This command will ‘word wrap’ an A type field.",
+  "syntax": "WRAP fieldname COL number_of_columns DLNES number_of_lines",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field to be wrapped."
+    },
+    {
+      "name": "number_of_columns",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The maximum width of a single line."
+    },
+    {
+      "name": "number_of_lines",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The maximum number of displayable lines. This should\nbe overstated so that you will never reach the max. However, the more lines you have\nhere the slower the rewrap process."
+    }
+  ],
+  "comments": "Once you have ‘wrapped’ a field using this command you can access individual lines with the\nWRAPL(), WRAPO() and WRAPS() functions. If you are inserting characters you need to REWRAP\nthe line.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> wRap",
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "WRAP"
+}

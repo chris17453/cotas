@@ -1,0 +1,57 @@
+# COLOR (DOS only)
+
+| | |
+|---|---|
+| **Category** | Command |
+| **Platform** | DOS |
+
+## Description
+
+Set the three color values for the program.
+
+## Syntax
+
+```text
+COLOR NORM normal HIGH highlight REV reverse ERR error ENTER enter_color ARRAY color_array_start
+```
+
+## Parameters
+
+- **`normal`** · `f/c/e` · *Optional*
+
+  The normal or regular color. This is the color used as the normal display color. Unless otherwise overridden, all display to the screen is in this color.
+
+- **`highlight`** · `f/c/e` · *Optional*
+
+  This color is used for choice bars in menus.
+
+- **`reverse`** · `f/c/e` · *Optional*
+
+  Used for displaying fields that are a part of a mounted screen.
+
+- **`error`** · `f/c/e` · *Optional*
+
+  The color used when displaying an error or help message at the bottom of the screen.
+
+- **`enter_color`** · `f/c/e` · *Optional*
+
+  The color to use when the ENTER command is executed.
+
+- **`color_array_start`** · `fn/v` · *Optional*
+
+  If this field is included then the program will get the colors from an array of color values with this field being color 1. Normally a color is specified in a program as a numeric value from 1 through 255. By using this option the programmer can include an array of color values and the program will translate the color number to an array number, i.e., color 1 would be array element 1, color 10 array element 10, etc. This will allow the programmer to specify a ‘color value bucket’ and then by changing the values in those ‘buckets’ change the colors to be displayed. This is the process that is used in all TAS Professional 5.1 programs. The color information is kept in TASCOLOR.OVL. Since each user can have their own copy of the file, they can have their own colors without having to create separate programs for each.
+  NOTE: Even though the color fields are considered part of an array they do not necessarily have to be a true array. So long as all the fields are of the same type as the initial field, they can be individual fields and will still be treated as an array by this routine.
+
+## Program Editor
+
+`User interface -> Color control -> Color`
+
+## See Also
+
+- [BKG](BKG.md)
+- [FRG](FRG.md)
+- [CC()](../functions/CC.md)
+- [CCE()](../functions/CCE.md)
+- [CCF()](../functions/CCF.md)
+- [CCH()](../functions/CCH.md)
+- [CCR()](../functions/CCR.md)

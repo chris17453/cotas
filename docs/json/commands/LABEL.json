@@ -1,0 +1,22 @@
+{
+  "name": "LABEL",
+  "abbreviation": null,
+  "platform": "PROGRAM EDITOR",
+  "description": "Specify a label name.",
+  "syntax": "label_name:",
+  "parameters": [
+    {
+      "name": "label_name",
+      "type": "sac",
+      "required": true,
+      "description": "label - Required - The name of the label. Cannot have been used as a label anywhere else in the program."
+    }
+  ],
+  "comments": "The label must be the first characters on the line, must be no more than 14 characters long, and must be terminated with a colon (:). Also, there can be no other commands on the same line.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> Line label",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

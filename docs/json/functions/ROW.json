@@ -1,0 +1,13 @@
+{
+  "name": "ROW",
+  "signature": "ROW()",
+  "platform": null,
+  "purpose": "This function will return the current row from the screen.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": "clear screen\n? row()\n1",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

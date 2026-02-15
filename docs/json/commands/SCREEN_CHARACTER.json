@@ -1,0 +1,15 @@
+{
+  "name": "SCREEN CHARACTER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "GET/SET - Required - GET will put the character/attribute on the screen at the column,row position into the appropriate fields. SET will take the current values in the fields and move them to the screen.",
+  "syntax": "GET/SET",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Screen control -> screen cHr",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

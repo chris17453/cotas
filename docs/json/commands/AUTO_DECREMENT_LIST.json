@@ -1,0 +1,20 @@
+{
+  "name": "AUTO DECREMENT LIST",
+  "abbreviation": "AUTODEC",
+  "platform": null,
+  "description": "This is used in connection with the LISTM (List Array) and LISTF (List File) commands. If you are executing one of those commands and are in a routine ‘outside’ of the command (e.g., an enter process), you can use this command to automatically force the cursor to go back to the previous line in the list when you return to it.",
+  "syntax": "AUTODEC No options",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Lists -> autoDec",
+  "see_also": [
+    "AUTOINC",
+    "LISTF",
+    "LISTM",
+    "AUTOENTER"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

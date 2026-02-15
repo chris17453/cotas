@@ -1,0 +1,13 @@
+{
+  "name": "CPATH",
+  "signature": "CPATH()",
+  "platform": null,
+  "purpose": "This function returns the user’s current path value.",
+  "parts": [],
+  "return_type": "A The receiving field should be at least 47 characters long.",
+  "comments": null,
+  "example": "? cpath()",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

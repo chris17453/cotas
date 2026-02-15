@@ -1,0 +1,22 @@
+{
+  "name": "FORCE3",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred TAS Professional 5.1 command is FORCE.",
+  "syntax": "FORCE3 Y/N",
+  "parameters": [
+    {
+      "name": "Y/N",
+      "type": "f",
+      "required": true,
+      "description": "Y/N - Required - If this option is Y the program will ignore any windows when displaying information to the screen. To return to normal mode the option would be Y."
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Print Outside Window.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

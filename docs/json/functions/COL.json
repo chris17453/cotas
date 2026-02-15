@@ -1,0 +1,13 @@
+{
+  "name": "COL",
+  "signature": "COL()",
+  "platform": null,
+  "purpose": "This function returns the current internal screen column location value.",
+  "parts": [],
+  "return_type": "I",
+  "comments": "Column 1 is the far left column for the active window.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

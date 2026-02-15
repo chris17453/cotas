@@ -1,0 +1,22 @@
+{
+  "name": "POP TRAP",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Restore a value in a trap or group of traps that was saved previously using the PUSHT (Push Trap) command.",
+  "syntax": "POPT trap_list",
+  "parameters": [
+    {
+      "name": "trap_list",
+      "type": "trap_list",
+      "required": true,
+      "description": "trap1,trap2,...,trapx - Required - The list of traps to restore."
+    }
+  ],
+  "comments": "When you use the PUSHT command the current trap settings are saved on an internal stack. This stack, just like all others used in microcomputers, is a Last In- First Out process. That means that the last value",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

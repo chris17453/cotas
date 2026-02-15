@@ -1,0 +1,13 @@
+{
+  "name": "PRGLNE",
+  "signature": "PRGLNE()",
+  "platform": null,
+  "purpose": "This function will return the actual number within the source file (or library routine) for the line that will be executed next.",
+  "parts": [],
+  "return_type": "A",
+  "comments": "This function will work properly only if the program has been compiled with the -D (debug) flag.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

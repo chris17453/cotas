@@ -1,0 +1,132 @@
+{
+  "name": "WINDOW DEFINE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used for defining a window to be opened later with the WINACT (Window Activate)\ncommand.",
+  "syntax": "WINDEF AT starting_column,starting_row LEN length WDT width\nWCOLOR window_color TTLW title_where TTL title\nBOX box BCOLOR box_color SHD shadow_where\nSCOLOR shadow_color ICOLOR inactive_color SAVEF save_field\nWTXT_COLOR window_text_color BTXT_COLOR border_text_color USE_COLORS",
+  "parameters": [
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the window, column value."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the window, row value."
+    },
+    {
+      "name": "length",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of rows long, including box around the window. If there are two lines within the window and there is a box, the length is 4."
+    },
+    {
+      "name": "width",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of columns wide, including box around the window. If the inside width required is 10 columns and there is a box then the total width is 12."
+    },
+    {
+      "name": "window_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The color value for the main body of the window. If nothing is specified the program will use the current normal color."
+    },
+    {
+      "name": "title_where",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you wish to put a title message at the top of the window you may choose where it will be. L is left side of window, R is right, C is centered and N is none. The default is N."
+    },
+    {
+      "name": "title",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you specified a title_where value other than N you use this as the value to be displayed."
+    },
+    {
+      "name": "box",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The box type to use for defining the edge of the window. If this is specified you need to take into consideration the 2 extra rows and columns that it requires when determining length, width, and location. S specifies a single line box, D is double, and C is custom (dependent on what you have set in TAS50.OVL)."
+    },
+    {
+      "name": "box_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you have specified some sort of box you may also specify the color for it. If this isn’t set the program will use the window_color as this value also."
+    },
+    {
+      "name": "shadow_where",
+      "type": "f/c/e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "shadow_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "inactive_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "SAVEF",
+      "type": "f/c/e",
+      "required": false,
+      "description": "save_field."
+    },
+    {
+      "name": "save_field",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The field where the window save state is stored."
+    },
+    {
+      "name": "WTXT_COLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "window_text_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The color of the window text."
+    },
+    {
+      "name": "BTXT_COLOR",
+      "type": "f/c/e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "border_text_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Color of the border text."
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Whether colors are used for the window."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "WINDEF"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

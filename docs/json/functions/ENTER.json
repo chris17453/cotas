@@ -1,0 +1,13 @@
+{
+  "name": "ENTER",
+  "signature": "ENTER()",
+  "platform": null,
+  "purpose": "This function will return the result of the last executed post UDF option in the ENTER command.",
+  "parts": [],
+  "return_type": "L The value that was returned by the post UDF.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

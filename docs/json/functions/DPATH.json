@@ -1,0 +1,13 @@
+{
+  "name": "DPATH",
+  "signature": "DPATH()",
+  "platform": null,
+  "purpose": "This function will return the default dictionary path value as set in the TAS50.OVL file or by the CHANGE DICTIONARY PATH command.",
+  "parts": [],
+  "return_type": "A",
+  "comments": null,
+  "example": "? dpath()\nC:\\ACCTG\\",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

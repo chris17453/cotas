@@ -1,0 +1,19 @@
+{
+  "name": "EOF",
+  "signature": "EOF(1)",
+  "platform": null,
+  "purpose": "This function will determine whether or not the program has tried to read a record that is past the end of the file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The filenumber value of the file to be checked."
+    }
+  ],
+  "return_type": "L If the file is at EOF the function will return .T.; otherwise it will return .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

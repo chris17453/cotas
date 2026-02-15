@@ -1,0 +1,54 @@
+{
+  "name": "FORMAT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will format an alpha or numeric field for a specific look during output.",
+  "syntax": "FORMAT fieldname RECV receiving_field NEG neg_how PICT picture\nNOCMA NOFD NOZERO OFF",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field to be formatted. May be either a numeric or alpha field."
+    },
+    {
+      "name": "receiving_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "If you want to put the formatted numeric field in another field this is the name of the A type receiving field. This only applies if the format field is of type N."
+    },
+    {
+      "name": "neg_how",
+      "type": "e",
+      "required": false,
+      "description": "LTPCA - L - Leading negative sign, T - Trailing negative sign, P Parentheses, C - Trailing CR, A - Angle brackets. This is applicable only when the format field is of type N."
+    },
+    {
+      "name": "picture",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is used to create what is called a ‘slider field’. Slider fields are useful when you have a field you want to display on the screen, and that field is too wide to fit within the screen or current window. You can specify how many characters to display by preceding that value with an ‘S’. For example:\n‘S30’\nwill display 30 characters of the field at any time. When the user enters that field it will start at the ‘beginning.’ As characters are entered the data will appear to ‘slide’ across the entry box. The user may press the LEFT and RIGHT arrows to go back and forth in the field. Also the HOME key goes to the beginning of the field, and the END key to the current ending character in the field. This allows you to enter large fields without having to use the TASEdit program or an outside editor. This only applies when the format field is of type A."
+    },
+    {
+      "name": "NOCMA",
+      "type": "e",
+      "required": false,
+      "description": "Optional - If this option is set the program will NOT include comma characters in the resulting formatted field. The default is to include comma characters. This only applies when the format field is of type N."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "BKG",
+    "REV",
+    "CC()",
+    "CCE()",
+    "CCF()",
+    "CCH()",
+    "CCR()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

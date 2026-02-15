@@ -1,0 +1,13 @@
+{
+  "name": "CO",
+  "signature": "CO()",
+  "platform": null,
+  "purpose": "This function returns the character company code file extension modifier.",
+  "parts": [],
+  "return_type": "A",
+  "comments": "The company code is added to the extension of all standard TAS Professional 5.1 files opened once it is set.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

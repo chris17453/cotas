@@ -1,0 +1,18 @@
+{
+  "name": "CLEAR PROGRAM ERROR",
+  "abbreviation": "CLRPE",
+  "platform": null,
+  "description": "This command will clear the system program error number holder. This is set anytime the program encounters an error while executing a program or if you execute the ERR (Error) command.",
+  "syntax": "CLRPE",
+  "parameters": [],
+  "comments": "You would use this command when making calls to a routine that may or may not fail. This is the only way to clear the error number before calling the routine again. Also, the program error holder is not reset when the program returns to the calling (previous) program. This allows you to check if an error occurred in the chained program. Use the ERR() function to check for an error value.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Messages -> Clear prg error",
+  "see_also": [
+    "ERR",
+    "ERR()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

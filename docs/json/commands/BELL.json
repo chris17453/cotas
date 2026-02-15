@@ -1,0 +1,15 @@
+{
+  "name": "BELL",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will cause the speaker to beep.",
+  "syntax": "BELL\nNo options",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Bell",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

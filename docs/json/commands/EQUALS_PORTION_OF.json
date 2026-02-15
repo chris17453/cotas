@@ -1,0 +1,46 @@
+{
+  "name": "EQUALS PORTION OF",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred method is to use the =MID() function.",
+  "syntax": "EQU_MID recv_field FLD parse_fld START start_val NCHR num_chrs MEM_AREA",
+  "parameters": [
+    {
+      "name": "recv_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that is going to receive the portion of the parse_fld."
+    },
+    {
+      "name": "parse_fld",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that you want a part of."
+    },
+    {
+      "name": "START",
+      "type": "n",
+      "required": true,
+      "description": "start_val - The starting position for the portion to extract."
+    },
+    {
+      "name": "NCHR",
+      "type": "n",
+      "required": true,
+      "description": "num_chrs - The number of characters to extract."
+    },
+    {
+      "name": "MEM_AREA",
+      "type": "mem_area",
+      "required": true,
+      "description": "MEM_AREA - The memory area."
+    }
+  ],
+  "comments": "This is a TAS Professional 3.0 command here for compatibility. The preferred method is to use the =MID() function.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

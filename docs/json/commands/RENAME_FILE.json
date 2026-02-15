@@ -1,0 +1,28 @@
+{
+  "name": "RENAME FILE",
+  "abbreviation": null,
+  "platform": "System -> File commands -> Rename file",
+  "description": "Use this command to rename any file on the disk.",
+  "syntax": "RENF from TO to",
+  "parameters": [
+    {
+      "name": "from",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The current file name including path and extension."
+    },
+    {
+      "name": "to",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The new file name including path and extension."
+    }
+  ],
+  "comments": "Unlike the DOS REN command you can ‘move’ a file from one path to another by changing the path value in the to option.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> File commands -> Rename file",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,13 @@
+{
+  "name": "ASK",
+  "signature": "ASK()",
+  "platform": null,
+  "purpose": "This function returns the logical value of what the user entered for the last ASK command entry.",
+  "parts": [],
+  "return_type": "L If the user answered the last ASK command question with a Y (yes) this function will return .T.; otherwise it will return .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

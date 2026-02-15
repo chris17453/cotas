@@ -1,0 +1,16 @@
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/bin/Release/net10.0/CoTAS.Compiler.deps.json
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/bin/Release/net10.0/CoTAS.Compiler.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/bin/Release/net10.0/CoTAS.Compiler.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/bin/Release/net10.0/CoTAS.Parser.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/bin/Release/net10.0/CoTAS.Parser.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.csproj.AssemblyReference.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.GeneratedMSBuildEditorConfig.editorconfig
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.AssemblyInfoInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.AssemblyInfo.cs
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.csproj.CoreCompileInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.sourcelink.json
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Co.86DABEF4.Up2Date
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/refint/CoTAS.Compiler.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/CoTAS.Compiler.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Compiler/obj/Release/net10.0/ref/CoTAS.Compiler.dll

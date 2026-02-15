@@ -1,0 +1,22 @@
+{
+  "name": "READ RECORD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred method is to use the OPENV/FINDV commands.",
+  "syntax": "RDREC err_label",
+  "parameters": [
+    {
+      "name": "err_label",
+      "type": "label",
+      "required": false,
+      "description": "This is the label to go to if an error occurs while reading from this non-TAS file."
+    }
+  ],
+  "comments": "",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

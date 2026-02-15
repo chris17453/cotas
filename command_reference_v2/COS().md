@@ -1,5 +1,0 @@
-# COS()
-
-## Summary
-Function Reference
-

@@ -1,0 +1,24 @@
+{
+  "name": "TRIM",
+  "signature": "TRIM(1,2)",
+  "platform": null,
+  "purpose": "This function will return an A type field with the leading or trailing spaces deleted.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to be converted. The original field is not changed."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "'T' - trim trailing spaces; this is the default value.\n'L' - trim leading spaces."
+    }
+  ],
+  "return_type": "A If the receiving field is not long enough, the remaining characters will be truncated.",
+  "comments": "You would use this function when concantenating (adding) A type fields together. If the spaces aren’t trimmed, there will probably be extra spaces in the resulting value. This function can get rid of them.\nYou can also use the ‘*’ when concatenating the fields. For more information please see Chapter 1, Installation and General Information.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

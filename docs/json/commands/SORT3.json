@@ -1,0 +1,52 @@
+{
+  "name": "SORT3",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred TAS Professional 5.1 command is SORT ARRAY.",
+  "syntax": "SORT3 mem_area# FLD sort_expression SIZE size_of_sort_expr NUM #_flds_to_sort DOwhat_to_do\nmem_area# - f/c/e - Required - This is the memory area to use. This must resolve to a value of\n1 through 4.\nsort_expression - f/c/e - Required - This resolves to the value to sort.\nsize_of_sort_expr - f/c/e - Required - The internal size of the value to sort.\nnum_flds_to_sort - f/c/e - Required - This is the maximum number of entries that will be made\nto the sort buffer. This is only required when initializing the sort buffer at the beginning of the process.\nchg_value - f/c/e - Required - The amount to add to or subtract from each pointer. NOTE:\nThe size and type of this field must be the same as the pointer.\nwhat_to_do - f/c/e - Required - This must resolve to either 0 (initialize the sort buffer) or 1\n(insert a new item into the buffer).",
+  "parameters": [
+    {
+      "name": "mem_area#",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the memory area to use. This must resolve to a value of 1 through 4."
+    },
+    {
+      "name": "sort_expression",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This resolves to the value to sort."
+    },
+    {
+      "name": "size_of_sort_expr",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The internal size of the value to sort."
+    },
+    {
+      "name": "num_flds_to_sort",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the maximum number of entries that will be made to the sort buffer. This is only required when initializing the sort buffer at the beginning of the process."
+    },
+    {
+      "name": "chg_value",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The amount to add to or subtract from each pointer. NOTE: The size and type of this field must be the same as the pointer."
+    },
+    {
+      "name": "what_to_do",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This must resolve to either 0 (initialize the sort buffer) or 1 (insert a new item into the buffer)."
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Sort.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "3.0 Commands -> P - Sort3",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

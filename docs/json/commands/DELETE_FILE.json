@@ -1,0 +1,22 @@
+{
+  "name": "DELETE FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will delete a file from the disk.",
+  "syntax": "DELF filename",
+  "parameters": [
+    {
+      "name": "filename",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name of the file to be deleted."
+    }
+  ],
+  "comments": "No error is reported if the file is not found and nothing is returned if it is.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> File commands -> Delete file",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

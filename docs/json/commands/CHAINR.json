@@ -1,0 +1,22 @@
+{
+  "name": "CHAINR",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This program will CHAIN to a program already specified as a RAP program.",
+  "syntax": "CHAINR rap_number",
+  "parameters": [
+    {
+      "name": "rap_number",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The RAP buffer number. This is the same value as the NUMBER option as set in the RAP (Run Anytime Program) command."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

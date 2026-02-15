@@ -1,0 +1,19 @@
+{
+  "name": "LBLNME",
+  "signature": "LBLNME(1)",
+  "platform": null,
+  "purpose": "This function will return the name of the label for a given value.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The number of the label name to be found."
+    }
+  ],
+  "return_type": "A The name of the label.",
+  "comments": "This function will work properly only if the program has been compiled with the -D (debug) flag.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

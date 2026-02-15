@@ -1,0 +1,13 @@
+{
+  "name": "WINDOWS",
+  "signature": "WINDOWS() (Windows Only)",
+  "platform": "Windows",
+  "purpose": "This function allows you to write programs that will run under Windows and DOS at the same time by letting the program know when it's running in Windows.",
+  "parts": [],
+  "return_type": "L If the program is running in the Windows environment this will return .T.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

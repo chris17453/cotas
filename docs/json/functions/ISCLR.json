@@ -1,0 +1,13 @@
+{
+  "name": "ISCLR",
+  "signature": "ISCLR()",
+  "platform": null,
+  "purpose": "This function will determine whether the computer system on which the program is being run has a\nmonochrome or color monitor active.",
+  "parts": [],
+  "return_type": "L If the system has a color monitor active the function will return .T., otherwise .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": "ISCOLOR.SRC",
+  "program_editor": null,
+  "see_also": []
+}

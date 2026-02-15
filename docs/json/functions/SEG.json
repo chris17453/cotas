@@ -1,0 +1,13 @@
+{
+  "name": "SEG",
+  "signature": "SEG(1)",
+  "platform": null,
+  "purpose": "This function no longer applies! It is only used internally by TAS Professional 5.1. You can use the OFST() function to get the absolute location of any field in memory.",
+  "parts": [],
+  "return_type": "",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

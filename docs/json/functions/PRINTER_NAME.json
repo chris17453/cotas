@@ -1,0 +1,13 @@
+{
+  "name": "PRINTER_NAME",
+  "signature": "PRINTER_NAME()",
+  "platform": "Windows Only",
+  "purpose": "Every printer in Windows has a distinct name. This function will return the name of the currently chosen printer..",
+  "parts": [],
+  "return_type": "A The name of the currently active or default printer.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

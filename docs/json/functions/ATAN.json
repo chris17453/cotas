@@ -1,0 +1,19 @@
+{
+  "name": "ATAN",
+  "signature": "ATAN(1)",
+  "platform": null,
+  "purpose": "This function returns the arctangent of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The result will be from -PI/2 to PI/2 in radians.",
+  "comments": null,
+  "example": "? atan(-0.539)\n-0.49435871",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

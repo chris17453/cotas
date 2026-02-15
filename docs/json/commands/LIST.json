@@ -1,0 +1,112 @@
+{
+  "name": "LIST",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will list a file, or a group of array fields, to the screen, printer, or a disk file.",
+  "syntax": "LIST field_list TTL title_list MEM NUM number CNTR counter_field\nFILE filename/@file_number KEY keyname/@key_number\nSTART start_value SCOPE scope scope_value FOR for_filter_expression\nWHILE while_filter_expression PTO print_to PFN print_to_file NOFF",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the list of fields to be used in this command. If the MEM option is set then the program assumes that each field is an array field. Through the use of the counter_field you need not use just regular array fields. However, if just standard array fields are to be used then you need not include any array spec. For example, a normal array field would be used as: FIELD[ARRAY_ELEMENT]. When using a standard array field in this option, you would specify just the FIELD portion, and no array element. The program will automatically increment the array element number. You can also use the counter_field within the array expression. For example, if the counter_field is CNTR then the current array element number can be accessed by using CNTR as the array element field, i.e., FIELD[CNTR]. You can also specify the beginning array element number by setting this value in the counter_field. A maximum of 80 fields/expressions/constants or any combination thereof may be included in a single field_list group."
+    },
+    {
+      "name": "title_list",
+      "type": "f/c/e",
+      "required": false,
+      "description": "This list will be displayed after any automatic top of form and as the first line printed by the command. The information printed is not automatically lined up with the data so you need to be sure that it displays properly."
+    },
+    {
+      "name": "MEM",
+      "type": "fn/v",
+      "required": false,
+      "description": "If you are listing from an array in memory instead of a standard file include this option in the command."
+    },
+    {
+      "name": "number",
+      "type": "fn/v",
+      "required": false,
+      "description": "If MEM is set, then this is Required - If MEM is specified then this the number of elements in the array to be listed."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This is an I type field that will be used for passing the number of records read, and the current array number, to your program. You can also use this to count the number of records listed."
+    },
+    {
+      "name": "filename/@file_number",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The name or number of the file to be used. If you do not include this option, the program will look for a default search file set in the SRCH (Search File) command. If a default search file hasn’t been previously set, the program will report an error and the command will be skipped. This entry will override any default value set in the SRCH command."
+    },
+    {
+      "name": "keyname/@key_number",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - Set this to the appropriate value to list the records in the file in the correct order. If you do not include this option, the program will look for a default key set in the SRCH (Search File) command. If a default key hasn’t been previously set the program will report an error and the command will be skipped. This entry will override any default value set in the SRCH command."
+    },
+    {
+      "name": "start_value",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The value to use as the beginning record. This is similar to doing a FIND before the command. If the index you’re searching on has multiple segments you may list the proper values for each of the segments, separating them with commas. This will allow you to specify the exact type for each of the segments. For example, suppose you’re searching on an index that has two segments: a 5 character alpha and an I type field. Each record you want has the same alpha but the I field will change, and is in order. In the first record the I type field has a value of 0. The following would find the first record for that group, if it exists: start ‘ABCDE’,0! Notice that we separate the values with a comma. The only requirement is that the values be of the same type (and size) as the segments in the key. In this case we put the I type constant specifier (!) after the 0 to make sure that it is passed as an I type field."
+    },
+    {
+      "name": "scope",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - This option may help determine how many records are listed. For more information about the scope specifier, please see the general information at the beginning of this chapter."
+    },
+    {
+      "name": "scope_value",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - If scope is set to N or F this is the number of records to listed."
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - You would use this option to restrict the records listed in this command. If the expression did not resolve to .T. the record would not be listed. In this option, the search continues until the program reaches the end of file and then will quit. You can also use this to perform the same task if MEM is specified. Use the counter_field as the array specifier in the expression."
+    },
+    {
+      "name": "while_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - This option also restricts the records listed. However, the first time the expression resolves to .F., the program stops reading records and continues to the next command. Therefore, if the program is reading records in a certain order (by a specific key) and the expression returns .F., then the program knows that all the appropriate records have been read and there is no need to continue reading. For example: Suppose you want to list all the invoice records for a specific customer. The first record for that customer is found in the invoice file either by using the start_value option within this command, or through the FIND command before executing this command. Then the while_filter_expression would be: INV_CUST_CODE = CUSTOMER_CODE (This assumes that there is a field called INV_CUST_CODE in the invoice file and a similar field in the customer file called CUSTOMER_CODE. The keyname/@key_number option must be set to the proper value so that the records are read in CUSTOMER_CODE order, or you must have set a default key using the SRCH command previous to this command.) When the first invoice record for the next customer is read the program will stop reading records."
+    },
+    {
+      "name": "PTO",
+      "type": "prt_where",
+      "required": false,
+      "description": "Optional - Use this option to direct the output of this command. The options are S,P,D, or A. (For more details on these options, please see the information at the beginning of this chapter.) If A is set the program will ask the user at runtime where to print. If no print_to option is set the program will use the default value. This will be either the screen or the last value set with the PRINT TO command."
+    },
+    {
+      "name": "PFN",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This parameter will define the print file handle."
+    },
+    {
+      "name": "print_to_file",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - If you set the print_to option to D, the name of the file to use may be specified with this option. If the file name is not specified the program will ask for one at runtime."
+    },
+    {
+      "name": "NOFF",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - If this is included in the command the program will not do a top of form operation at the end of the command. Irregardless of the setting of this option, normal form feeds will be executed during the operation of this command if the report would take more than one page."
+    }
+  ],
+  "comments": "If the while_filter_expression option is used you must be careful to make the proper setting of the scope, and/or start_value options also. If you think everything is set properly and yet no records are being listed, make sure that the proper first record is in memory prior to the execution of this command or that correct use has been made of the start_value option. The last record read before exiting the command is still in the record buffer after the program leaves this command. This command provides you with an easy and quick method to display a group of fields from a file or from an array in memory. Any file, TAS or non-TAS, may be displayed.",
+  "example": null,
+  "sample_program": "DLTEST, DLTEST2, LISTTEST",
+  "program_editor": "fiLe -> Mult rec cmds -> List records",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

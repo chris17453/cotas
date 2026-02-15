@@ -1,0 +1,19 @@
+{
+  "name": "PSET",
+  "signature": "PSET(1)",
+  "platform": null,
+  "purpose": "This function will return the currently set value for printer width, printable lines, or maximum lines.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "What to get: ‘W’ - printer width, ‘P’ - printable lines, or ‘M’ - maximum lines."
+    }
+  ],
+  "return_type": "I The current value depending on the option.",
+  "comments": null,
+  "example": "? pset(‘w’)\n80\n? pset(‘m’)\n66",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

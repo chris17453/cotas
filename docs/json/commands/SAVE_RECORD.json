@@ -1,0 +1,52 @@
+{
+  "name": "SAVE RECORD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to save records to any file, TAS or non-TAS.",
+  "syntax": "SAVE filename/@file_number NOCNF NOCLR GOTO goto_label ERR error_lbl",
+  "parameters": [
+    {
+      "name": "filename/@file_number",
+      "type": "fn/v",
+      "required": true,
+      "description": "file_expr - Required - This is the name or number of the file that will receive the record."
+    },
+    {
+      "name": "NOCNF",
+      "type": "sac",
+      "required": false,
+      "description": "Optional - The normal process is for the program to confirm that it is okay to save the record. If you do not want the program to confirm, include this option in the"
+    },
+    {
+      "name": "NOCLR",
+      "type": "sac",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "GOTO",
+      "type": "sac",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "goto_label",
+      "type": "e",
+      "required": false,
+      "description": ""
+    },
+    {
+      "name": "ERR",
+      "type": "sac",
+      "required": false,
+      "description": ""
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

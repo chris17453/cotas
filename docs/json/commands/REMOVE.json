@@ -1,0 +1,15 @@
+{
+  "name": "REMOVE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Optional - Remove the hot spot from the screen. If the NUM (or handle) value is 0 then all hot spots will be removed from the screen.",
+  "syntax": "REMOVE",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

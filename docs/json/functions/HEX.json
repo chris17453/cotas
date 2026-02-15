@@ -1,0 +1,19 @@
+{
+  "name": "HEX",
+  "signature": "HEX(1)",
+  "platform": null,
+  "purpose": "This function converts a numeric value to hexidecimal number and returns that number as an A type\nfield.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The number to be converted."
+    }
+  ],
+  "return_type": "A",
+  "comments": "All values are converted to R type first and then to hex.",
+  "example": "? hex(100)\n64\n? hex(110)\n6e",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

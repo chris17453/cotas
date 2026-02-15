@@ -1,0 +1,29 @@
+{
+  "name": "IIF",
+  "signature": "IIF(1,2,3)",
+  "platform": null,
+  "purpose": "This function can return many different values depending on whether the logical expression provided\nreturns .T. or .F.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "lexpr",
+      "description": "The expression to evaluate to determine what should be returned."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "If the lexpr in part 1 evaluates to .T. the function will return this value."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "If the lexpr evaluates to .F. the function will return this value."
+    }
+  ],
+  "return_type": "? The return type depends entirely on you.",
+  "comments": "If you are only concerned about one type of return (i.e., only .T. or only .F.), the other part need not be\nincluded.",
+  "example": "x=1\n? iif(x=1,,’False’)\n(the return above will be blank (“”) )\n? iif(x=1,’True’)\nTrue",
+  "sample_program": "IIFTEST.SRC, IIFTEST2.SRC",
+  "program_editor": null,
+  "see_also": []
+}

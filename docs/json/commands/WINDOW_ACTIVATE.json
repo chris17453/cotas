@@ -1,0 +1,31 @@
+{
+  "name": "WINDOW ACTIVATE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "appropriate. This is how records can automatically appear when you press one of the record search keys (F5-F9). To do this TAS Professional 5.1 looks at a field in memory that gives the segment pointer (offset is always 0 for this buffer) for the field buffer. If a screen has been mounted then this value is non-zero. Each screen format has its own internal buffer location and determining which one is active depends on the value in this location field.\nYou can set that screen active yourself without having to use the REDSP or WINACT command. This is a two step process. The first step is to get the location of the mount_buffer location within TAS Professional 5.1. This is done through the use of an option in the FFLD() function. The receiving field must be of type P (a P-pointer). In the example below, MOUNT_BUFF is a P-type pointer used to get the location of the screen buffer pointer via the FFLD() function:\nMOUNT_BUFF=FFLD('~M',’P’)\nThat’s the tilde (~) immediately followed by an ‘M’, and the quote marks are required. The P surrounded by quotes after the comma tells the function to return a type P pointer. This then gives you the location of the screen buffer pointer itself. After a screen is mounted you would then get the buffer location using the command:\nMOUNT_LOC=&MOUNT_BUFF\nObviously, you would need to do this for each screen after it is mounted the first time, with each buffer location being saved into a different field. If you want to do this for multiple screens, you could make MOUNT_LOC an array and then save each location as a different element. For example:\nMOUNT_LOC[1]=&MOUNT_BUFF\nThen, to reset the current buffer location value, you’d do just the opposite:\n&MOUNT_BUFF=MOUNT_LOC[1]\nNOTE: The receiving field in both cases must be of type I.\nSo, why do this when WINDEF/WINACT does the same thing? Because it's not the same thing. For example, suppose you have a screen with data at the top and bottom and a window opened in the middle, such as BKSOA in Advanced Accounting 4.0. In that case we have defined 3 windows (using WINDEF) and still have to manually update the data at the bottom of the screen (the current sales order amounts) by using the PMSG command each time a line is entered or changed. If instead we had used the process described above, we could MOUNT the entire background screen. Then, after a line item had been entered, we'd reset the mount buffer location, which would reactivate the appropriate fields and automatically update the totals at the bottom of the screen. Instead of several lines of code there would be only one!\nThe other important difference is that this process doesn’t change the fixed (non-field) portion of the screen. So it isn’t like doing a SAVES/REDSP each time, which would accomplish the same task, but would wipe out the information in the middle of the screen each time you did a REDSP. If you have struggled trying to set up several different WINDEF commands to manage and keep separate various sections on the screen, try this instead. It doesn’t take any more data space; all the information you’re accessing is already there. All you’re doing is accessing it differently.\nWindows Note: The process described above does NOT work in Windows. However, a similar process does. Each window, when it is active, has a particular pointer or handle value. You can get that value by using the WINDOW_PTR() function. You would save the value in a type R field (as opposed to a type P above). Then, when you want to activate the window you would still use the WINACT command, e.g.:",
+  "syntax": "Winact Window_hldr",
+  "parameters": [
+    {
+      "name": "Window_hldr",
+      "type": "R",
+      "required": true,
+      "description": "The window handle value saved from WINDOW_PTR() (a type R field)."
+    },
+    {
+      "name": "Notes",
+      "type": "n",
+      "required": false,
+      "description": "The receiving field in both cases must be of type I."
+    }
+  ],
+  "comments": null,
+  "example": "Window_hldr = Window_Ptr()\n... other commands ..\nWinact Window_hldr\n;this will set the window that was active when you executed the\n;Window_Ptr() function above active again.",
+  "sample_program": "MULTWIND",
+  "program_editor": "User interface -> Windows -> Activate window",
+  "see_also": [
+    "WINDEF",
+    "WINDOW DEFINE"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

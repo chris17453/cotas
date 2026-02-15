@@ -1,0 +1,19 @@
+{
+  "name": "CREC",
+  "signature": "CREC(1)",
+  "platform": null,
+  "purpose": "This function will return the given field as an R type (record or 4 byte integer) field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The field to be converted to R type."
+    }
+  ],
+  "return_type": "R The original field is not changed.",
+  "comments": "An F type field cannot be converted to R; however, all others can. If an L type field is converted, a .T. value will be converted to 1, a .F. to 0.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

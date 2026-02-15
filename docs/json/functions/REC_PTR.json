@@ -1,0 +1,19 @@
+{
+  "name": "REC_PTR",
+  "signature": "REC_PTR(1)",
+  "platform": null,
+  "purpose": "This function returns a pointer (type P) to a record buffer. You can then use that pointer to get values from that record buffer rather than having to use the ADD command.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to use."
+    }
+  ],
+  "return_type": "P",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

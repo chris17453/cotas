@@ -1,0 +1,13 @@
+{
+  "name": "LISTF_CHRS",
+  "signature": "LISTF_CHRS()",
+  "platform": null,
+  "purpose": "This function will return the characters entered by the user when searching for records during a LISTF\ncommand.",
+  "parts": [],
+  "return_type": "A The characters entered by the user using Fast Search.",
+  "comments": "This function can be used at the end of a command to put the characters entered by the user into the\nENTER field if a record wasn't found. For example:\nLISTF bkar.custcode, ' ', bkar.custname . . .\nIF bkar.custcode= ' ' THEN bkar.custcode=LISTF_CHRS()\nRET",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

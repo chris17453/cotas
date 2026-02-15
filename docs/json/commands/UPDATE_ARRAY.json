@@ -1,0 +1,40 @@
+{
+  "name": "UPDATE ARRAY",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to change all or several of the values in an array or group of arrays. It will quickly and efficiently add or subtract values, or insert or delete a specific element number in an array.",
+  "syntax": "UPDTA array_field_list INS/DEL/ADD/SUB/CLR TIMES times VAL value",
+  "parameters": [
+    {
+      "name": "array_field_list",
+      "type": "fn/v1, fn/v2,..., fn/vx",
+      "required": true,
+      "description": "The names of the array fields to be changed. You may set the array element spec to the first element number to be updated, or in the case of INS/DEL, the location to start the insertion/deletion."
+    },
+    {
+      "name": "INS/DEL/ADD/SUB/CLR",
+      "type": "sac",
+      "required": true,
+      "description": "Options include:\nADD - Add a value to an array of values. The type of the value being added needs to be the same as the type of the array field(s). The value specified will added the number of times specified, starting with the array element indicated in array_field_list. For example, if the following were true:\nElement #\n————\n1\n2\n3\n4\n5\n\nFLD1\n——\n250\n300\n100\n125\n190\n\nand the following were executed:\nUPDTA FLD1[2] ADD VAL 10 TIMES 3"
+    },
+    {
+      "name": "TIMES",
+      "type": "n",
+      "required": true,
+      "description": "The number of times to apply the operation."
+    },
+    {
+      "name": "VAL",
+      "type": "n",
+      "required": true,
+      "description": "The value to be added (or used by the operation)."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

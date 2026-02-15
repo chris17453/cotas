@@ -1,0 +1,19 @@
+{
+  "name": "EXP",
+  "signature": "EXP(1)",
+  "platform": null,
+  "purpose": "This function returns the exponential of the field given.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N type field to be used in the calculation."
+    }
+  ],
+  "return_type": "N",
+  "comments": "The function returns ex, with x being the field value given.",
+  "example": "? logtest.sr c",
+  "sample_program": "LOGTEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

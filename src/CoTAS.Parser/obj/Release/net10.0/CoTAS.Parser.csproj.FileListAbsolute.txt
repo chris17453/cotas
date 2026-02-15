@@ -1,0 +1,12 @@
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.GeneratedMSBuildEditorConfig.editorconfig
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/bin/Release/net10.0/CoTAS.Parser.deps.json
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/bin/Release/net10.0/CoTAS.Parser.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/bin/Release/net10.0/CoTAS.Parser.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.AssemblyInfoInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.AssemblyInfo.cs
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.csproj.CoreCompileInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.sourcelink.json
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/refint/CoTAS.Parser.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/CoTAS.Parser.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Parser/obj/Release/net10.0/ref/CoTAS.Parser.dll

@@ -1,0 +1,25 @@
+{
+  "name": "IF/ENDIF",
+  "description": "IF/ENDIF\nThis is a non-loop structure. Each item is only tested once. The general layout of the structure is:\nIF lexpr\nELSE_IF lexpr\nELSE\nENDIF\n\nIF lexpr\nThis is the beginning of the IF/ENDIF structure. The lexpr must be in the form of a comparison expression. For example:\nIF x = 1\nIf the lexpr returns .T., the lines after the IF command and continuing until the next ELSE_IF,\nELSE or ENDIF command will be executed. Otherwise control will be passed to the next\nsubsequent ELSE_IF, ELSE, or ENDIF command.\n\nELSE_IF lexpr\nIf the original IF or a previous ELSE_IF comparison expression returned .F., the program will\nkeep testing each subsequent ELSE_IF command until one is found that returns .T. or until an\nELSE command is found, or the appropriate ENDIF command is found. If the ELSE_IF\nlexpr returns .T., the lines after the command will be executed until the next ELSE_IF, ELSE,\nor ENDIF command.\nThere can be any number of ELSE_IF commands within an IF/ENDIF structure. However,\nonly one will be executed, and that will be the first one for which the lexpr resolves to .T.\nOnce the program lines have been executed, control is transferred to the appropriate ENDIF\ncommand.\n\nELSE\nIf the original IF and the previous ELSE_IF commands all resolved to .F., the program will\nevery execute the lines after this command and until the ENDIF. This is a way of providing\na for actions to be taken if all the other IF tests have failed.\n\nENDIF\nThis is the end of the IF/ENDIF structure. Each IF must have an ENDIF to finish the\nstructure. If the ENDIF is not included an error message will be displayed during compilation.\n\nTAS Professional 5.1\nCopyright  Business Tools, Inc. 1985-1996 All Rights Reserved",
+  "syntax": "IF lexpr\nELSE_IF lexpr\nELSE\nENDIF",
+  "keywords": [
+    {
+      "keyword": "ELSE_IF lexpr",
+      "description": "If the original IF or a previous ELSE_IF comparison expression returned .F., the program will keep testing each subsequent ELSE_IF command until one is found that returns .T. or until an ELSE command is found. If the ELSE_IF lexpr returns .T., the lines after the command will be executed until the next ELSE_IF, ELSE, or ENDIF command."
+    },
+    {
+      "keyword": "ELSE",
+      "description": "If the original IF and the previous ELSE_IF commands all resolved to .F., the program will always execute the lines after this command and until the ENDIF. This is a way of providing for actions to be taken if all the other IF tests have failed."
+    },
+    {
+      "keyword": "ENDIF",
+      "description": "This is the end of the IF/ENDIF structure. Each IF must have an ENDIF to finish the structure. If the ENDIF is not included an error message will be displayed during compilation."
+    },
+    {
+      "keyword": "IF lexpr",
+      "description": "The beginning of the IF/ENDIF structure. The lexpr must be in the form of a comparison expression."
+    }
+  ],
+  "max_nesting": "20 deep",
+  "example": "The following example shows the proper way to use this structure:\nIF X = 100\n...\n...\n&& group 1\n...\nELSE_IF X = 200\n...\n...\n&& group 2\n...\nELSE_IF X = 300\n...\n...\n&& group 3\n...\nELSE\n...\n...\n&& group 4\n...\nENDIF"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "CTOL",
+  "signature": "CTOL(1)",
+  "platform": null,
+  "purpose": "This function converts an A (character string) type field to a L (logical) type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The A type field that is to be converted."
+    }
+  ],
+  "return_type": "L",
+  "comments": null,
+  "example": "? ctol(‘.Y.’)\n.T.",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

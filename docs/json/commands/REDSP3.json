@@ -1,0 +1,22 @@
+{
+  "name": "REDSP3",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred method is to use the REDSP command.",
+  "syntax": "REDSP3 screen_buff_num",
+  "parameters": [
+    {
+      "name": "screen_buff_num",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the screen buffer number. This must resolve to one of the following values:\n1-10 - Redisplay entire screen including active windows\n21-30 - Redisplay characters and color attributes only\n41-50 - Redisplay characters only"
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Redisplay Screen.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "3.0 Commands -> M - Redsp3",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

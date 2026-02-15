@@ -1,0 +1,22 @@
+{
+  "name": "BACKGROUND",
+  "abbreviation": "BKG",
+  "platform": "DOS only",
+  "description": "This command will change the screen output color to the value set as the highlight color in the COLOR command.",
+  "syntax": "BKG\nNo options",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Color Control -> Background",
+  "see_also": [
+    "COLOR",
+    "CC()",
+    "CCE()",
+    "CCF()",
+    "CCH()",
+    "CCR()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

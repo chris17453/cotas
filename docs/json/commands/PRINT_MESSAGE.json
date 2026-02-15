@@ -1,0 +1,70 @@
+{
+  "name": "PRINT MESSAGE",
+  "abbreviation": "PMSG",
+  "platform": null,
+  "description": "The command will allow you to send a message, data, or combination of both to the SCREEN, PRINTER or default device.",
+  "syntax": "PMSG message_list AT starting_column,starting_row WAIT NOCR PTW print_to\nENTER enter_field COLOR color ABS",
+  "parameters": [
+    {
+      "name": "message_list",
+      "type": "f/c/e1, f/c/e2,...",
+      "required": true,
+      "description": "Any combination of constants, expressions, and or field values. These will print in a continuous line. For example:\nPMSG ‘ABC’,’DEF’,X\nassuming X = ‘GHI’, will display:\nABCDEFGHI\nYou may include a maximum of 80 fields, constants, or expressions."
+    },
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The number of the column at which to start the display. The first column on the screen (far left position) is number 1. The default value, if none is provided, is the current column value as set by the last display or enter to the screen. This value can be easily determined through the use of the COL() function."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The row or line number to display at. The first row on the screen (top) is number 1. The default value, if none is provided, is the current row value as set by the last display or enter to the screen. This value can be easily determined through the use of the ROW() function."
+    },
+    {
+      "name": "WAIT",
+      "type": "flag",
+      "required": false,
+      "description": "Optional - If this option is included, it will force the program to wait after completing this command for the user to press any key at the keyboard before continuing with the next command."
+    },
+    {
+      "name": "NOCR",
+      "type": "flag",
+      "required": false,
+      "description": "Optional - Normally, this command will print a CR/LF (0dh/0ah) after the message_list is printed. If this option is included in the command that will not happen. That will force the next line printed to print on the same line until or unless the line is automatically truncated or a print command without this option is executed.\nNOTE: If you use this feature and find that your lines are not being printed properly, make sure they don’t extend off the edge of the screen or printer. If they do, use the WRAP command (for long fields) or split up the lines."
+    },
+    {
+      "name": "PTW",
+      "type": "flag",
+      "required": false,
+      "description": "PTW."
+    },
+    {
+      "name": "print_to",
+      "type": "SPD",
+      "required": false,
+      "description": "Optional - You can use this option to specify where to print. The option ASK (a regular print_to option) is not available. The only options available are S screen, P - printer or D - default."
+    },
+    {
+      "name": "ABS",
+      "type": "flag",
+      "required": false,
+      "description": "Optional - If this option is included in the command the program will ignore any windows currently active and will place the box according to the location calculated from the absolute upper left hand corner of the screen. Normally, the location would be figured from the upper left hand corner of the current window. This only applies when displaying to the screen."
+    },
+    {
+      "name": "ENTER",
+      "type": "section",
+      "required": false,
+      "description": "ENTER enter_field COLOR color ABS"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Reports -> prt Message",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

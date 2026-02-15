@@ -1,0 +1,19 @@
+{
+  "name": "FLTIME",
+  "signature": "FLTIME(1)",
+  "platform": null,
+  "purpose": "This function returns the update time of the file named in the function.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The name of the file to be checked. You must include the path and extension in standard notation."
+    }
+  ],
+  "return_type": "T",
+  "comments": "If the file isn’t found the returned time will be 0.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

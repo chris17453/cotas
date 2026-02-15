@@ -1,0 +1,34 @@
+{
+  "name": "MID",
+  "signature": "MID(1,2,3,4)",
+  "platform": null,
+  "purpose": "This function will return a portion of a specified A type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to be parsed."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The starting character position. The first character of an A type field is position 1."
+    },
+    {
+      "number": "3",
+      "type": "f/c/e",
+      "description": "The number of characters to return. If the value given would go beyond the end of the original field, only those characters up to the end of the field will be passed."
+    },
+    {
+      "number": "4",
+      "type": "f/c/e",
+      "description": "The memory area number. This may be from 1 through 4. If this is set properly, you do not have to specify part 1, the field to be parsed. However, you do still need to put the comma in for place keeping, i.e., =mid(,1,10,3)"
+    }
+  ],
+  "return_type": "A If the receiving field is too short, the remaining characters will be truncated.",
+  "comments": null,
+  "example": "x = ‘ABCDEFG’\n? mid(x,2,2)\nBC\n? mid(x,6,10)\nFG",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

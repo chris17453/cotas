@@ -1,0 +1,28 @@
+{
+  "name": "CHANGE DICTIONARY PATH",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will change the default dictionary path to a different location.",
+  "syntax": "CDPATH location",
+  "parameters": [
+    {
+      "name": "location",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The new path for the dictionary. The value should be terminated with a backslash, e.g.: C:\\\\NEWPRGS\\\\ "
+    },
+    {
+      "name": "location",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The new path for the dictionary. The value should be terminated with a backslash, e.g.: C:\\\\NEWPRGS\\\\ "
+    }
+  ],
+  "comments": "This command will NOT affect the dictionary used during compilation. That value defaults to the path specified in the TAS50.OVL file or to the value set in the command line.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Programming -> chG dict path",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,28 @@
+{
+  "name": "INTERRUPT",
+  "abbreviation": null,
+  "platform": "DOS only",
+  "description": "Use this command to call any DOS, BIOS, etc. interrupt directly from TAS Professional 5.1.",
+  "syntax": "INT int_num REGS register_field",
+  "parameters": [
+    {
+      "name": "int_num",
+      "type": "f/c/e",
+      "required": true,
+      "description": "This is the decimal form of the interrupt number. Make sure you’re using the decimal and not hex representation."
+    },
+    {
+      "name": "register_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The first field in the register list."
+    }
+  ],
+  "comments": "TAS Professional 5.1 can do a lot, but it can’t do everything! Using this command you can do almost all\nthe rest. This is like writing in assembly language without having to worry about all the problems you\ntypically encounter when writing in assembly. You can access many things in Netware, or\nLANTASTIC, etc. without having to write outside programs.\nA word of warning: if you don’t understand everything about the interrupt you’re using, don’t try this.\nYou can easily shut down the system using this feature. It is provided so that skilled programmers can\nmore easily and quickly access features they couldn’t before.",
+  "example": "",
+  "sample_program": "",
+  "program_editor": "",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

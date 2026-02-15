@@ -1,0 +1,15 @@
+{
+  "name": "ENDIF",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is the end point of the process control command IF/ENDIF.",
+  "syntax": "ENDIF",
+  "parameters": [],
+  "comments": "For more information on the different structured programming commands, and the ENDIF command in\nparticular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

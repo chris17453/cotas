@@ -1,0 +1,13 @@
+{
+  "name": "OPEN",
+  "signature": "OPEN()",
+  "platform": null,
+  "purpose": "This function will return the appropriate TAS Professional 5.1 error message number for the last OPEN (or OPENV) command.",
+  "parts": [],
+  "return_type": "I",
+  "comments": "If the file was opened properly this function will return 0. If the file was a Btrieve type file the function\nFLERR() will return the Btrieve error number.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

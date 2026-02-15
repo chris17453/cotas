@@ -1,0 +1,19 @@
+{
+  "name": "AVAIL",
+  "signature": "AVAIL(1)",
+  "platform": null,
+  "purpose": "This function returns the approximate number of elements that could be allocated given a field or group of fields.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The total internal size for the field or fields to be used in the function."
+    }
+  ],
+  "return_type": "I The maximum number of elements that could be allocated for the total size given.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

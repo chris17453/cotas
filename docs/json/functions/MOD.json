@@ -1,0 +1,24 @@
+{
+  "name": "MOD",
+  "signature": "MOD(1,2)",
+  "platform": null,
+  "purpose": "This function returns the division remainder of two specified numbers.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The dividend, where quotient = dividend / divisor. This must be a type N value."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The divisor. This must be a type N value."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

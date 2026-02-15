@@ -1,0 +1,26 @@
+{
+  "name": "ELSE_IF",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will control whether a command, or group of commands will be executed. This is one part of a complete command structure.",
+  "syntax": "ELSE_IF else_if_expression",
+  "parameters": [
+    {
+      "name": "else_if_expression",
+      "type": "lexpr",
+      "required": true,
+      "description": "else_if_expression - lexpr - Required - If the else_if_expression resolves to .T., the command lines between the ELSE_IF command and the next ELSE_IF, ELSE or ENDIF command will be executed."
+    }
+  ],
+  "comments": "For more information on the different structured programming commands, and the ELSE_IF command\nin particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> If -> eLse_if",
+  "see_also": [
+    "IF",
+    "ELSE",
+    "ENDIF"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

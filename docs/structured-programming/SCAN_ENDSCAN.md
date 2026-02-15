@@ -1,0 +1,86 @@
+# SCAN/ENDSCAN
+
+| | |
+|---|---|
+| **Category** | Structured Programming |
+| **Max Nesting** | 20 deep |
+
+## Description
+
+SCAN
+This structure is a specialized type of loop. The SCAN command combines a FIND command with a
+WHILE loop. You can specify the file, key, starting value, scope, and for/while filters for the file
+searches. The first time the SCAN command is executed, the first appropriate record will be read. If
+there is a start value, the record will be found. If there isn’t the program will start with the record in
+memory, find the first record in the file or do whatever else the programmer has specified as determined by the settings of the various options. Then, each time through the loop, the program will find
+
+## Syntax
+
+```tas
+SCAN options
+SEXIT
+SEXIT_IF lexpr
+SLOOP
+SLOOP_IF lexpr
+ENDS
+```
+
+## Keywords
+
+### `filename/@file_number`
+
+Optional - The name or number of the file to be used. If you do not include this option, the program will look for a default search file set in the SEARCH FILE command. If a default hasn’t been previously set, the program will report an error and the command will be skipped. Setting this option will override any default value set in the SEARCH FILE command.
+
+### `keyname/@key_number`
+
+Optional - Set this option to the appropriate value to read the records in the file in a particular order. If you do not include this option, the program will look for a default key specified in the SEARCH FILE command. If a default hasn’t been previously set, the program will report an error and the command will be skipped. Setting this option will override any default value set in the SEARCH FILE command.
+
+### `start_value`
+
+Optional - The value to use as the beginning record. This is similar to doing a FIND before the command. If the index you’re searching on has multiple segments you may list the proper values for each of the segments, separating them with commas. This will allow you to specify the exact type for each of the segments. For example, suppose you’re searching on an index that has two segments: a 5 character alpha and an I type field. Each record you want has the same alpha but the I field will change, and is in order. In the first record the I type field has a value of 0. The following would find the first record for that group, if it exists:
+start ‘ABCDE’,0!
+Notice that we separate the values with a comma. The only requirement is that the values be of the same type (and size) as the segments in the key. In this case we put the I type constant specifier (‘!’) after the 0 to make sure that it is passed as an I type field.
+
+### `scope`
+
+Optional - This option may help determine how many records are scanned. For more information about the scope specifier, please see the general information at the beginning of Chapter 5, Command Reference.
+
+### `scope_value`
+
+Optional - If scope is set to N or F this is the number of records to scan.
+
+### `for_filter_expression`
+
+Optional - You would use this option to restrict the records scanned in this command. If the expression did not resolve to .T., the search would continue until the program reaches the end of file and then will quit.
+
+### `while_filter_expression`
+
+Optional - This option also restricts the records scanned. However, the first time the expression resolves to .F., the program stops reading records and continues to the command immediately after the corresponding ENDS. Thus if the program is reading records in a certain order (by a specific key) and the expression returns .F., then the program knows that all the appropriate records have been read and there is no need to continue reading. For example: Suppose you want to export all the invoice records for a specific customer. The first record for that customer is found in the invoice file either by using the start_value option within this command, or through the FIND command before executing this command. Then the while_filter_expression would be:
+
+INV_CUST_CODE = CUSTOMER_CODE
+This assumes that there is a field called INV_CUST_CODE in the invoice file and a similar field in the customer file called CUSTOMER_CODE. The keyname/@key_number option must be set to the proper value so that the records are read in CUSTOMER_CODE order, or you must have set the SEARCH FILE previous to this command. When the first invoice record for the next customer is read, the program will stop reading records.
+NOTE: If there is no start_value you must set the scope value to Ror N xxx. If this is not done, the program will find the first record in the file and the while_filter_expression option will probably fail the first time. However, if the start_value option is used you can ignore this requirement.
+
+### `SEXIT`
+
+SEXIT(
+This is one of the options to exit the loop. The SEXIT option exits the loop immediately.
+
+### `SEXIT_IF lexpr`
+
+SEXIT_IF lexpr This element of the SCAN/ENDS loop will exit the loop if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression. For example: SEXIT_IF x = 1
+
+### `SLOOP`
+
+SLOOP
+These elements of the SCAN/ENDS loop will allow you to transfer control to the beginning of the loop (SCAN command) without having to reach the ENDS command. The SLOOP option transfers control immediately.
+
+### `SLOOP_IF lexpr`
+
+SLOOP_IF lexpr The SLOOP_IF lexpr will transfer control if the expression resolves to .T.; otherwise nothing will happen. The lexpr must be in the form of a comparison expression. For example:
+SLOOP_IF x = 1
+
+### `ENDS`
+
+ENDS
+This is the final step in the SCAN/ENDS loop. When this command is executed, control is returned to the SCAN command line. Each SCAN must have an ENDS to finish the loop. If the ENDS is not included an error message will be displayed during compilation.

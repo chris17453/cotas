@@ -1,0 +1,24 @@
+{
+  "name": "DMY",
+  "signature": "DMY(1,2)",
+  "platform": null,
+  "purpose": "This function returns a date value in the form of Day Month Year.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Date value to use."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "If set to ‘S’ only the first three characters of the month value are used (e.g., Jan = January) and only the last two digits of the year. If set to ‘L’ (long) then the full month name and the full year are used."
+    }
+  ],
+  "return_type": "A",
+  "comments": null,
+  "example": "? dmy(date(),’s’)\n23 Jun 94\n? dmy(date(),’l’)\n23 June 1994",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

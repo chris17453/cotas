@@ -1,0 +1,22 @@
+{
+  "name": "POP FIELD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Restore a value in a field or group of fields that was saved previously using the PUSHF (Push Field) command.",
+  "syntax": "POPF field_list",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "fn/v1,fn/v2,...,fn/vx",
+      "required": true,
+      "description": "fn/v1,fn/v2,...,fn/vx - Required - The list of fields to restore."
+    }
+  ],
+  "comments": "When you use the PUSHF command the field values are saved on an internal stack. This stack, just like all others used in microcomputers, is a Last In-First Out process. That means that the last value pushed on the stack must be the first value popped out. The TAS Professional 5.1 stack, however, is different from a ‘normal’ stack in that it is intelligent. It knows the sizes of the values being pushed/popped and automatically allows for the differences.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

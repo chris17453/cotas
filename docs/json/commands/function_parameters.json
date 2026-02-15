@@ -1,0 +1,22 @@
+{
+  "name": "function_parameters",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "The values being passed to the UDF. A maximum of 20 fields may be specified. The field names are separated with commas.",
+  "syntax": "function_parameters - fn/v1,fn/v2,...,fn/vx - Optional - The values being passed to the UDF.",
+  "parameters": [
+    {
+      "name": "function_parameters",
+      "type": "fn/v",
+      "required": false,
+      "description": "The values being passed to the UDF. A maximum of 20 fields may be specified. The field names are separated with commas."
+    }
+  ],
+  "comments": "You must include the compiler directive UDF before the first user defined function is referenced in the program. All functions end with the command RET (Return). You may return a single value of any type, including an expression. Fields within the UDF are not automatically local. However, you may use the PUSHF (Push Field)/POPF (Pop Field) commands for saving/restoring all appropriate field values. Through this process the UDF may be made reentrant.\nAny legal TAS Professional 5.1 command may be used in conjunction with a UDF.\nAny UDF can be called as though it were a subroutine instead of a function. For example, a UDF with the name of CALC_EXP can be included as part of an expression:\nTOTAL_EXP=CALC_EXP()\nYou can also GOSUB CALC_EXP. Note that in this case, you don\\'t include the parentheses after the name, and you cannot pass data to the expression. So: you have two different ways to access any function.\nIf you do a GOSUB to a function, there is no built-in method of finding out what the returned value was.\nA function called RETVAL() allows you to do just that and must be the next executed line after the GOSUB.\nSuppose you have a subroutine you want to be able to access two different ways: both as a true UDF and as a regular subroutine. However, you want to check for successful execution by returning .T. or .F.\nStructured as a standard UDF, that\\'s very simple. For example:\nIF DO_SUB() xxxx\nwill do or not do whatever depending on whether DO_SUB() returns .T. or .F. If you instead GOSUB\nDO_SUB and place this:\nIF RETVAL() xxxx\non the next line after the GOSUB, the effect would be the same. RETVAL can be used only for testing\nthe returned value from a UDF. You cannot just RET a value from a standard subroutine; the value will\nbe ignored.\nThis process is used extensively in the Report/2 format report writer. Header blocks are accessed both\nas standard subroutines and as UDFs. The routines are actually called using GOSUBL, since it\\'s easy to\nobtain a line number for the UDF just as though it were a standard line label. You can see this in action\nby creating a report using this utility and generating the source code as appropriate.",
+  "example": "#udf\ndefine x type n\nclrscr\nx = user_func(1,3,’A’)\n?x\nquit\ndefine y,z,a type n\ndefine do type a size 1\nfunc user_func y,z,do\nif do = ‘A’\na = y+z\nelse_if do = ‘S’\na = y-z\nelse_if do = ‘M’\na = y*z\nelse_if do = ‘D’\na = y/z\nendif\nret a\n\nThe above is a complete program. The result would be:\n4.00",
+  "sample_program": "UDFTEST.SRC",
+  "program_editor": "System -> Programming -> udF",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

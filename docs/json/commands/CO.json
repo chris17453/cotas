@@ -1,0 +1,24 @@
+{
+  "name": "CO",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will get or set the three letter extension on files to be used as company codes (e.g., for use with Business Tools' accounting products).",
+  "syntax": "CO co_code GET/SET",
+  "parameters": [
+    {
+      "name": "co_code",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The new three letter extension. If this is a GET operation then this must be a fieldname or variable field (fn/v)."
+    }
+  ],
+  "comments": "Accounting software products from Business Tools can handle multiple companies, and use a three character extension on files to indicate different companies' data. For example, the master inventory file for company #57 might be BKICMSTR.B57.\n\nOnce you set this value it is used as the extension for all TAS files opened unless otherwise overridden.\nYou should have a set of records in FILELOC.B with the proper company code value for each company you have active. For more information about this topic, please refer to Chapter 3, Main Menu Utilities.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [
+    "CO()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

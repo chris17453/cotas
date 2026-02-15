@@ -1,0 +1,19 @@
+{
+  "name": "TTOF",
+  "signature": "TTOF(1)",
+  "platform": null,
+  "purpose": "This function will convert a time (type T) value to a numeric (type N) value.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The time value to use. The original field is left unchanged."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": null,
+  "sample_program": "TIMETEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

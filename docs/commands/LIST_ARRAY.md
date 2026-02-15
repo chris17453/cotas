@@ -1,0 +1,202 @@
+# LIST ARRAY
+
+| | |
+|---|---|
+| **Category** | Command |
+
+## Description
+
+You need to specify a window before this command or the routine will take the entire screen. Also, the command uses 2 columns of that window to provide up and down arrow indicators and the line between the arrows and the list data.
+All traps, other than F1, F2 and F3 are still available to you and can be set before executing this command. The counter_field value is not cleared if one of these traps is executed. You can safely use a
+TRAP to exit from the routine since all housekeeping is done before the TRAP is run. If you wish to return to this routine from a trap routine do a GOSUB in the TRAP with a standard RET.
+If you have included an enter_udf, the following applies:
+1) When returning from the UDF, return .T. if you wish to save the changes made to the array element; return .F. if you don’t.
+2) Do not save the array element yourself in the UDF. The command will save it for you. This
+also applies to inserting a new element.
+3) If you are allowing the user to delete an element and wish to do so, return from the appropriate UDF with a .T.; otherwise return with a .F. and nothing will change. Again, don’t delete
+the element in the UDF; the command will do so for you.
+4) If you have other arrays/files that are also being accessed along with the main array you do
+have to make any appropriate changes to those arrays/files that are necessary. The command
+will only affect the main array/file.
+5) You can also have the program affect other array fields that are not displayed by including
+them in the list. Even if they can’t be seen in the window the program will affect them all
+during an insert, delete, etc.
+You must return to the command from any UDF called with a RET .x. command. If you wish to exit the command upon return, execute the LIST_EXIT command and the program will continue automatically
+to the next command upon return to the LISTM.
+
+USER INTERFACE
+To add a new line the user would move the cursor to the end of the list (END key, DN ARROW, PgDn,
+etc.) and the press the DOWN ARROW key once more so that the cursor is on a blank line. If the user
+presses the RETURN or ENTER key now the program will allow entry of a new set of values. As a
+shortcut, you can also press the ^END key (ctrl+END) to jump immediately to the entry of a new record.
+A line can be inserted at the cursor location by pressing the INS key. For this to happen you must have
+specified an enter_udf and have more elements available than active.
+If the mouse is active, the user will be able to use the mouse to move through the list. Please see the
+detailed explanation under the MOUSE CONTROL in the Introduction of Chapter 3, Main Menu
+Programs.
+
+5-76
+
+## Syntax
+
+```text
+LIST ARRAY
+```
+
+## Parameters
+
+- **`search_udf`** · `udf` · *Optional*
+
+  If this is specified the program will execute this UDF if the user presses the F2 key. You can then reset the counter_field value in the routine and return .T. if you want to reset the display to a specific element, or .F. if you want to leave everything as it is.
+
+- **`chse_expr`** · `expression` · *Optional*
+
+  Through the use of this option you can specify the field to be used as the choice field for this command. The program will use the first character of the field returned by this expression. In general you would use this to point to a different field to be checked when the user enters a character from the keyboard. For example, you may want to choose one of two fields depending on other values. You could set an F or P type pointer to point to field one. Then if the user presses the F3 key, for example, your udf could change the pointer so that it points to field two. In both cases this option would look like:
+  CHSE pointer_fld
+  where pointer_fld is the F or P type pointer. Now, if the user presses a key (to choose a specific line in the list) the program will use the field being pointed to instead of just using the first field in the list.
+
+- **`help_udf`** · `udf` · *Optional*
+
+  This is the UDF to execute if the user presses the F1 key.
+  NOTE: The counter_field value is constantly updated by the program. This way you can use that value in a help message if desired and tailor the response to the particular element number currently being processed.
+
+- **`other_udf`** · `udf` · *Optional*
+
+  This UDF is called if the user presses the F3 key. If you return .T. from this UDF, the program will assume that major changes have been made to the array and will restart the list command. This will allow you to resort the array into a different order and list it again without having to completely exit from the command.
+
+- **`number_of_active_elements`** · `f/c/e` · *Required*
+
+  The number of elements in the array(s) that have live data. Or, the total number of lines in the list.
+
+- **`max_number_of_elements`** · `f/c/e` · *Optional*
+
+  The maximum number of elements allowed in the smallest array. This is necessary only if you are using the enter_udf option.
+  NOTE: This must be at least 1 more than the number_of_active_elements or the program will not execute the enter_udf.
+
+- **`counter_field`** · `fn/v` · *Required*
+
+  This is an I type field that will be used for passing the current array number to your program. If the MENU option is specified then this is the field that will be used for returning the line (element) number when the user presses the RETURN or ENTER key.
+  NOTE: If the user presses the ESC key this field is set to 0.
+
+- **`move_udf`** · `udf` · *Optional*
+
+  This UDF is called each time the user presses any key while in the LISTM command. The counter_field is set to the proper value before this UDF is executed. The program expects no return and this is for your use only.
+
+- **`choice_color`** · `f/c/e` · *Optional*
+
+  The color to use to mark the ‘active’ line. If this isn’t specified the program will use the reverse color value.
+
+- **`search_type`** · `f/c/e` · *Optional*
+
+  If you are using the FAST SEARCHtm process and the value being searched for is not an A type field then you need to specify the field type with this option.
+
+- **`first_line_fields`** · `f/c/e,f/c/e,...,f/c/e` · *Optional*
+
+  Each of these fields contains a title line previously set up with the SETLINE command.
+
+- **`chrs_btwn_fields`** · `f/c/e` · *Optional*
+
+  This character string will be inserted at the end of each field in the list and before the next. If you allow the user to scroll left and right, you should use this option instead of just inserting a constant between each field yourself. By using this option, the program will know that these are additional fields and will not stop at them when shifting to the left or right.
+
+- **`num_of_blank_lines`** · `f/c/e` · *Optional*
+
+  The number of blank lines to keep between the top of the window box and the first line in the list.
+
+- **`enter_text_color`** · `Windows Only - f/c/e` · *Optional*
+
+  When a user enters characters to search for a specific entry the matching characters are generally displayed in an offsetting color. This is the text color for those characters. If this value is not specified the program will use black. For more information on colors in Windows programs please refer to Chapter 11 - Windows Programming.
+
+- **`choice_text_color`** · `Windows Only - f/c/e` · *Optional*
+
+  This is the text color for the choice (or highlight) bar. If this value is not specified the program will use black. For more information on colors in Windows programs please refer to Chapter 11 - Windows Programming.
+
+- **`RND`** · `flag` · *Optional*
+
+  Optional - If this is included in the command the program will know that the elements are not in alphabetic order and will loop through the entire list when searching for a specific value.
+
+- **`NOWAIT`** · `flag` · *Optional*
+
+  Optional - If this is included in the command the program will display the lines but will immediately continue with the next command. This is useful when you want to display the choices available but you want to have the user start with a different process.
+
+- **`MENU`** · `flag` · *Optional*
+
+  Optional - If this is included in the command the program will exit the routine after the user presses the RETURN or ENTER key. The current element number will be in the counter_field. This allows you to use this command as though it were a very large menu. If the user presses the ESC key the counter_field will be set to 0.
+
+- **`NOADD`** · `flag` · *Optional*
+
+  Optional - If this is included in the command the user will not be able to add new values to the array but will still be able to change or delete them. This is effective only if the enter_udf option has been included.
+
+- **`NOSHIFT`** · `flag` · *Optional*
+
+  Optional - Use this option to prevent the user from shifting or scrolling right or left. This might be the case where you are keeping more data than you want the user to access. The default is to allow the user to scroll right and left.
+
+- **`USE_TRAPS`** · `flag` · *Optional*
+
+  Optional - If this option is set the program will look to 'outside' traps that are set to something other than Default or Ignore before checking for operations within this command.
+
+- **`INS_AT_END`** · `flag` · *Optional*
+
+  Optional - If this option is set then the program will treat all insert operations at though the user had gone to the end of the list, moved to a new line, and pressed the ENTER key.
+
+## Comments
+
+You need to specify a window before this command or the routine will take the entire screen. Also, the command uses 2 columns of that window to provide up and down arrow indicators and the line between the arrows and the list data.
+All traps, other than F1, F2 and F3 are still available to you and can be set before executing this command. The counter_field value is not cleared if one of these traps is executed. You can safely use a
+TRAP to exit from the routine since all housekeeping is done before the TRAP is run. If you wish to return to this routine from a trap routine do a GOSUB in the TRAP with a standard RET.
+If you have included an enter_udf, the following applies:
+1) When returning from the UDF, return .T. if you wish to save the changes made to the array element; return .F. if you don’t.
+2) Do not save the array element yourself in the UDF. The command will save it for you. This
+also applies to inserting a new element.
+3) If you are allowing the user to delete an element and wish to do so, return from the appropriate UDF with a .T.; otherwise return with a .F. and nothing will change. Again, don’t delete
+the element in the UDF; the command will do so for you.
+4) If you have other arrays/files that are also being accessed along with the main array you do
+have to make any appropriate changes to those arrays/files that are necessary. The command
+will only affect the main array/file.
+5) You can also have the program affect other array fields that are not displayed by including
+them in the list. Even if they can’t be seen in the window the program will affect them all
+during an insert, delete, etc.
+You must return to the command from any UDF called with a RET .x. command. If you wish to exit the command upon return, execute the LIST_EXIT command and the program will continue automatically
+to the next command upon return to the LISTM.
+
+USER INTERFACE
+To add a new line the user would move the cursor to the end of the list (END key, DN ARROW, PgDn,
+etc.) and the press the DOWN ARROW key once more so that the cursor is on a blank line. If the user
+presses the RETURN or ENTER key now the program will allow entry of a new set of values. As a
+shortcut, you can also press the ^END key (ctrl+END) to jump immediately to the entry of a new record.
+A line can be inserted at the cursor location by pressing the INS key. For this to happen you must have
+specified an enter_udf and have more elements available than active.
+If the mouse is active, the user will be able to use the mouse to move through the list. Please see the
+detailed explanation under the MOUSE CONTROL in the Introduction of Chapter 3, Main Menu
+Programs.
+
+5-76 PROGRAM EDITOR
+
+User interface -> Lists -> Array list
+
+SAMPLE PROGRAM
+
+ARAYLIST
+
+SEE ALSO
+
+LISTF, LIST_EXIT, AUTOINC, NOREDSP, NORSTRT
+
+TAS Professional 5.1
+Copyright ©Business Tools, Inc. 1985-1996 All Rights Reserved
+
+
+## Sample Program
+
+`ARAYLIST`
+
+## Program Editor
+
+`User interface -> Lists -> Array list`
+
+## See Also
+
+- [LISTF](LISTF.md)
+- [LIST_EXIT](LIST_EXIT.md)
+- [AUTOINC](AUTOINC.md)
+- [NOREDSP](NOREDSP.md)
+- [NORSTRT](NORSTRT.md)

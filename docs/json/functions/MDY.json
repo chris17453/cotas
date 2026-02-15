@@ -1,0 +1,24 @@
+{
+  "name": "MDY",
+  "signature": "MDY(1,2)",
+  "platform": null,
+  "purpose": "This function returns a date value in the form of Month, Day, Year.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Date value to use."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "If set to ’S’, only the first three characters of the month value are used (e.g., Jan = January)."
+    }
+  ],
+  "return_type": "A The size of the string returned depends on the month.",
+  "comments": null,
+  "example": "? mdy(date(),’s’)\nJun 23, 94",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

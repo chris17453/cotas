@@ -1,0 +1,22 @@
+{
+  "name": "CLOSE NON-TAS FILE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. The preferred method is to use the OPENV/CLOSE commands.",
+  "syntax": "CLSO delete_yn",
+  "parameters": [
+    {
+      "name": "delete_yn",
+      "type": "char",
+      "required": false,
+      "description": "delete_yn - Optional - If you want to delete the file after closing it then put a Y here."
+    }
+  ],
+  "comments": "This is the equivalent of the TAS Professional 3.0 command Close Non-TAS File. It is the close command that would be used for files opened with the OPNO command.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "3.0 Commands -> A - Clse non-TAS",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

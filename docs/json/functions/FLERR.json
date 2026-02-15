@@ -1,0 +1,19 @@
+{
+  "name": "FLERR",
+  "signature": "FLERR(1)",
+  "platform": null,
+  "purpose": "This function will return the error number for the last access for a particular file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to be checked."
+    }
+  ],
+  "return_type": "I The last file error number.",
+  "comments": "If the last access was successful the FLERR() value returned will be 0. This function works for both TAS and non-TAS files. The error number returned will correspond to standard TAS Professional runtime errors. For more information please refer to Chapter 10, Runtime Errors.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

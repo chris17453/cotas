@@ -1,0 +1,19 @@
+{
+  "name": "LBL_LNE",
+  "signature": "LBL_LNE(1)",
+  "platform": null,
+  "purpose": "This function will return the internal (program) location for a given label number.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The number of the label location to be found."
+    }
+  ],
+  "return_type": "I The internal location of the label.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

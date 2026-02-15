@@ -1,0 +1,24 @@
+{
+  "name": "RENF",
+  "signature": "RENF(1,2)",
+  "platform": null,
+  "purpose": "This function can be used to rename a file. It will return a value indicating whether or not the renaming was successful.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The current file name, must include full path and extension."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The new file name, must include full path and extension."
+    }
+  ],
+  "return_type": "L If the rename operation is successful the function will return .T., if not, .F..",
+  "comments": "COMMENTS You may ‘move’ the file from one path to another by using the appropriate path values.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

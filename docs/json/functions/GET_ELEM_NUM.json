@@ -1,0 +1,13 @@
+{
+  "name": "GET_ELEM_NUM",
+  "signature": "GET_ELEM_NUM()",
+  "platform": "Windows Only",
+  "purpose": "This function returns the element number for the last or current entry field.",
+  "parts": [],
+  "return_type": "R Returns the element number for the last or current entry field.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

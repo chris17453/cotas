@@ -1,0 +1,82 @@
+{
+  "name": "ADD",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will add fields to the internal field list. These fields may be a part of a file that has been opened or just for standalone purposes. This file could have been specified in the original program or could have been opened during the execution of the program. Once the field is added you can access it almost as though it had been named in the original program. An ‘F’ type pointer is returned and by using the field redirector (&) you can access that field for any purpose, including ENTER, =, etc.",
+  "syntax": "ADD field_name TYPE type SIZE display_size DEC decimal_chrs\nARRAY num_array_elements UP up_case PICT picture\nFILE filename/@file_number KEY key_number OFST offset_in_file FPTR field_ptr",
+  "parameters": [
+    {
+      "name": "field_name",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The name of the field being added. Must conform to standard field name requirements."
+    },
+    {
+      "name": "TYPE",
+      "type": "type",
+      "required": true,
+      "description": "TYPE type"
+    },
+    {
+      "name": "SIZE",
+      "type": "display_size",
+      "required": true,
+      "description": "display_size"
+    },
+    {
+      "name": "DEC",
+      "type": "decimal_chrs",
+      "required": true,
+      "description": "decimal_chrs"
+    },
+    {
+      "name": "ARRAY",
+      "type": "num_array_elements",
+      "required": true,
+      "description": "num_array_elements"
+    },
+    {
+      "name": "UP",
+      "type": "up_case",
+      "required": true,
+      "description": "up_case"
+    },
+    {
+      "name": "PICT",
+      "type": "picture",
+      "required": true,
+      "description": "picture"
+    },
+    {
+      "name": "FILE",
+      "type": "filename/@file_number",
+      "required": true,
+      "description": "filename/@file_number"
+    },
+    {
+      "name": "KEY",
+      "type": "key_number",
+      "required": true,
+      "description": "key_number"
+    },
+    {
+      "name": "OFST",
+      "type": "offset_in_file",
+      "required": true,
+      "description": "offset_in_file"
+    },
+    {
+      "name": "FPTR",
+      "type": "field_ptr",
+      "required": true,
+      "description": "field_ptr"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

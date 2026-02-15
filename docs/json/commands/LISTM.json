@@ -1,0 +1,256 @@
+{
+  "name": "LISTM",
+  "abbreviation": null,
+  "platform": null,
+  "description": "(Description omitted in this excerpt)",
+  "syntax": "LISTM field_list ENTER enter_udf SRCH search_udf CHSE chse_expr HELP help_udf ACTV number_of_active_elements MAXA max_number_of_elements CNTR counter_field ON_MOVE move_udf CCOLOR choice_color STYP search_type FLINE first_line_fields CBF chrs_btwn_fields BLNES num_of_blank_lines ETXT_COLOR enter_text_color CTXT_COLOR choice_text_color RND NOWAIT MENU NOADD NOSHIFT USE_TRAPS INS_AT_END USE_COLORS",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The array fields, constants or expressions to be used in the list."
+    },
+    {
+      "name": "ENTER",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - The program will execute the UDF each time the user presses the ENTER key."
+    },
+    {
+      "name": "SRCH",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - Search UDF (first stage of filtering)."
+    },
+    {
+      "name": "search_udf",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - The search UDF used with SRCH."
+    },
+    {
+      "name": "CHSE",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - Chse expression for additional filtering."
+    },
+    {
+      "name": "chse_expr",
+      "type": "expression",
+      "required": false,
+      "description": "Chse expression content."
+    },
+    {
+      "name": "HELP",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - Help UDF."
+    },
+    {
+      "name": "help_udf",
+      "type": "udf",
+      "required": false,
+      "description": "Help UDF."
+    },
+    {
+      "name": "ACTV",
+      "type": "n",
+      "required": false,
+      "description": "Optional - number of active elements."
+    },
+    {
+      "name": "number_of_active_elements",
+      "type": "n",
+      "required": false,
+      "description": "Number of active elements."
+    },
+    {
+      "name": "MAXA",
+      "type": "n",
+      "required": false,
+      "description": "Optional - Maximum active elements."
+    },
+    {
+      "name": "max_number_of_elements",
+      "type": "n",
+      "required": false,
+      "description": "Maximum number of elements."
+    },
+    {
+      "name": "CNTR",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - Counter field."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "Counter field."
+    },
+    {
+      "name": "ON_MOVE",
+      "type": "udf",
+      "required": false,
+      "description": "Optional - UDF for ON_MOVE."
+    },
+    {
+      "name": "move_udf",
+      "type": "udf",
+      "required": false,
+      "description": "Move UDF."
+    },
+    {
+      "name": "CCOLOR",
+      "type": "color",
+      "required": false,
+      "description": "Optional - Color selection."
+    },
+    {
+      "name": "choice_color",
+      "type": "color",
+      "required": false,
+      "description": "Choice color."
+    },
+    {
+      "name": "STYP",
+      "type": "n",
+      "required": false,
+      "description": "Optional - Style type."
+    },
+    {
+      "name": "search_type",
+      "type": "n",
+      "required": false,
+      "description": "Search type."
+    },
+    {
+      "name": "FLINE",
+      "type": "f",
+      "required": false,
+      "description": "First line fields."
+    },
+    {
+      "name": "first_line_fields",
+      "type": "f",
+      "required": false,
+      "description": "First line fields."
+    },
+    {
+      "name": "CBF",
+      "type": "n",
+      "required": false,
+      "description": "Chrs between fields."
+    },
+    {
+      "name": "chrs_btwn_fields",
+      "type": "n",
+      "required": false,
+      "description": "Characters between fields."
+    },
+    {
+      "name": "BLNES",
+      "type": "n",
+      "required": false,
+      "description": "Number of blank lines before/after."
+    },
+    {
+      "name": "num_of_blank_lines",
+      "type": "n",
+      "required": false,
+      "description": "Number of blank lines."
+    },
+    {
+      "name": "ETXT_COLOR",
+      "type": "color",
+      "required": false,
+      "description": "Enter text color."
+    },
+    {
+      "name": "enter_text_color",
+      "type": "color",
+      "required": false,
+      "description": "Enter text color."
+    },
+    {
+      "name": "CTXT_COLOR",
+      "type": "color",
+      "required": false,
+      "description": "Choice text color."
+    },
+    {
+      "name": "choice_text_color",
+      "type": "color",
+      "required": false,
+      "description": "Choice text color."
+    },
+    {
+      "name": "RND",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Randomization flag."
+    },
+    {
+      "name": "NOWAIT",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Do not wait for user input."
+    },
+    {
+      "name": "MENU",
+      "type": "udf",
+      "required": false,
+      "description": "Menu UDF."
+    },
+    {
+      "name": "NOADD",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Do not add."
+    },
+    {
+      "name": "NOSHIFT",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - No shift."
+    },
+    {
+      "name": "USE_TRAPS",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Use traps."
+    },
+    {
+      "name": "INS_AT_END",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Insert at end."
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Use colors."
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Use colors."
+    },
+    {
+      "name": "INS_AT_END",
+      "type": "boolean",
+      "required": false,
+      "description": "Optional - Insert at end."
+    }
+  ],
+  "comments": "",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

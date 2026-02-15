@@ -1,0 +1,1404 @@
+; Decompiled from 
+; Fields: 308, Labels: 51, Instructions: 1118
+
+define BUTTON_LIST type R size 10 array 20
+define BUTTON_CNTR type I size 5
+define COLOR_HNDL type I size 5 reset
+define NORM_HLDR type N size 10 dec 2
+define BKHELP_HNDL type I size 5 reset
+define NORMW type R size 10
+define NORMTEXT type R size 10
+define ENTERW type R size 10
+define ENTERTEXT type R size 10
+define WCW type R size 10
+define WCTEXT type R size 10
+define BCW type R size 10
+define BCTEXT type R size 10
+define MCW type R size 10
+define MCTEXT type R size 10
+define CCW type R size 10
+define CCTEXT type R size 10
+define ECW type R size 10
+define ECTEXT type R size 10
+define ORIGINAL type L size 3
+define ALT1_COPY type L size 3
+define SETUP_RAP type L size 3
+define DO_PASSWORDS type L size 3 reset
+define ALREADY_ENTERED type L size 3 reset
+define LOGON.CHR type A size 1 reset
+define PL_CNTR type B size 2 reset
+define CV_TMP_BUFF type A size 26
+define CNTR type I size 5
+define CURRENT_PRG type A size 22 reset
+define CURRENT_VER type A size 5 reset
+define ADV50_OVL_BUFF type A size 63000
+define ADV50_OVL_SZE type R size 10
+define PRGS_WHR type A size 40
+define MESSAGE type A size 74 array 24
+define MSG_PTR type P size 35
+define DUMMY_L type L size 3
+define LOGON_SCTY type A size 1 array 360 reset
+define LOGON_FLAGS type A size 1 array 20 reset
+define LOGON_DOS_OK type A size 1 reset
+define LOGON_CODE type A size 15 reset
+define LOGON_LEVEL type A size 2
+define BK_FILE_NAME type A size 12
+define USER_PSWD type A size 10
+define USER_PSWD1 type A size 10
+define RUN.PRG type A size 40
+define NON_TAS_PRG type A size 40
+define INIT_FILE_NAME type A size 8
+define INIT_FILE_FD type A size 8
+define INIT_FILE_EXT type A size 3
+define INIT_FILE_LOC type A size 60
+define COMMAND_LINE type A size 40
+define DOS_COMMAND type A size 40
+define CUR.DATE type D size 8
+define CUR.TIME type T size 7
+define CNTR4 type I size 5
+define DATE_CHG type L size 3
+define LKUP_FULL_SCRN type A size 1
+define POS type L size 3
+define BOM type L size 3
+define JOB_COST type L size 3
+define CUR_COMP_NAME type A size 25
+define NEW_CODE type A size 2
+define PATH_NAME type A size 40
+define COMPANY_NAME type A size 1
+define COMPANY_CODE type A size 1
+define TAL type A size 1
+define CMP_CNTR type I size 5
+define CMP_CNTR2 type I size 5
+define CMP_CNTR3 type I size 5
+define FIRST type L size 3
+define SCRN_HLDR type A size 4200
+define SCRN_SPECS type A size 200
+define MENU1_X type I size 5
+define MENU1_Y type I size 5
+define MENU1_WDT type I size 5
+define MENU1_MC type I size 5
+define MENU1_BC type I size 5
+define MENU1_CC type I size 5
+define MENU1_SC type I size 5
+define MENU1_GMC type I size 5
+define MENU1_GBC type I size 5
+define MENU1_GCC type I size 5
+define MENU1_GSC type I size 5
+define MENU1_BOX type A size 1
+define MENU1_SW type A size 1
+define MENU1_TW type A size 1
+define MENU1_TTL type A size 40
+define MENU2_X type I size 5
+define MENU2_Y type I size 5
+define MENU2_WDT type I size 5
+define MENU2_MC type I size 5
+define MENU2_BC type I size 5
+define MENU2_CC type I size 5
+define MENU2_SC type I size 5
+define MENU2_BOX type A size 1
+define MENU2_SW type A size 1
+define MENU2_TW type A size 1
+define MENU2_TTL type A size 40
+define MENU3_X type I size 5
+define MENU3_Y type I size 5
+define MENU3_WDT type I size 5
+define MENU1_APP_NAME type A size 40 array 30
+define MENU1_FULL_NAME type A size 40 array 30
+define MENU1_PRG_NAME type A size 8 array 30
+define MENU1_APP_STRT type I size 5 array 20
+define MENU1_APP_FINI type I size 5 array 20
+define MENU1_CHSE_CHR type A size 1 array 30
+define MENU1_SCTY_LVL type B size 2 array 30
+define MENU1_LINES type B size 2 array 30
+define MENU2_APP_NAME type A size 40 array 360
+define MENU2_PRG_NAME type A size 8 array 360
+define MENU2_SCTY_LVL type B size 2 array 360
+define MENU3_APP_NAME type A size 40 array 20
+define MENU3_PRG_NAME type A size 8 array 20
+define MENU3_SCTY_LVL type B size 2 array 20
+define MENU1_CNTR type I size 5
+define MENU2_CNTR type I size 5
+define MENU3_CNTR type I size 5
+define MENU1_CHOICE type I size 5
+define MENU2_CHOICE type I size 5
+define OVL_PATH type A size 40
+define OVL_HNDL type I size 5
+define INSTALL_TYPE type A size 25
+define KEYBD_SPEED type I size 2
+define ACS_FILE_NAME type A size 8
+define CUSTOM_BOX type B size 3 array 8
+define AM_SPECIFIER type A size 1
+define PM_SPECIFIER type A size 1
+define BINARY_0 type B size 1
+define LOWER_CASE_CHRS type A size 25
+define UPPER_CASE_CHRS type A size 25
+define YN_VALUE type A size 2
+define REUSE_SPC2 type A size 3
+define BELL_TONE type A size 2
+define COMMA_CHR type A size 1
+define DOLLAR_CHR type A size 1
+define DATE_SEPARATOR type A size 1
+define TIME_SEPARATOR type A size 1
+define DATE_TYPE type A size 1
+define TIME_TYPE type A size 1
+define DECIMAL_CHR type A size 1
+define GEN_BUFF_SIZE type I size 5
+define DFLT_DICT_PATH type A size 47
+define NUM_OF_RETRIES type B size 2
+define TIME_BTWN_RETRY type B size 2
+define BELL_DURATION type B size 1
+define BELL_NOTE_FLD type I size 5
+define BELL_BEAT_FLD type I size 5
+define WTP_VALUE type A size 4
+define MOUSE_DELAY type R size 7
+define MOUSE_ON type A size 1
+define NO_REVERSE_FLDS type A size 1
+define REAL_MEM_K type B size 2
+define REUSE_SPACE type A size 29
+define DFLT_PRTR_CTRL type A size 8
+define DFLT_PRTR_NUM type B size 1
+define BTRV_LOAD_STR type A size 47
+define INT_STACK_VALUE type I size 5
+define EXTRA_MEM_SIZE type I size 3
+define MULTI_USER type A size 1
+define YN_EXT type A size 8
+define YN_EXT_END type B size 1
+define CR_LF type A size 2
+define PRG_LIST type A size 60
+define CNTR2 type I size 5
+define CNTR1 type I size 5
+define BUTTON_HLDR type R size 10
+define BUTTONS_OFF type L size 3
+define LOC_HNDL type I size 5
+define FD_HLDR type A size 8
+define BKM_ARY_BUFF type A size 1
+define BKM_REC type A size 100
+define BKM_HNDL type I size 5
+define SCTY_LVL type I size 5
+define TMP_FIELD type A size 15
+define OPT_OK type L size 3
+define CNTR3 type I size 5
+define GET_VAL_HLDR type A size 15
+define BUTTON_SIZE type I size 5
+define BUTTON_START type I size 5
+define TEMP_WIDTH type I size 5
+define EXTRA_SPACE type I size 5
+define I type I size 5
+define BKSYLOG_HNDL type I size 5
+define BKSYUSER_HNDL type I size 5
+define BKSYNOTE_HNDL type I size 5
+define BKSYNLUP_HNDL type I size 5
+define CC_SORT_HOW type A size 1
+define BKSYMSTR_HNDL type I size 5
+define EHL_FLD type A size 15
+define EHL_PRG type A size 8
+define DHL_DUMMY type L size 3
+define IMF_DONE type L size 3
+define ML_ARRAY_PTR type P size 35
+define ML_NUM type I size 5
+define ML_WDT type I size 5
+define ML_CNTR type I size 5
+define ML_PWHR_HLDR type A size 1
+define ML_OLD_FORM type A size 1
+define ML_CENTER_VERT type A size 1
+define ML_COL type I size 5
+define ML_ROW type I size 5
+define ML_MSG_HLDR type A size 1300
+define PRG_HDR_NAME type A size 51
+define PRG_HDR_PRG type A size 16
+define PRG_HDR_LINE type A size 80
+define PRG_HDR_CV type A size 21
+define FNC_LIST_FLD type A size 120
+define FNC_LIST_ESC type A size 40
+define FNC_CLR_COLOR type I size 5
+define FNC_LIST_CNTR type I size 5
+define FNC_LIST_SPACE type I size 5
+define FNC_LIST_HLDR type A size 50
+define FNC_LOC type I size 5
+define DO_HELP_FIELD type A size 15
+define DO_HELP_PRG type A size 8
+define DO_HELP_DESC type A size 30
+define DH_LCTR type I size 5
+define HELP_HLDR type A size 2500
+define HELP_FIRST type L size 3
+define AE_ELE1 type I size 5
+define AE_ELE2 type I size 5
+define AE_NUM_ELE type I size 5
+define EL_ARRAY_PTR type P size 35
+define EL_NUM type I size 5
+define EL_WDT type I size 5
+define EL_CNTR type I size 5
+define EL_CHR type A size 1
+define EL_PWHR_HLDR type A size 1
+define EL_OLD_FORM type A size 1
+define EL_MASK type A size 25
+define EL_COL type I size 5
+define EL_ROW type I size 5
+define EL_ASK type A size 250
+define EL_RESULT type L size 3
+define EL_DEFAULT type L size 3
+define EL_CNTR type I size 5
+
+  gray
+  BUTTON_CNTR = CONST@5(I)
+  if EXPR@11 do
+  if EXPR@62 do
+  openv 'tascolor.ovl' fnum COLOR_HNDL
+  else
+  openv 'tascolor.ovl' fnum COLOR_HNDL
+  findv F fnum COLOR_HNDL
+  else
+  ropen COLOR_HNDL
+  color NORM
+  NORM_HLDR = NORM
+  if EXPR@155 do
+  if EXPR@184 do
+  openv 'bkhelp' cc 'B' fnum BKHELP_HNDL
+  else
+  openv 'bkhelp' cc 'B' fnum BKHELP_HNDL
+  else
+  ropen BKHELP_HNDL
+  udc LABEL_1
+  clrscr
+  color 
+  CC = CC
+  WC = WC
+  MC = MC
+  SC = SC
+  BC = BC
+  GC = GC
+  if EXPR@235 do
+  NORMW = EXPR@264
+  NORMTEXT = EXPR@299
+  ENTERW = EXPR@332
+  ENTERTEXT = EXPR@366
+  WCW = EXPR@400
+  WCTEXT = EXPR@438
+  BCW = EXPR@469
+  BCTEXT = EXPR@501
+  MCW = EXPR@533
+  MCTEXT = EXPR@569
+  CCW = EXPR@603
+  CCTEXT = EXPR@638
+  ECW = EXPR@672
+  ECTEXT = EXPR@707
+  ORIGINAL = .T.
+  ALT1_COPY = .T.
+  ALREADY_ENTERED = .T.
+  SETUP_RAP = .F.
+  if EXPR@739 do
+  PL_CNTR = CONST@765(I)
+  ORIGINAL = .T.
+  ALT1_COPY = .T.
+  ALREADY_ENTERED = .T.
+  openv 'current.ver' fnum CNTR buf CV_TMP_BUFF
+  findv F fnum CNTR
+  CURRENT_PRG = EXPR@792
+  CURRENT_VER = EXPR@821
+  close CNTR
+  if EXPR@851 then
+  CURRENT_PRG = 'No Program'
+  if EXPR@895 then
+  CURRENT_VER = '0.00'
+  ADV50_OVL_SZE = EXPR@963
+  if EXPR@987 do
+  MESSAGE[1] = ' The ADV50.OVL file must be in the same sub-directory as all the programs.'
+  udc LABEL_2
+  quit
+  openv EXPR@1132 fnum CNTR buf ADV50_OVL_BUFF
+  read CNTR ADV50_OVL_SZE
+  close CNTR
+  DUMMY_L = EXPR@1158
+  trap CONST@1179 ?0x49:0
+  if EXPR@1229 do
+  OVL_PATH = EXPR@1271
+  else
+  OVL_PATH = EXPR@1287
+  openv 'TAS50.OVL' fnum OVL_HNDL buf KEYBD_SPEED
+  if EXPR@1319 do
+  msg 'Unable to open TAS50.OVL'
+  findv F fnum OVL_HNDL
+  if EXPR@1382 do
+  msg 'Unable to find info in TAS50.OVL'
+  if EXPR@1480 then
+  MULTI_USER = 'N'
+  if EXPR@1532 do
+  INSTALL_TYPE = 'Single User Version'
+  else
+  INSTALL_TYPE = 'Multi-User Version'
+  close OVL_HNDL
+  caption 'Advanced Accounting 5.1 for Windows'
+  gosub LABEL_3
+  gosub LABEL_4
+LABEL_4:
+  button ?0x49:0[?0x49:4784128]
+  gosub LABEL_6
+  gosub LABEL_7
+  if SETUP_RAP do
+  rap 'bkmenu'
+  rap 'showmem'
+  rap 'exeprg'
+  rap 'runprg'
+  SETUP_RAP = .T.
+  if EXPR@1685 do
+  mount
+  else
+  mount
+  udc LABEL_8
+  ? 23,1,[EXPR@1760, ' (C) 1997-2013 Addsum Business Software, Inc.   801-277-9240   www.addsuminc.com']
+  ? 24,1,[EXPR@1875, ' Portions Copyright 1985-2003 MGM Holdings.  All Rights Reserved.', EXPR@1967, '', EXPR@1989]
+  if EXPR@2035 gosub LABEL_9
+  MENU1_CHOICE = CONST@2051(I)
+  trap '#$%&'()*+,-.0123456789:;<' ?0x47:10
+  trap 'D' ?0x53:11
+LABEL_11:
+  if EXPR@2090 do
+  PRG_LIST = EXPR@2116
+  else
+  PRG_LIST = EXPR@2237
+  udc LABEL_13
+  if EXPR@2439 do
+  MENU2_CHOICE = CONST@2455(I)
+  goto LABEL_14
+  else
+  nmenu CONST@2458 MENU1_X MENU1_Y MENU1_WDT MENU1_CNTR EXPR@2547 MENU1_TW EXPR@2511 MENU1_CHOICE MENU1_BOX
+  if EXPR@2639 goto LABEL_17
+  if EXPR@2674 do
+  ALREADY_ENTERED = .T.
+  redsp SCRN_HLDR
+  gosub LABEL_18
+  FIRST = .T.
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  SETUP_RAP = .T.
+  goto LABEL_5
+  CNTR2 = MENU1_CHOICE
+  goto LABEL_19
+LABEL_13:
+  if EXPR@2756 do
+  udc LABEL_13
+  else
+  udc LABEL_13
+  ? 25,1,CONST@2906
+  gosub LABEL_20
+LABEL_20:
+  trap 'O' ?0x53:11
+  if EXPR@2922 do
+  nmenu CONST@2938 EXPR@2972 5 MENU3_WDT CNTR1 EXPR@3138 'l' EXPR@3072 MENU2_CHOICE 'd'
+  else
+  nmenu CONST@3209 MENU3_X MENU3_Y MENU3_WDT CNTR1 EXPR@3312 MENU2_TW EXPR@3262 MENU2_CHOICE MENU2_BOX
+  if EXPR@3381 do
+  if EXPR@3407 goto LABEL_17
+  goto LABEL_12
+  else
+  if EXPR@3439 do
+  goto LABEL_24
+  else
+  saves 
+  chain EXPR@3525
+  redsp 
+  if ALT1_COPY then
+  quit
+  goto LABEL_21
+LABEL_21:
+  CNTR2 = MENU1_CHOICE
+  if EXPR@3565 do
+  CNTR2 = CONST@3591(I)
+  else
+  inc CNTR2
+  goto LABEL_19
+LABEL_22:
+  CNTR2 = MENU1_CHOICE
+  if EXPR@3597 do
+  CNTR2 = MENU1_CNTR
+  else
+  dec CNTR2
+  goto LABEL_19
+LABEL_9:
+  CNTR = EXPR@3626
+  CNTR2 = EXPR@3658
+LABEL_18:
+  if EXPR@3698 do
+  if EXPR@3807 do
+  button 0
+  ALREADY_ENTERED = .T.
+  redsp SCRN_HLDR
+  gosub LABEL_18
+  FIRST = .T.
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  SETUP_RAP = CONST@3909(L)
+  goto LABEL_5
+  MESSAGE[1] = ' To execute the option chosen press the ESC key'
+  MESSAGE[2] = ' then press the appropriate option key again.'
+  udc LABEL_2
+  CNTR2 = CONST@4050(I)
+  if EXPR@4056 do
+  redsp SCRN_HLDR
+  MENU1_CHOICE = CNTR2
+  trap 'O' ?0x53:11
+  if EXPR@4088 do
+  nmenu CONST@4120 MENU1_X MENU1_Y MENU1_WDT MENU1_CNTR EXPR@4209 MENU1_TW EXPR@4173 MENU1_CHOICE MENU1_BOX
+  MENU2_CHOICE = CONST@4275(I)
+  goto LABEL_14
+  bell
+  goto LABEL_21
+LABEL_23:
+  BUTTONS_OFF = .T.
+  udc LABEL_25
+  trap '\v' ?0x47:26
+  saves 
+  if EXPR@4297 do
+  button 0
+  BUTTONS_OFF = .T.
+  window 12 16 5 58 EXPR@4370 ' Run TAS Program' 'l' 'd' EXPR@4393 EXPR@4426
+  ? 16,14,[EXPR@4463, ' Run TAS Program', EXPR@4500]
+  ? 2,1,CONST@4555
+  upar
+  menu 16 2 RUN.PRG 89
+  if EXPR@4585 do
+  MESSAGE[1] = ' It appears that you are trying to run an accounting program'
+  MESSAGE[2] = ' directly.  Since a security level is active you need to choose'
+  MESSAGE[3] = ' that program from the appropriate menu instead of running it'
+  MESSAGE[4] = ' directly here.'
+  udc LABEL_2
+  else
+  if EXPR@4975 then
+  chain RUN.PRG
+  if ALT1_COPY then
+  quit
+  else
+  if EXPR@5013 do
+  button 0
+  BUTTONS_OFF = .T.
+  window 12 EXPR@5079 EXPR@5129 EXPR@5179 EXPR@5280 'd' EXPR@5257 EXPR@5220
+  ? 15,14,[EXPR@5303, ' Run Non-TAS Program', EXPR@5344]
+  ? 2,1,CONST@5399
+  ? 3,1,CONST@5428
+  upar
+  menu 16 2 NON_TAS_PRG 89
+  if EXPR@5442 do
+  menu 16 3 COMMAND_LINE 89
+  exec NON_TAS_PRG
+  else
+  if EXPR@5479 do
+  window 12 16 5 58 'd'
+  ? 16,14,[EXPR@5524, ' Run DOS Command', EXPR@5561]
+  ? 2,1,CONST@5616
+  upar
+  menu 16 2 DOS_COMMAND 89
+  if EXPR@5630 do
+  exec DOS_COMMAND
+  ? 25,1,CONST@5688
+  else
+  if EXPR@5706 do
+  trap CONST@5746 ?0x53:29
+  button 0
+  BUTTONS_OFF = .T.
+  window 20 16 6 40 EXPR@5806 'd' EXPR@5829 EXPR@5769
+  ? 16,22,[EXPR@5852, ' Initialize Data File', EXPR@5894]
+  ? 5,2,[EXPR@5930, ' F2 - Display File Names', EXPR@5982]
+  ? 2,1,CONST@6047
+  ? 3,1,CONST@6086
+  upar
+  menu 27 2 INIT_FILE_NAME 89
+  if EXPR@6100 do
+  menu 27 3 INIT_FILE_EXT 78
+  trap CONST@6131 ?0x44:0
+  INIT_FILE_FD = EXPR@6137
+  if EXPR@6164 then
+  chain EXPR@6200
+  if ALT1_COPY then
+  quit
+  else
+  if EXPR@6252 do
+  chain EXPR@6302
+  if ALT1_COPY then
+  quit
+  else
+  if EXPR@6340 do
+  msg 'This feature is no longer supported.  You should not be changing your system date/time for any accounting software related function.'
+  else
+  if EXPR@6531 do
+  msg 'Type EXIT when ready to return'
+  exec 'cmd'
+  else
+  if EXPR@6623 do
+  chain EXPR@6674
+  if ALT1_COPY then
+  quit
+  else
+  if EXPR@6712 do
+  chain EXPR@6764
+  else
+  if EXPR@6802 do
+  if EXPR@6867 do
+  chain EXPR@6921
+  else
+  msg 'This option is only available on licensed multi-user systems.'
+  else
+  if EXPR@7029 do
+  button 0
+  BUTTONS_OFF = .F.
+  gosub LABEL_32
+  if EXPR@7074 do
+  udc LABEL_33
+  redsp 
+  button 0
+  ALREADY_ENTERED = .T.
+  gosub LABEL_18
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  SETUP_RAP = .T.
+  goto LABEL_5
+  else
+  if EXPR@7148 do
+  chain EXPR@7200
+  else
+  if EXPR@7234 do
+  if EXPR@7277 do
+  chain EXPR@7306
+  rap 'bkmenu'
+  rap 'showmem'
+  rap 'exeprg'
+  rap 'runprg'
+  else
+  chain EXPR@7379
+  if ALT1_COPY then
+  quit
+LABEL_25:
+  if BUTTONS_OFF then
+  button 0
+  udc LABEL_33
+  redsp 
+  if DATE_CHG do
+  redsp SCRN_HLDR
+  ? 23,1,[EXPR@7419, ' (C) 1997-2013 Addsum Business Software, Inc.   801-277-9240   www.addsuminc.com']
+  ? 24,1,[EXPR@7539, ' Portions Copyright 1985-2003 MGM Holdings.  All Rights Reserved.', EXPR@7636, '', EXPR@7658]
+  saves SCRN_HLDR
+  DATE_CHG = .T.
+  goto LABEL_21
+LABEL_28:
+  openv 'fileloc' cc 'b' fnum LOC_HNDL
+  saves 
+  udc LABEL_25
+  trap CONST@7745 ?0x49:0
+  window 14 14 10 60 WC ' Advanced Accounting Files' 'l' 'd' BC 'r' SC
+  listf [LOC_FILE_NAME, CONST@7797, LOC_COMP_CODE, CONST@7802, LOC_DESCRIPTION] LOC_HNDL 2 EXPR@7850
+  udc LABEL_33
+  redsp 
+  if EXPR@7901 do
+  INIT_FILE_NAME = LOC_FILE_NAME
+  INIT_FILE_EXT = LOC_COMP_CODE
+  close LOC_HNDL
+  ret
+LABEL_30:
+  func LABEL_31
+  openv 'fileloc' cc 'b' fnum LOC_HNDL
+  findv M fnum LOC_HNDL key 2 val INIT_FILE_NAME, INIT_FILE_EXT
+  if EXPR@7979 do
+  msg EXPR@8171
+  ret ''
+  INIT_FILE_LOC = EXPR@8291
+  FD_HLDR = LOC_BUFF_NAME
+  close LOC_HNDL
+  ret FD_HLDR
+LABEL_33:
+  scrn
+  if EXPR@8372 do
+  msg 'BKMENU.ARY does not currently exist.  Cannot proceed.'
+  quit
+  CNTR = EXPR@8485
+  if EXPR@8509 do
+  MESSAGE[1] = ' BKMENU.ARY file not found.'
+  udc LABEL_2
+  quit
+  alloc BKM_ARY_BUFF
+  openv 'bkmenu.ary' fnum BKM_HNDL buf BKM_ARY_BUFF
+  findv F fnum BKM_HNDL
+  close BKM_HNDL
+  MENU1_CNTR = CONST@8651(I)
+  MENU2_CNTR = CONST@8654(I)
+  updta [MENU1_APP_NAME, MENU1_FULL_NAME, MENU1_PRG_NAME, MENU1_APP_STRT, MENU1_APP_FINI, MENU1_CHSE_CHR, MENU1_SCTY_LVL, MENU2_APP_NAME, MENU2_PRG_NAME, MENU2_SCTY_LVL, MENU1_LINES] 0
+  CNTR = CONST@8717(I)
+  while .T.
+  inc CNTR
+  BKM_REC = EXPR@8722
+  trim BKM_REC
+  loop_if EXPR@8758
+  exit_if EXPR@8806
+  if EXPR@8851 do
+  if EXPR@8969 do
+  JOB_COST = .T.
+  gosub LABEL_35
+  endw
+  else
+  JOB_COST = .F.
+  else
+  if EXPR@9044 do
+  if EXPR@9162 do
+  BOM = .T.
+  gosub LABEL_35
+  endw
+  else
+  BOM = .F.
+  else
+  if EXPR@9238 do
+  if EXPR@9356 do
+  POS = .T.
+  gosub LABEL_35
+  endw
+  else
+  POS = .F.
+  else
+  if EXPR@9426 do
+  gosub LABEL_35
+  endw
+  if EXPR@9559 do
+  MENU1_X = EXPR@9625
+  MENU1_Y = EXPR@9675
+  MENU1_WDT = EXPR@9725
+  MENU1_MC = EXPR@9781
+  MENU1_BC = EXPR@9939
+  MENU1_CC = EXPR@10097
+  MENU1_SC = EXPR@10255
+  MENU1_GMC = EXPR@10413
+  MENU1_GBC = EXPR@10571
+  MENU1_GCC = EXPR@10729
+  MENU1_GSC = EXPR@10887
+  MENU1_BOX = EXPR@11039
+  MENU1_SW = EXPR@11078
+  MENU1_TW = EXPR@11117
+  MENU1_TTL = EXPR@11156
+  endw
+  else
+  if EXPR@11204 do
+  MENU2_X = EXPR@11270
+  MENU2_Y = EXPR@11320
+  MENU2_WDT = EXPR@11370
+  MENU2_MC = EXPR@11426
+  MENU2_BC = EXPR@11584
+  MENU2_CC = EXPR@11742
+  MENU2_SC = EXPR@11900
+  MENU2_BOX = EXPR@12052
+  MENU2_SW = EXPR@12091
+  MENU2_TW = EXPR@12130
+  endw
+  if EXPR@12172 do
+  loop_if EXPR@12247
+  SCTY_LVL = EXPR@12334
+  if EXPR@12389 do
+  OPT_OK = .T.
+  gosub LABEL_35
+  endw
+  OPT_OK = CONST@12463(L)
+  inc MENU1_CNTR
+  if EXPR@12468 do
+  msg 'Array limit exceeded in menu1_app_name section.  Contact Addsum for more information.'
+  else
+  else
+  MENU1_APP_NAME[MENU1_CNTR] = EXPR@12601
+  MENU1_PRG_NAME[MENU1_CNTR] = EXPR@12666
+  MENU1_CHSE_CHR[MENU1_CNTR] = EXPR@12715
+  MENU1_SCTY_LVL[MENU1_CNTR] = EXPR@12764
+  MENU1_APP_STRT[MENU1_CNTR] = MENU2_CNTR
+  MENU1_APP_FINI[MENU1_CNTR] = MENU2_CNTR
+  MENU1_LINES[MENU1_CNTR] = CONST@12841(I)
+  while .T.
+  inc CNTR
+  BKM_REC = EXPR@12846
+  trim BKM_REC
+  exit_if EXPR@12884
+  loop_if EXPR@12990
+  loop_if EXPR@13109
+  loop_if EXPR@13218
+  loop_if EXPR@13330
+  MENU2_APP_NAME[MENU2_CNTR] = EXPR@13432
+  MENU2_PRG_NAME[MENU2_CNTR] = EXPR@13497
+  MENU2_SCTY_LVL[MENU2_CNTR] = EXPR@13546
+  MENU1_APP_FINI[MENU1_CNTR] = MENU2_CNTR
+  inc MENU1_LINES[MENU1_CNTR]
+  inc MENU2_CNTR
+  endw
+  endw
+  dealoc BKM_ARY_BUFF
+  ORIGINAL = .F.
+  if EXPR@13618 do
+  CNTR = CONST@13644(I)
+  endw
+  for CNTR =  to MENU1_CNTR
+  CNTR3 = EXPR@13655
+  CNTR2 = EXPR@13711
+  endw
+  MENU1_WDT = CNTR2
+  if EXPR@13740 do
+  if EXPR@13772 do
+  MENU1_X = CONST@13814(I)
+  else
+  MENU1_X = EXPR@13823
+  if EXPR@13868 do
+  if EXPR@13900 do
+  MESSAGE[1] = ' You have specified too many options in the main or Menu1 option list.'
+  MESSAGE[2] = ' Please check the values in BKMENU.ARY and try again.  The maximum is 20.'
+  udc LABEL_2
+  goto LABEL_17
+  MENU1_Y = EXPR@14137
+  scrn
+  ret
+LABEL_34:
+  while .T.
+  inc CNTR
+  BKM_REC = EXPR@14181
+  exit_if EXPR@14213
+  exit_if EXPR@14282
+  endw
+  dec CNTR
+  ret
+LABEL_37:
+  scrn
+  CNTR = EXPR@14323
+  if EXPR@14347 do
+  MESSAGE[1] = ' BKMENUW.ARY file not found.'
+  udc LABEL_2
+  quit
+  alloc BKM_ARY_BUFF
+  openv 'bkmenuw.ary' fnum BKM_HNDL buf BKM_ARY_BUFF
+  findv F fnum BKM_HNDL
+  close BKM_HNDL
+  MENU1_CNTR = CONST@14491(I)
+  MENU2_CNTR = CONST@14494(I)
+  updta [MENU1_APP_NAME, MENU1_FULL_NAME, MENU1_PRG_NAME, MENU1_APP_STRT, MENU1_APP_FINI, MENU1_CHSE_CHR, MENU1_SCTY_LVL, MENU2_APP_NAME, MENU2_PRG_NAME, MENU2_SCTY_LVL, MENU1_LINES] 0
+  CNTR = CONST@14557(I)
+  while .T.
+  inc CNTR
+  BKM_REC = EXPR@14562
+  trim BKM_REC
+  loop_if EXPR@14598
+  exit_if EXPR@14646
+  if EXPR@14691 do
+  if EXPR@14809 do
+  JOB_COST = .T.
+  gosub LABEL_35
+  endw
+  else
+  JOB_COST = .F.
+  else
+  if EXPR@14884 do
+  if EXPR@15002 do
+  BOM = .T.
+  gosub LABEL_35
+  endw
+  else
+  BOM = .F.
+  else
+  if EXPR@15078 do
+  if EXPR@15196 do
+  POS = .T.
+  gosub LABEL_35
+  endw
+  else
+  POS = .F.
+  else
+  if EXPR@15266 do
+  gosub LABEL_35
+  endw
+  if EXPR@15393 do
+  loop_if EXPR@15468
+  SCTY_LVL = EXPR@15555
+  if EXPR@15610 do
+  OPT_OK = .T.
+  gosub LABEL_35
+  endw
+  OPT_OK = CONST@15684(L)
+  inc MENU1_CNTR
+  if EXPR@15689 do
+  msg 'Array limit exceeded in menu1_app_name section.  Contact Addsum for more information.'
+  else
+  else
+  MENU1_APP_NAME[MENU1_CNTR] = EXPR@15817
+  MENU1_PRG_NAME[MENU1_CNTR] = EXPR@15866
+  MENU1_CHSE_CHR[MENU1_CNTR] = EXPR@15915
+  MENU1_SCTY_LVL[MENU1_CNTR] = EXPR@15964
+  MENU1_FULL_NAME[MENU1_CNTR] = EXPR@16024
+  MENU1_APP_STRT[MENU1_CNTR] = MENU2_CNTR
+  MENU1_APP_FINI[MENU1_CNTR] = MENU2_CNTR
+  MENU1_LINES[MENU1_CNTR] = CONST@16090(I)
+  while .T.
+  inc CNTR
+  BKM_REC = EXPR@16095
+  trim BKM_REC
+  exit_if EXPR@16133
+  loop_if EXPR@16239
+  loop_if EXPR@16355
+  loop_if EXPR@16424
+  MENU2_APP_NAME[MENU2_CNTR] = EXPR@16526
+  MENU2_PRG_NAME[MENU2_CNTR] = EXPR@16591
+  MENU2_SCTY_LVL[MENU2_CNTR] = EXPR@16640
+  MENU1_APP_FINI[MENU1_CNTR] = MENU2_CNTR
+  if EXPR@16700 do
+  msg 'Array limit exceeded in menu1_lines.  Contact Addsum for more information.'
+  else
+  else
+  inc MENU1_LINES[MENU1_CNTR]
+  inc MENU2_CNTR
+  endw
+  endw
+  dealoc BKM_ARY_BUFF
+  ORIGINAL = .F.
+  if EXPR@16819 do
+  MESSAGE[1] = ' You have not specified any main menu options'
+  MESSAGE[2] = ' in the BKMENUW.ARY file.  The program will quit now.'
+  udc LABEL_2
+  quit
+  scrn
+  ret
+LABEL_35:
+  func LABEL_36
+  CNTR2 = MACRO@10752
+  ret CNTR2
+LABEL_8:
+  if EXPR@17002 do
+  button 0
+  ret
+  BUTTON_SIZE = EXPR@17031
+  EXTRA_SPACE = EXPR@17060
+  BUTTON_START = CONST@17102(I)
+  I = CONST@17105(I)
+  endw
+  for I =  to MENU1_CNTR
+  TEMP_WIDTH = BUTTON_SIZE
+  if EXPR@17111 do
+  inc TEMP_WIDTH
+  dec EXTRA_SPACE
+  button BUTTON_START 2 2 TEMP_WIDTH MENU1_APP_NAME[I] EXPR@17156 0
+  BUTTON_START = EXPR@17196
+  endw
+  button 2555974
+  ret
+LABEL_16:
+  rscr
+  if ALT1_COPY then
+  quit
+  if EXPR@17222 then
+  quit
+  if EXPR@17243 do
+  MESSAGE[1] = ' You don't have permission to exit to DOS.'
+  MESSAGE[2] = ' The program will return to the Logon Screen.'
+  udc LABEL_2
+  if EXPR@17402 then
+  button 0
+  ALREADY_ENTERED = .T.
+  gosub LABEL_18
+  FIRST = .T.
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  rap 'noalt'
+  SETUP_RAP = CONST@17458(L)
+  goto LABEL_5
+  else
+  MESSAGE[1] = ' Are you sure you want to exit Adv 5.1?'
+  if EXPR@17532 goto LABEL_5
+  clrsf
+  clrscr
+  quit
+LABEL_39:
+  clrscr
+  quit
+LABEL_40:
+  func LABEL_41
+  USER_PSWD1 = USER_PSWD
+  USER_PSWD = ''
+  ret EXPR@17595
+LABEL_17:
+  rscr
+  BK_FILE_NAME = EXPR@17645
+  openv 'BKSYLOG' fnum BKSYLOG_HNDL
+  DO_PASSWORDS = .F.
+  if EXPR@17693 do
+  DO_PASSWORDS = CONST@17730(L)
+  close BKSYLOG_HNDL
+  ret
+LABEL_41:
+  MESSAGE[1] = EXPR@17766
+  MESSAGE[2] = EXPR@17861
+  CNTR2 = CONST@17920(I)
+  if EXPR@17926 do
+  MESSAGE[3] = ' An error check indicates that this file is in user by another station.'
+  CNTR2 = CONST@18043(I)
+  udc LABEL_2
+  if EXPR@18065 do
+  quit
+  else
+  ret
+LABEL_5:
+  if EXPR@18099 do
+  BK_FILE_NAME = EXPR@18170
+  openv 'BKSYLOG' fnum BKSYLOG_HNDL
+  BK_FILE_NAME = EXPR@18227
+  openv 'BKSYUSER' fnum BKSYUSER_HNDL
+  mount
+  udc LABEL_8
+  upar
+  xtrap 0
+  trap '\v' ?0x47:40
+  trap 'l' ?0x53:43
+  trap CONST@18338 ?0x53:44
+LABEL_44:
+  menu BKSY.USER.CODE 'f'[]
+  saves 
+  findv M fnum BKSYUSER_HNDL key 1
+  if EXPR@18411 do
+  msg 'The logon code entered was not found.  Please try again.'
+  redsp 
+  goto LABEL_45
+  redsp 
+  LOGON_CODE = BKSY.USER.CODE
+  LOGON_LEVEL = BKSY.USER.SCTY
+  menu USER_PSWD 'f'[]
+  findv M fnum BKSYLOG_HNDL key 1 val CONST@18621
+  if EXPR@18634 do
+  msg 'The security level record was not found for this user.  Please try again.'
+  goto LABEL_45
+  clrsf
+  clrscr
+  ALREADY_ENTERED = .T.
+  xfer BKSY.LOGON.FLAG to LOGON_SCTY
+  xfer BKSY.LOGON.USE to LOGON_FLAGS
+  LOGON_DOS_OK = BKSY.LOGON.DOS
+  close BKSYLOG_HNDL
+  close BKSYUSER_HNDL
+  ORIGINAL = .T.
+  else
+  if EXPR@18794 do
+  xfer EXPR@18857 to LOGON_SCTY
+  xfer EXPR@18920 to LOGON_FLAGS
+  LOGON_DOS_OK = 'Y'
+  LOGON.CHR = 'z'
+  if ORIGINAL do
+  if EXPR@18988 do
+  cursor ,
+  gosub LABEL_38
+  cursor ,
+  else
+  gosub LABEL_34
+  trap '\v' ?0x49:0
+  ret
+LABEL_3:
+  if EXPR@19055 do
+  if EXPR@19100 then
+  close BKSYNOTE_HNDL
+  openv 'bksynote' fnum BKSYNOTE_HNDL
+  if EXPR@19141 then
+  close BKSYNLUP_HNDL
+  openv 'bksynlup' fnum BKSYNLUP_HNDL
+  ret
+LABEL_19:
+  updta [MENU3_APP_NAME, MENU3_PRG_NAME] 0
+  CNTR1 = CONST@19194(I)
+  CNTR = MENU1_APP_STRT[MENU1_CHOICE]
+  endw
+  for CNTR =  to MENU1_APP_FINI[MENU1_CHOICE]
+  inc CNTR1
+  if EXPR@19228 do
+  msg 'Array limit exceeded in setup_arrays.  Contact Addsum for more information.'
+  else
+  else
+  MENU3_APP_NAME[CNTR1] = MENU2_APP_NAME[CNTR]
+  MENU3_PRG_NAME[CNTR1] = MENU2_PRG_NAME[CNTR]
+  MENU3_SCTY_LVL[CNTR1] = MENU2_SCTY_LVL[CNTR]
+  endw
+  MENU3_X = MENU2_X
+  MENU3_Y = MENU2_Y
+  MENU3_WDT = MENU2_WDT
+  if EXPR@19408 do
+  CNTR2 = CONST@19434(I)
+  CNTR = CONST@19437(I)
+  endw
+  for CNTR =  to CNTR1
+  CNTR3 = EXPR@19448
+  CNTR2 = EXPR@19504
+  endw
+  MENU3_WDT = CNTR2
+  if EXPR@19533 do
+  if EXPR@19565 do
+  MENU3_X = EXPR@19610
+  else
+  MENU3_X = EXPR@19645
+  if EXPR@19706 do
+  if EXPR@19738 do
+  MESSAGE[1] = ' You have specified too many options in the secondary option list.'
+  MESSAGE[2] = ' Please check the values in BKMENU.ARY and try again.  The maximum is 20.'
+  udc LABEL_2
+  goto LABEL_17
+  MENU3_Y = EXPR@19971
+  ret
+LABEL_15:
+  func LABEL_16
+  if EXPR@20013 then
+  ret .T.
+  if FIRST do
+  saves SCRN_HLDR
+  FIRST = .F.
+  else
+  redsp SCRN_HLDR
+  if EXPR@20036 then
+  ret .T.
+  gosub LABEL_20
+  saves SCRN_SPECS
+  window MENU3_X MENU3_Y EXPR@20150 MENU3_WDT MENU1_GMC EXPR@20181 MENU2_TW MENU2_BOX MENU1_GBC MENU2_SW MENU1_GSC
+  CNTR3 = CONST@20221(I)
+  endw
+  for CNTR3 =  to CNTR1
+  ? CNTR3,1,'Y\0O'
+  endw
+  redsp SCRN_SPECS
+  ret .T.
+LABEL_31:
+  CC_SORT_HOW = 'C'
+  CMP_CNTR3 = CONST@20255(I)
+  udc LABEL_25
+  trap '\f' ?0x47:46
+  saves 
+  openv 'fileloc' cc 'b' fnum LOC_HNDL
+  if EXPR@20301 do
+  msg EXPR@20371
+  udc LABEL_33
+  redsp 
+  ret
+  CMP_CNTR = CONST@20403(I)
+  scan EXPR@20440 78
+  inc CMP_CNTR
+  if EXPR@20469 do
+  MESSAGE[1] = ' There is only one company in the location file.'
+  udc LABEL_2
+  goto LABEL_46
+  alloc COMPANY_NAME
+  alloc COMPANY_CODE
+  window 20 12 3 40 WC 's' BC 'r' SC
+  ? 1,1,CONST@20690
+  CMP_CNTR2 = CONST@20700(I)
+  scan EXPR@20737 78
+  openv 'bksymstr' cc LOC_COMP_CODE fnum BKSYMSTR_HNDL
+  if EXPR@20778 do
+  inc CMP_CNTR2
+  findv F fnum BKSYMSTR_HNDL key 45154559
+  COMPANY_NAME[CMP_CNTR2] = BKSY.COMP.NAME
+  COMPANY_CODE[CMP_CNTR2] = EXPR@20836
+  ? 1,16,'F`-'
+  close BKSYMSTR_HNDL
+  trap '\t' ?0x47:47
+  udc LABEL_13
+  window 20 12 EXPR@21025 40 WC ' Choose Company' 'l' 'd' BC 'r' SC
+LABEL_47:
+  if EXPR@21096 do
+  CMP_CNTR3 = CONST@21122(I)
+  sorta COMPANY_CODE[CMP_CNTR3] CMP_CNTR2 [COMPANY_NAME[CMP_CNTR3], COMPANY_CODE[CMP_CNTR3]] CMP_CNTR3
+  CMP_CNTR3 = CONST@21182(I)
+  listm [EXPR@21195, COMPANY_CODE, CONST@21232, COMPANY_NAME] CMP_CNTR3 CMP_CNTR2
+  else
+  CMP_CNTR3 = CONST@21302(I)
+  sorta COMPANY_NAME[CMP_CNTR3] CMP_CNTR2 [COMPANY_NAME[CMP_CNTR3], COMPANY_CODE[CMP_CNTR3]] CMP_CNTR3
+  CMP_CNTR3 = CONST@21362(I)
+  listm [EXPR@21375, COMPANY_NAME, CONST@21412, COMPANY_CODE] CMP_CNTR3 CMP_CNTR2
+LABEL_45:
+  close LOC_HNDL
+  udc LABEL_33
+  redsp 
+  if EXPR@21485 do
+  if EXPR@21514 then
+  NEW_CODE = COMPANY_CODE[CMP_CNTR3]
+  dealoc COMPANY_NAME
+  dealoc COMPANY_CODE
+  if EXPR@21557 do
+  co NEW_CODE
+  gosub LABEL_3
+  gosub LABEL_4
+  ret
+LABEL_6:
+  openv 'fileloc' cc 'b' fnum LOC_HNDL
+  if EXPR@21620 do
+  msg EXPR@21690
+  ret
+  findv M fnum LOC_HNDL key 2 val 'BKSYMSTR', EXPR@21739
+  PATH_NAME = LOC_LOCATION
+  close LOC_HNDL
+  ret
+LABEL_48:
+  trap '\t' ?0x47:47
+  udc LABEL_13
+  CC_SORT_HOW = 'C'
+  goto LABEL_48
+LABEL_46:
+  trap '\t' ?0x47:49
+  udc LABEL_13
+  CC_SORT_HOW = 'N'
+  goto LABEL_48
+LABEL_2:
+  openv 'bksymstr' fnum BKSYMSTR_HNDL
+  findv F fnum BKSYMSTR_HNDL key 45154559
+  CUR_COMP_NAME = BKSY.COMP.NAME
+  PRGS_WHR = EXPR@21953
+  LKUP_FULL_SCRN = BKSY.FULL.SCRN
+  TAL = BKSY.TAL
+  close BKSYMSTR_HNDL
+  gosub LABEL_18
+  FIRST = .T.
+  ret
+LABEL_42:
+  EHL_FLD = EXPR@21981
+  saves 
+  chain 'bkhelp'
+  redsp 
+  ret
+LABEL_43:
+  EHL_FLD = EXPR@22022
+  DHL_DUMMY = EXPR@22042
+  ret
+LABEL_10:
+  saves 
+  chain EXPR@22091
+  redsp 
+  ret
+LABEL_24:
+  cmd LABEL_25
+  pusht 'k'
+  xtrap
+  popt 'k'
+  trap 'l' ?0x53:43
+  trap CONST@22135 ?0x53:44
+  trap 'D' ?0x53:11
+  if EXPR@22147 then
+  udc LABEL_50
+  ret
+LABEL_32:
+  cmd LABEL_33
+  if EXPR@22163 then
+  udc LABEL?51
+  xtrap
+  ret
+LABEL_49:
+  cmd LABEL_50
+  if EXPR@22182 do
+  MESSAGE[1] = 'Too many XBTN_SAVEs without any XBTN_RSTRs'
+  udc LABEL_2
+  ret
+  inc BUTTON_CNTR
+  button 5702233
+  ret
+LABEL_50:
+  cmd LABEL?51
+  if EXPR@22287 do
+  MESSAGE[1] = 'Too many XBTN_RSTRs without equal XBTN_SAVEs'
+  udc LABEL_2
+  ret
+  button 0
+  dec BUTTON_CNTR
+  ret
+LABEL_27:
+  func LABEL_28
+  if EXPR@22391 then
+  ret NORMW
+  ret BC
+LABEL_26:
+  func LABEL_27
+  if EXPR@22407 then
+  ret NORMW
+  ret WC
+  quit
+LABEL_0:
+  cmd LABEL_1
+  if IMF_DONE then
+  ret
+  MSG_PTR = MESSAGE[CONST@24836(I)]
+  IMF_DONE = .T.
+  ret
+LABEL_1:
+  cmd LABEL_2
+  if EXPR@24886 then
+  ret
+  udc LABEL_25
+  if EXPR@24949 do
+  prtall
+  ML_MSG_HLDR = MACROARY@25011
+  if EXPR@25028 do
+  ML_CNTR = CONST@25054(I)
+  endw
+  for ML_CNTR =  to ML_NUM
+  ML_MSG_HLDR = EXPR@25063
+  endw
+  msg ML_MSG_HLDR
+  udc LABEL_33
+  ret
+  ML_PWHR_HLDR = EXPR@25165
+  pset 's'
+  ML_WDT = 0
+  ML_CNTR = 1
+  endw
+  for ML_CNTR =  to ML_NUM
+  if EXPR@25197 then
+  ML_WDT = EXPR@25258
+  endw
+  saves 
+  ML_COL = EXPR@25307
+  if EXPR@25368 then
+  ML_COL = 1
+  if EXPR@25424 do
+  window ML_COL EXPR@25486 EXPR@25556 EXPR@25594 ERR 's' EXPR@25635
+  else
+  window ML_COL EXPR@25696 EXPR@25750 EXPR@25788 ERR 's' EXPR@25829
+  ML_CNTR = 1
+  endw
+  for ML_CNTR =  to ML_NUM
+  ? ML_CNTR,1,CONST@25914
+  endw
+  ? ,,'CDe'
+  redsp 
+  pset ML_PWHR_HLDR
+  udc LABEL_33
+  ML_CENTER_VERT = ''
+  ret
+LABEL_7:
+  cmd LABEL_8
+  PRG_HDR_LINE = EXPR@25962
+  mid PRG_HDR_LINE = 28,,CONST@25988
+  mid PRG_HDR_LINE = 29,,EXPR@25998
+  ? 1,1,'F 1'
+  ret
+LABEL_12:
+  cmd LABEL_13
+  if EXPR@26057 then
+  FNC_CLR_COLOR = NORM_HLDR
+  if EXPR@26083 do
+  scrn
+  button ?0x49:0[?0x49:4784128]
+  FNC_LIST_CNTR = 1
+  FNC_LOC = 1
+  while .T.
+  FNC_LIST_HLDR = EXPR@26107
+  exit_if EXPR@26147
+  button FNC_LOC 25 2 EXPR@26190 FNC_LIST_HLDR EXPR@26240 0
+  FNC_LOC = EXPR@26284
+  inc FNC_LIST_CNTR
+  endw
+  if EXPR@26346 do
+  FNC_LOC = EXPR@26383
+  button FNC_LOC 25 2 EXPR@26458 FNC_LIST_ESC 'esc' 0
+  scrn
+  ret
+  clrlne 25,1
+  FNC_LIST_CNTR = 1
+  ? 25,1,CONST@26514
+  while .T.
+  FNC_LIST_HLDR = EXPR@26526
+  exit_if EXPR@26566
+  ? ,,[EXPR@26592, EXPR@26620, EXPR@26646]
+  ? ,,'C:h'
+  inc FNC_LIST_CNTR
+  endw
+  if EXPR@26701 do
+  ? 25,EXPR@26834,[EXPR@26727, EXPR@26755, EXPR@26781]
+  ret
+LABEL_14:
+  func LABEL_15
+  DO_HELP_FIELD = EXPR@26896
+  DO_HELP_PRG = EXPR@26917
+  udc LABEL_25
+  if EXPR@26941 do
+  openv 'bkhelp' cc 'B' fnum BKHELP_HNDL
+  if EXPR@26985 do
+  msg 'There is no help file.'
+  udc LABEL_33
+  ret .F.
+  findv M fnum BKHELP_HNDL key 1 val DO_HELP_FIELD, DO_HELP_PRG, 0
+  if EXPR@27079 do
+  msg 'There is no help available for this option.'
+  udc LABEL_33
+  ret .T.
+  if EXPR@27173 do
+  HELP_FIRST = .F.
+  prtall
+  scan EXPR@27275 EXPR@27214 78
+  if HELP_FIRST do
+  HELP_HLDR = BKHELP_HELP_LNE
+  HELP_FIRST = .F.
+  else
+  HELP_HLDR = EXPR@27309
+  prtall
+  msg HELP_HLDR
+  udc LABEL_33
+  ret .F.
+  DH_LCTR = EXPR@27402
+  if EXPR@27453 then
+  DO_HELP_DESC = EXPR@27482
+  saves 
+  window 6 EXPR@27575 EXPR@27700 66 ERR EXPR@27843 'l' 's' ERR 'r' SC
+  listf CONST@27890 BKHELP_HNDL 1 EXPR@27961 EXPR@27900 [DO_HELP_FIELD, DO_HELP_PRG, 0]
+  redsp 
+  udc LABEL_33
+  ret .T.
+LABEL_29:
+  func LABEL_30
+  ret EXPR@28012
+LABEL_36:
+  func LABEL_37
+  ret EXPR@28056
+LABEL_38:
+  func LABEL_39
+  if EXPR@28147 then
+  ret ''
+  if EXPR@28181 then
+  EL_MASK = 'YN'
+  EL_MASK = EXPR@28213
+  if EXPR@28259 do
+  EL_CNTR = 1
+  endw
+  for EL_CNTR =  to EL_NUM
+  if EXPR@28436 do
+  EL_ASK = MACROARY@28462
+  else
+  EL_ASK = EXPR@28481
+  endw
+  EL_DEFAULT = EXPR@28542
+  ask EL_ASK EL_DEFAULT
+  EL_CHR = 'Y'
+  if EXPR@28584 then
+  EL_CHR = 'N'
+  ret EL_CHR
+  udc LABEL_25
+  EL_WDT = 0
+  EL_PWHR_HLDR = EXPR@28624
+  pset 's'
+  EL_CNTR = 1
+  endw
+  for EL_CNTR =  to EL_NUM
+  if EXPR@28653 then
+  EL_WDT = EXPR@28714
+  endw
+  saves 
+  EL_COL = EXPR@28763
+  if EXPR@28824 then
+  EL_COL = 1
+  EL_ROW = EXPR@28881
+  window EL_COL EL_ROW EXPR@28935 EXPR@28973 ERR 's' EXPR@29014
+  EL_CNTR = 1
+  endw
+  for EL_CNTR =  to EL_NUM
+  ? EL_CNTR,2,CONST@29099
+  endw
+  EL_CHR = EXPR@29109
+  EL_COL = EXPR@29133
+  EL_ROW = EXPR@29165
+  upar
+  menu EL_COL EL_ROW EL_CHR EL_MASK 89
+  redsp 
+  pset EL_PWHR_HLDR
+  udc LABEL_33
+  ret EL_CHR
+  ; UNK_65024 (spec=0 bytes)

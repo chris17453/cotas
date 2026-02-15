@@ -1,0 +1,19 @@
+{
+  "name": "RETURN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "A value can only be returned in the case of a UDF. In the case of a UDC or a return from a subroutine called through the GOSUB command the RET should not be followed by a value. In any case it will have no effect.",
+  "syntax": "",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "prg Control -> Goto/gosub -> Ret",
+  "see_also": [
+    "GOSUB",
+    "UDC",
+    "UDF"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

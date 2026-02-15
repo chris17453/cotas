@@ -1,0 +1,13 @@
+{
+  "name": "PSTAT",
+  "signature": "PSTAT()",
+  "platform": "DOS Only",
+  "purpose": "This function returns the printer status, indicating whether or not it is ready for printing.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

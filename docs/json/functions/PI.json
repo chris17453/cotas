@@ -1,0 +1,13 @@
+{
+  "name": "PI",
+  "signature": "PI()",
+  "platform": null,
+  "purpose": "This function returns the value of the constant PI.",
+  "parts": [],
+  "return_type": "N The constant is maintained internally up to 8 decimal characters.",
+  "comments": null,
+  "example": "? pi()\n3.14159265",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

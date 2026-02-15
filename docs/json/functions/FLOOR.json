@@ -1,0 +1,19 @@
+{
+  "name": "FLOOR",
+  "signature": "FLOOR(1)",
+  "platform": null,
+  "purpose": "This function returns a whole number that is the closest value equal to or less than the field value specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Must be N type field."
+    }
+  ],
+  "return_type": "N",
+  "comments": "? floor(-2.935) -3.000\n? floor(2.935) 2.000\n\n&& Don’t forget, -3 is < -2.935",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

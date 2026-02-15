@@ -1,0 +1,19 @@
+{
+  "name": "LOW",
+  "signature": "LOW(1)",
+  "platform": null,
+  "purpose": "This function returns the A type field specified in lower case characters.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The value to use. The original value is left unchanged."
+    }
+  ],
+  "return_type": "A If the receiving field is too short, the remaining characters will be truncated.",
+  "comments": null,
+  "example": "? low(‘ABcdEFG’)\nabcdefg",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

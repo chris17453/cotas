@@ -1,5 +1,0 @@
-# IFNA()
-
-## Summary
-Function Reference
-

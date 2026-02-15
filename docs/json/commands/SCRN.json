@@ -1,0 +1,22 @@
+{
+  "name": "SCRN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will allow you to lock, unlock, refresh, and reset the screen.",
+  "syntax": "SCRN what_to_do",
+  "parameters": [
+    {
+      "name": "what_to_do",
+      "type": "f/c/e",
+      "required": true,
+      "description": "L - lock the screen; all display to the screen will be stopped until the unlock or refresh option is run. U - unlock the screen; DO NOT refresh any screen fields currently displayed. R - refresh any fields currently displayed on the screen. S reset the screen, and eliminate the effect of the current window."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Screen control -> screen L/u/r/s",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

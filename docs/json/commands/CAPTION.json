@@ -1,0 +1,22 @@
+{
+  "name": "CAPTION",
+  "abbreviation": null,
+  "platform": "Windows only",
+  "description": "This will put a text line in the caption bar of the window created for your application. After this command executes the text will stay the same until the next time the command is executed.",
+  "syntax": "CAPTION caption_text",
+  "parameters": [
+    {
+      "name": "caption_text",
+      "type": "f/c/e",
+      "required": true,
+      "description": "caption_text - f/c/e - Required - The text you want to appear in the caption bar at the top of the window."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Win Commands -> Caption",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

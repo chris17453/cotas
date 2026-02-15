@@ -1,0 +1,19 @@
+{
+  "name": "SIN",
+  "signature": "SIN(1)",
+  "platform": null,
+  "purpose": "This function returns the sine of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The value returned is in radians.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

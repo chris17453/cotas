@@ -1,0 +1,19 @@
+{
+  "name": "SIGN",
+  "signature": "SIGN(1)",
+  "platform": null,
+  "purpose": "This function will return an N type value indicating the sign of the field value specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "N type field to check."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

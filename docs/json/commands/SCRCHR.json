@@ -1,0 +1,40 @@
+{
+  "name": "SCRCHR",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "Use this command to get or put a single display character or attribute on the screen.",
+  "syntax": "SCRCHR AT column,row DISP display_field ATRB attribute_field GET/SET",
+  "parameters": [
+    {
+      "name": "column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The column position on the screen for the character. The upper left corner of the active window (or the full screen) is column 1, row 1."
+    },
+    {
+      "name": "row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The row position on the screen for the character. The upper left corner of the active window (or the full screen) is column 1, row 1."
+    },
+    {
+      "name": "display_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field that either holds the character to be displayed (set) or will receive the character currently on the screen (get). This must be a 1 character alpha (type A) field."
+    },
+    {
+      "name": "attribute_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field that either holds the color attribute to be displayed (set) or will receive the color attribute currently on the screen (get). This must be a 1 character alpha (type A) field."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,5 +1,0 @@
-# CTOT()
-
-## Summary
-Function Reference
-

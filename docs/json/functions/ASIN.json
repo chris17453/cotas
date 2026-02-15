@@ -1,0 +1,19 @@
+{
+  "name": "ASIN",
+  "signature": "ASIN(1)",
+  "platform": null,
+  "purpose": "This function returns the arcsine of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The result will be from -PI/2 to PI/2 in radians.",
+  "comments": "The value specified must be between -1 and 1.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

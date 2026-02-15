@@ -1,0 +1,24 @@
+{
+  "name": "GET_REC",
+  "signature": "GET_REC(1,2)",
+  "platform": null,
+  "purpose": "This function will return an individual record from a buffer that has been used to store an entire file.\nBefore using this function you should have read a non-TAS type file (general text or X type) into a field\nin your program that you are using as a temporary buffer.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "fn/v",
+      "description": "The name of the field you are using as a buffer."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The record number you want to retrieve. The first record in the buffer is 1."
+    }
+  ],
+  "return_type": "A The size of this field depends on the number of characters in the record. The termination\ncharacters(s) at the end of the record is not returned as part of the record.",
+  "comments": "Each record in the buffer must be terminated by a carriage return (CR) or a carriage return/line feed\npair (CR/LF) or a binary 0. If you attempt to get more records than are in the file, the function will\nreturn a blank field with a length of 0. This also applies if there are no characters in the record to\nreturn.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

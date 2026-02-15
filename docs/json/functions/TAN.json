@@ -1,0 +1,19 @@
+{
+  "name": "TAN",
+  "signature": "TAN(1)",
+  "platform": null,
+  "purpose": "This function returns the tangent of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The return value is in radians.",
+  "comments": null,
+  "example": "? tan(1.539)\n31.43957419",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

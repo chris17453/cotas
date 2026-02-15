@@ -1,0 +1,22 @@
+{
+  "name": "QUIT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Provide a process for leaving a program.",
+  "syntax": "QUIT quit_level",
+  "parameters": [
+    {
+      "name": "quit_level",
+      "type": "f/c/e",
+      "required": false,
+      "description": "This is the program level to quit to. If this is not provided the program will quit to the previous program. If there is no previous program you will be returned to DOS.\n\nQuit_level 0 will return you to DOS, 1 will return you to the first program, 2 to the second, etc. Through the use of this option you can force the program to exit all the way to DOS or to a specific program. All appropriate action at each level is taken so that all files that need to be closed are closed, and all fields that need to be deallocated are removed from memory."
+    }
+  ],
+  "comments": "TAS Professional 5.1 will automatically exit a program upon reaching the end of that program (the last executable line). (This doesn’t apply if the last executable line is a RET command in a subroutine or UDF/UDC.) For example, the following program will exit automatically after the print command:\nclrscr\n? ‘this is a test’\nHowever, if you want to control where the program exits then the QUIT command must be used. For example, that same program with a subroutine would require the QUIT command:\nclrscr\ngosub prt_test\nquit\nprt_test:\n? ‘this is a test’\nret\nIf there was a previous program (i.e., the program being quit was chained to), that previous program will continue executing with the next line.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> Quit",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,19 @@
+{
+  "name": "IFNA",
+  "signature": "IFNA(1)",
+  "platform": null,
+  "purpose": "This function will check if there is an active record for a specific file.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The file_number of the file to be checked."
+    }
+  ],
+  "return_type": "L If a record IS NOT ACTIVE for the file, the function will return .T., otherwise .F.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

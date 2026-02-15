@@ -1,0 +1,58 @@
+{
+  "name": "OPEN",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command will set up a file so that you may access data from it or write records to it from within your program. Use of this command forces you to refer to the file in every other command through the use of the file name as a special alpha constant (sac). However, this command is included to provide upward compatibility to TAS Professional 3.0 programs.",
+  "syntax": "OPEN filename EXT extension LOCK lock_type ERR error_label OWNER owner PATH path FD file_descriptor",
+  "parameters": [
+    {
+      "name": "filename",
+      "type": "sac",
+      "required": true,
+      "description": "A special alpha constant with a maximum of 8 characters that is the actual file name. No extension or path is given as part of the filename. For example: BKARCUST"
+    },
+    {
+      "name": "EXT",
+      "type": "extension",
+      "required": true,
+      "description": "extension"
+    },
+    {
+      "name": "LOCK",
+      "type": "lock_type",
+      "required": true,
+      "description": "lock_type"
+    },
+    {
+      "name": "ERR",
+      "type": "error_label",
+      "required": true,
+      "description": "error_label"
+    },
+    {
+      "name": "OWNER",
+      "type": "owner",
+      "required": true,
+      "description": "owner"
+    },
+    {
+      "name": "PATH",
+      "type": "path",
+      "required": true,
+      "description": "path"
+    },
+    {
+      "name": "FD",
+      "type": "file_descriptor",
+      "required": false,
+      "description": "file_descriptor"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

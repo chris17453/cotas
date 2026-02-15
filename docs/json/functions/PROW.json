@@ -1,0 +1,13 @@
+{
+  "name": "PROW",
+  "signature": "PROW()",
+  "platform": null,
+  "purpose": "This function will return the current row from the printer.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": "top_of_form print_to printer\n? prow()\n1",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

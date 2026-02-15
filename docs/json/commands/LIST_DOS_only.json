@@ -1,0 +1,112 @@
+{
+  "name": "LIST (DOS only)",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "This command will list a file, or a group of array fields, to the screen, printer, or a disk file.",
+  "syntax": "LIST field_list TTL title_list MEM NUM number CNTR counter_field\nFILE filename/@file_number KEY keyname/@key_number\nSTART start_value SCOPE scope scope_value FOR for_filter_expression\nWHILE while_filter_expression PTO print_to PFN print_to_file NOFF",
+  "parameters": [
+    {
+      "name": "field_list",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Same as LIST: This is the list of fields to be used in this command."
+    },
+    {
+      "name": "title_list",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Same as LIST: Optional - This list will be displayed after any automatic top of form and as the first line printed by the command."
+    },
+    {
+      "name": "MEM",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - If you are listing from an array in memory instead of a standard file include this option in the command."
+    },
+    {
+      "name": "number",
+      "type": "fn/v",
+      "required": false,
+      "description": "If MEM is set, then this is Required - If MEM is specified then this the number of elements in the array to be listed."
+    },
+    {
+      "name": "CNTR",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This is an I type field that will be used for passing the number of records read, and the current array number, to your program."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This is an I type field that will be used for passing the number of records read, and the current array number, to your program."
+    },
+    {
+      "name": "FILE",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The name or number of the file to be used."
+    },
+    {
+      "name": "filename/@file_number",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The name or number of the file to be used."
+    },
+    {
+      "name": "KEY",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - Set this to the appropriate value to list the records in the file in the correct order."
+    },
+    {
+      "name": "keyname/@key_number",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - Set this to the appropriate value to list the records in the file in the correct order."
+    },
+    {
+      "name": "START",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - The value to use as the beginning record."
+    },
+    {
+      "name": "scope",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - This option may help determine how many records are listed."
+    },
+    {
+      "name": "scope_value",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - If scope is set to N or F this is the number of records to listed."
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - You would use this option to restrict the records listed in this command."
+    },
+    {
+      "name": "while_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - This option also restricts the records listed."
+    },
+    {
+      "name": "PTO",
+      "type": "prt_where",
+      "required": false,
+      "description": "Optional - Use this option to direct the output of this command."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,42 @@
+{
+  "name": "DELETE CHARACTERS",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to delete a group of characters from an alpha field.",
+  "syntax": "DELC fieldname START start NCHR number_of_characters MEM_AREA mem_area#",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the alpha field."
+    },
+    {
+      "name": "start",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The starting position within the field. The first character in the field is at position 1. If this value isn’t specified the program will set start to the first character."
+    },
+    {
+      "name": "number_of_characters",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The number of characters to delete from the field."
+    },
+    {
+      "name": "mem_area#",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you are actually deleting the characters from a memory area then this is the number (from 1-4). NOTE: Even if you want to use a memory area you must still specify a fieldname, although it will be ignored during execution of the command."
+    }
+  ],
+  "comments": "This command has the same effect as though you cut out a piece of the field and put the remaining two pieces back together, filling the end of the field with spaces.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> alpha Fld cmds -> Delete chrs",
+  "see_also": [
+    "DEL"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

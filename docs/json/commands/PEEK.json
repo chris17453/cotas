@@ -1,0 +1,43 @@
+{
+  "name": "PEEK",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "Use this command to ‘peek’ at a specific location in memory.",
+  "syntax": "PEEK offset FLD receiving_fld NCHR number_of_chrs",
+  "parameters": [
+    {
+      "name": "offset",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The actual memory location."
+    },
+    {
+      "name": "receiving_fld",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that will receive the value at the specified memory location."
+    },
+    {
+      "name": "NCHR",
+      "type": "n",
+      "required": true,
+      "description": "The number of characters to get."
+    },
+    {
+      "name": "number_of_chrs",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The number of characters to get. If you don’t specify a number here the program defaults to 1."
+    }
+  ],
+  "comments": "This command, along with POKE, gives you a quick and easy way to check certain settings on a PC when you know the value will always be in the same location in memory.",
+  "example": null,
+  "sample_program": "CAPSLOCK",
+  "program_editor": "System -> Programming -> pEek",
+  "see_also": [
+    "POKE",
+    "TEST()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

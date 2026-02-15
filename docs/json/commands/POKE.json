@@ -1,0 +1,37 @@
+{
+  "name": "POKE",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "POKE (DOS only) Use this command to ‘poke’ or put a byte or string of bytes into a specific location in memory.",
+  "syntax": "POKE offset FLD giving_fld NCHR number_of_chrs",
+  "parameters": [
+    {
+      "name": "offset",
+      "type": "f/c/e",
+      "required": true,
+      "description": "f/c/e - Required - The actual memory location."
+    },
+    {
+      "name": "giving_fld",
+      "type": "fn/v",
+      "required": true,
+      "description": "fn/v - Required - The field that contains the value to be inserted into memory at the specified location."
+    },
+    {
+      "name": "number_of_chrs",
+      "type": "f/c/e",
+      "required": false,
+      "description": "f/c/e - Optional - The number of characters to poke. If you don’t specify a number here the program defaults to 1."
+    }
+  ],
+  "comments": "This command, along with PEEK, gives you a quick and easy way to make certain settings on a PC when you know the appropriate area will always be in the same location in memory.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "PROGRAM EDITOR\nSystem -> Programming -> pOke",
+  "see_also": [
+    "PEEK",
+    "TEST()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

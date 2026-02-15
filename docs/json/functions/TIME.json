@@ -1,0 +1,13 @@
+{
+  "name": "TIME",
+  "signature": "TIME()",
+  "platform": null,
+  "purpose": "This function will return the current system time.",
+  "parts": [],
+  "return_type": "T",
+  "comments": "This is the same time that is returned if the user enters TIME at the DOS prompt.",
+  "example": null,
+  "sample_program": "TIMETEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "DTOR",
+  "signature": "DTOR(1)",
+  "platform": null,
+  "purpose": "This function will convert a D type field to an R type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The D type field to be converted. The original field is not changed."
+    }
+  ],
+  "return_type": "R The original field is not changed.",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

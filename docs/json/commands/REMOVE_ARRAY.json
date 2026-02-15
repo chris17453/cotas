@@ -1,0 +1,22 @@
+{
+  "name": "REMOVE ARRAY",
+  "abbreviation": null,
+  "platform": "PROGRAM EDITOR",
+  "description": "This command will deallocate an array previously allocated using the ALLOC (Allocate Field) command or ALOCARY() function. The memory used will be released to be used again, if desired.",
+  "syntax": "REMVA array_field_name",
+  "parameters": [
+    {
+      "name": "array_field_name",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field that had been previously allocated."
+    }
+  ],
+  "comments": "This command will not remove any fields that have been defined in the original program, only those that\nhave been allocated with the ALOCARY() function, or ALLOC (Allocate Field) command while\nrunning the program.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> Array -> Remove",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

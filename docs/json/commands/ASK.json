@@ -1,0 +1,30 @@
+{
+  "name": "ASK",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command provides you with a method of getting the user’s response to Y/N questions using a standardized process.",
+  "syntax": "ASK question DFLT default_response",
+  "parameters": [
+    {
+      "name": "question",
+      "type": "f/c/e",
+      "required": true,
+      "description": "You may use this in two ways. It can be an A type field and the program will display the field as the message. It can also be a numeric value (any appropriate type), and the program will read the appropriate record in the ERRMSG.B file. The value you set must relate to the ERROR_NUM field in the ERRMSG record. For more information please see Chapter 3, Main Menu - Utilities."
+    },
+    {
+      "name": "default_response",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The normal default response to this command is .T.. This would be the case if the user pressed just the RETURN or ENTER key without entering a value. If you would like the default response to be N (.F.) then this value must be set to .F."
+    }
+  ],
+  "comments": "The ASK message will be displayed at the same location as the error message. The message will be word wrapped properly and the program will back up the cursor one character. To use this feature you should make sure that the last character in the message is a ‘Y’ or ‘N’ as appropriate. You can test the user’s response to the message through the ASK() function. If the ASK() function returns .T. the user answered Y to the question; if .F., N. If the user presses the ESC key at the question, the ASK() function returns .F. Also, you can test if the user pressed the ESC key through the use of the ESC() function. It will return .T. if the user pressed the ESC key.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Messages -> Ask",
+  "see_also": [
+    "ASK()"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

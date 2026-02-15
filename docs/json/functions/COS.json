@@ -1,0 +1,19 @@
+{
+  "name": "COS",
+  "signature": "COS(1)",
+  "platform": null,
+  "purpose": "This function returns the cosine of the N type field specified.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N value."
+    }
+  ],
+  "return_type": "N The return value is in radians.",
+  "comments": "The value specified must be between -1 and 1.",
+  "example": "? cos(1.539)\n0.03179097",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

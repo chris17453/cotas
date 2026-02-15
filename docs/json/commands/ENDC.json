@@ -1,0 +1,19 @@
+{
+  "name": "ENDC",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is the end point of the process control command SELECT/CASE/ENDC.",
+  "syntax": "ENDC",
+  "parameters": [],
+  "comments": "For more information on the different structured programming commands, and the ENDC command in\nparticular, please see Chapter 7, Structured Programming Commands.\nIf you are missing an ENDC (End Case) command in a SELECT/CASE structure you will get the If\nwithout Endif error message during the compile process.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Prg control -> Case -> Case",
+  "see_also": [
+    "SELECT",
+    "ENDC",
+    "OTHERWISE"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

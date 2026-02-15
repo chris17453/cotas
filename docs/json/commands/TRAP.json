@@ -1,0 +1,22 @@
+{
+  "name": "TRAP",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command is used to set internal traps so that if a certain key is pressed the program will take an appropriate action.",
+  "syntax": "TRAP trap_name_list GOTO/GOSUB/IGNR/DFLT label",
+  "parameters": [
+    {
+      "name": "trap_name_list",
+      "type": "sac",
+      "required": true,
+      "description": "The name of the trap. These are listed below. You may include multiple trap names for a single trap command. Each of the traps will be set to the same values. This is generally used when you are setting a group of traps to IGNR (ignore) or DFLT (default)."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

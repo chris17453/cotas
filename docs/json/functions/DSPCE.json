@@ -1,0 +1,13 @@
+{
+  "name": "DSPCE",
+  "signature": "DSPCE()",
+  "platform": null,
+  "purpose": "This function will return the amount of unused disk space on the current ‘default’ drive.",
+  "parts": [],
+  "return_type": "R The value returned is in number of bytes. If there are 5 Mbytes remaining the returned value would be: 5242880",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

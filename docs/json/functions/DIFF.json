@@ -1,0 +1,24 @@
+{
+  "name": "DIFF",
+  "signature": "DIFF(1,2)",
+  "platform": null,
+  "purpose": "Using a process similar to the SNDX() function, this function will return a value that can be used to determine how ‘close’ the two values ‘sound.’",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Comparison value 1. Must be type A."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Comparison value 2. Must be type A."
+    }
+  ],
+  "return_type": "I The return value is from 0 thru 4. 0 is no match at all; 4 is a very close match.",
+  "comments": null,
+  "example": "? DIFF(‘translate’,’trnslt’)\n4\n? DIFF(‘John’,’Paul’)\n0",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

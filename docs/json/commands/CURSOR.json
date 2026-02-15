@@ -1,0 +1,52 @@
+{
+  "name": "CURSOR",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to change the size of the cursor on the screen and to turn it on and off.",
+  "syntax": "CURSOR ON/OFF SIZE start_line,stop_line WAIT DFLT",
+  "parameters": [
+    {
+      "name": "ON/OFF",
+      "type": "sac",
+      "required": false,
+      "description": "Optional - If ON the cursor will be turned on, if it is off. This is the default value."
+    },
+    {
+      "name": "SIZE",
+      "type": "n",
+      "required": false,
+      "description": "start_line,stop_line"
+    },
+    {
+      "name": "start_line",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The beginning scan line for the cursor block. This may be from 0 through 7 for color monitors and 0 through 13 for monochrome."
+    },
+    {
+      "name": "stop_line",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The ending scan line for the cursor block. This may be from 0 through 7 for color monitors and 0 through 13 for monochrome."
+    },
+    {
+      "name": "WAIT",
+      "type": "sac",
+      "required": false,
+      "description": "Windows Only - Optional - Will change the standard arrow cursor to an hourglass or whatever is the equivalent in Windows 95."
+    },
+    {
+      "name": "DFLT",
+      "type": "sac",
+      "required": false,
+      "description": "Windows Only - Options - Will change the cursor back to the standard arrow. Used after setting the WAIT option when whatever process that was taking so long is over."
+    }
+  ],
+  "comments": "The stop_line value should be the larger number. The default value in TAS Pro 5.1 is 6,7 for color and 11,12 for mono displays.\nNOTE: The ON/OFF and SIZE options have no effect in Windows.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

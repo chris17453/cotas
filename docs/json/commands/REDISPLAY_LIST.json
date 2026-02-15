@@ -1,0 +1,18 @@
+{
+  "name": "REDISPLAY LIST",
+  "abbreviation": "RDLIST",
+  "platform": "TAS Professional 5.1",
+  "description": "Use this command when you are in a subroutine called from the LISTM (List Array) or LISTF (List File) command and you want to redisplay all the current lines when you return.",
+  "syntax": "RDLIST",
+  "parameters": [],
+  "comments": "You can see this process at work in the Maintain Database, Import and Export utilities. If you press the F3 key to choose all the fields in a record the program calls a UDF to do the work and then executes this command so that the ‘stars’ will appear when the process is finished.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Lists -> Redisplay list",
+  "see_also": [
+    "LISTF",
+    "LISTM"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

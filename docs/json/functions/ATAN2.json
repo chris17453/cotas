@@ -1,0 +1,24 @@
+{
+  "name": "ATAN2",
+  "signature": "ATAN2(1,2) (DOS only)",
+  "platform": "DOS only",
+  "purpose": "This function returns the arctangent of field value1/field value2.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Field 1, must be N type."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "Field 2, must be N type."
+    }
+  ],
+  "return_type": "N The result will be from -PI to PI in radians.",
+  "comments": null,
+  "example": "? atan2(-0.539,-1.325)\n-2.75524446",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "ISLO",
+  "signature": "ISLO(1)",
+  "platform": null,
+  "purpose": "This function will determine whether the first character of a field is a lowercase alphanumeric character\n(a-z), or something else.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "Field to check, must be of type A."
+    }
+  ],
+  "return_type": "L If the first character is from a-z (lower case), the function will return .T., otherwise .F.",
+  "comments": null,
+  "example": "x = ‘SAMPLE’\n? islo(x)\n.F.\nx = ‘sample’\n? islo(x)\n.T.",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

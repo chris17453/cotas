@@ -1,0 +1,24 @@
+{
+  "name": "DECREMENT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "DECREMENT Decrement an I or R type field. This is the same as subtracting 1 from the field. For example:\nDEC CNTR is equivalent to:\nCNTR = CNTR - 1\nThis command provides a more succinct method to subtract 1 from a field. This command also runs a\nlittle faster than the standard subtraction routine.",
+  "syntax": "DEC fieldname",
+  "parameters": [
+    {
+      "name": "fieldname",
+      "type": "fn/v",
+      "required": true,
+      "description": "The name of the field being decremented. Must be of I or R type."
+    }
+  ],
+  "comments": "This is the same as subtracting 1 from the field. For example:\nDEC CNTR is equivalent to:\nCNTR = CNTR - 1\nThis command provides a more succinct method to subtract 1 from a field. This command also runs a\nlittle faster than the standard subtraction routine.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "Field -> Decrement",
+  "see_also": [
+    "INC"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

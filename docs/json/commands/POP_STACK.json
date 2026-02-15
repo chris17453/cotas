@@ -1,0 +1,17 @@
+{
+  "name": "POP STACK",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Remove the value pushed on the internal stack by a previous GOSUB command.",
+  "syntax": "POP STACK",
+  "parameters": [],
+  "comments": "This command needs to be used with great caution. However, it will allow you to do something other than just returning from a GOSUB if necessary.\nYou may use this command only in connection with a GOSUB or PUSHx command. Each POPS removes 2 bytes from the internal stack. You may NOT use this command in connection with a UDF or UDC.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "prg Control -> Goto/gosub -> Pop stack",
+  "see_also": [
+    "GOSUB"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

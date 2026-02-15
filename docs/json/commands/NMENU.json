@@ -1,0 +1,172 @@
+{
+  "name": "NMENU",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "will display (box not shown):\nChoice1\nChoice2\n———\nChoice3\nChoice4\nYou can also specify your own dividing lines; however, the first two characters must\nbe single/double dashed lines (and they will be displayed). If the user chooses\n‘Choice3’ the program would return 3 in counter_field. This has nothing to do with\nthe name (Choice3) but only reflects the fact that Choice 3 is the 3rd choice in the list,\nignoring the single dashed line. If the user presses the Dn Arrow key the ‘cursor’ will\nskip the single dashed line.\nThis can also be an array field reference. If it is, the array option must be Y. All the\nsame rules apply; the only difference is that there is only one field reference for this\noption instead of a list. The list is actually the array elements.",
+  "syntax": "",
+  "parameters": [
+    {
+      "name": "starting_column",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the menu, column value."
+    },
+    {
+      "name": "starting_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Upper left corner of the menu, row value."
+    },
+    {
+      "name": "length",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of rows long, including box around the menu. If there are\ntwo lines within the menu the length is 4."
+    },
+    {
+      "name": "width",
+      "type": "f/c/e",
+      "required": true,
+      "description": "Number of columns wide, including box around the menu. If the\nchoices are 10 columns wide within the menu the total width is 12."
+    },
+    {
+      "name": "ARRAY",
+      "type": "Optional",
+      "required": false,
+      "description": "If the lines field is actually an array field this must be included in the\ncommand.."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "This is an I type field that will be used for passing the user’s\nchoice to your program.\nNOTE: If the user presses the ESC key this field is set to 0."
+    },
+    {
+      "name": "number_of_choices",
+      "type": "f/c/e",
+      "required": false,
+      "description": "How many choices the user has. This is only required\nif the ARRAY option is specified."
+    },
+    {
+      "name": "choice_expression",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The user may choose the appropriate menu item by\nentering a single character. The default method is the first capitalized character of\neach item. You can specify an expression which will return a character that will be\ncompared to that entered by the user. The program will move the cursor to the\nappropriate line. If not found the bell will sound."
+    },
+    {
+      "name": "box",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The box type to use for defining the edge of the menu. If this is\nspecified you need to take into consideration the 2 extra rows and columns that it\nrequires when determining length, width, and location. S specifies a single line box,\nD is double, and C is custom (dependent on what you have set in TAS50.OVL)."
+    },
+    {
+      "name": "box_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you have specified some sort of box you may also specify the\ncolor for it. If this isn’t set the program will use the menu_color as this value also."
+    },
+    {
+      "name": "menu_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The color value for the main body of the menu. If nothing is\nspecified the program will use the current normal color."
+    },
+    {
+      "name": "choice_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The color used to designate the current cursor location and the\nfirst capitalized character in each choice line. If not specified the program uses the\nreverse color value."
+    },
+    {
+      "name": "shadow_where",
+      "type": "f/c/e",
+      "required": false,
+      "description": "You may specify that a ‘shadow’ is to be displayed behind\nthe menu. The shadow_where options are R - right, L - left or N - none. The\nshadow is displayed two characters to the right or left, and one line down from the\nmenu. If you specify the appropriate shadow_color value, the resulting display will\ngive the menu a 3-D feel. The default value is N."
+    },
+    {
+      "name": "shadow_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you have specified L or R for the shadow_where option\nyou may also specify the color to be used."
+    },
+    {
+      "name": "title_where",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you wish to put a title message at the top of the menu you\nmay choose where it will be. L is left side of menu, R right, C is centered and N is\nnone. The default is N."
+    },
+    {
+      "name": "title",
+      "type": "f/c/e",
+      "required": false,
+      "description": "If you specified a title_where value other than N you use this as the\nvalue to be displayed."
+    },
+    {
+      "name": "help_udf",
+      "type": "udf",
+      "required": false,
+      "description": "This is the UDF to execute if the user presses the F1 key.\nNOTE: The counter_field value is constantly updated by the program. This way you\ncan use that value in a help message if desired and tailor the response to the current\nline or situation."
+    },
+    {
+      "name": "left_arrow_label",
+      "type": "label",
+      "required": false,
+      "description": "Where to transfer control if the user presses the left arrow\nkey."
+    },
+    {
+      "name": "right_arrow_label",
+      "type": "label",
+      "required": false,
+      "description": "Where to transfer control if the user presses the right\narrow key."
+    },
+    {
+      "name": "menu_text_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Windows Only - The text color for the menu characters.\nIf this value is not specified the program will use black. For more information on\ncolors in Windows programs please refer to Chapter 11 - Windows Programming."
+    },
+    {
+      "name": "choice_text_color",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Windows Only - This is the text color for the choice (or\nhighlight) bar. If this value is not specified the program will use black. For more\ninformation on colors in Windows programs please refer to Chapter 11 - Windows\nProgramming."
+    },
+    {
+      "name": "HOLD",
+      "type": "Optional",
+      "required": false,
+      "description": "Optional - If this is included in the command the program will not automatically clear\nthe menu upon leaving this command. This will allow you to ‘stack’ menus if desired."
+    },
+    {
+      "name": "AUTO",
+      "type": "DOS only",
+      "required": false,
+      "description": "DOS only - Optional - If this is included in the command the program will exit the\nmenu automatically when the user presses a key that matches one of the possible\nchoice characters. Normally, the cursor would move to that line and the program\nwould wait for him/her to press the RETURN or ENTER key."
+    },
+    {
+      "name": "NOWAIT",
+      "type": "DOS Only",
+      "required": false,
+      "description": "DOS Only - Optional - If this is included in the command the program will display\nthe menu but not wait for any input. Should be used in conjunction with the HOLD\noption or the menu will just flash on the screen and the user will wonder what happened."
+    },
+    {
+      "name": "USE_COLORS",
+      "type": "Windows Only",
+      "required": false,
+      "description": "In a normal windows program the colors specified\nin a command are ignored and the program uses the colors in the TP5WIN.INI file.\nThe colors in the TP5WIN.INI file become the default colors.. This is due to the\nmajor differences between DOS and Windows colors. If you use this option the\nprogram will look to the colors specified in the command first and, if they are 0, will\nthen use the colors in the TP5WIN.INI file. For more information on colors in\nWindows please refer to Chapter 11 - Windows Programming."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> 4.0 Nmenu",
+  "see_also": [
+    "LISTF",
+    "LISTM",
+    "LIST_EXIT",
+    "AUTOINC",
+    "NORSTRT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

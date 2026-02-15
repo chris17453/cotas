@@ -1,0 +1,13 @@
+{
+  "name": "DATE",
+  "signature": "DATE()",
+  "platform": null,
+  "purpose": "This function will return the current system date.",
+  "parts": [],
+  "return_type": "D",
+  "comments": "This is the same date that is returned if the user enters DATE at the DOS prompt.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

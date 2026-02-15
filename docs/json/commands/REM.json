@@ -1,0 +1,22 @@
+{
+  "name": "REM",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command allows the programmer to include a message or remark within the program that will have no effect on the program.\nREM statement",
+  "syntax": "REM statement",
+  "parameters": [
+    {
+      "name": "statement",
+      "type": "sac",
+      "required": false,
+      "description": "Optional - Anything you want. This command is ignored by the compiler and is for your use only."
+    }
+  ],
+  "comments": "If the remark is going to extend over several lines then the REM command (or appropriate symbol)\nmust begin each line.\nSeveral characters may be used instead of the REM command. The semicolon (;) or asterisk (*) may be\nused instead of REM so long as it is the first non-space character on the line. For remarks following a\ncommand on the same line, the programmer may use the double ampersand (&&). Some examples:\nREM All of the following remarks are legal\n; This is a legal remark\n* This is also.\n? ‘TEST’\n&& This is a legal remark after a command.\nThe programmer cannot put a remark on a command line if the command is continued. For example:\n? ‘THIS IS A TEST’+ \\ && this is not a legal remark\n‘ ALSO’\n&& this is a legal remark\nA remark cannot be put on the continued line since the continuation character (\\) must be the last\ncharacter on the line. Please note that a continuation character is treated as such, even if it appears on a\nline after a remark character.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

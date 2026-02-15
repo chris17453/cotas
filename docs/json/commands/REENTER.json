@@ -1,0 +1,15 @@
+{
+  "name": "REENTER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This will re-execute the last ENTER command.",
+  "syntax": "",
+  "parameters": [],
+  "comments": "This is generally used when checking values after the ENTER command to make sure that what the user\nentered is acceptable. A better method is to use the valid and valid_message options in the ENTER\ncommand. This command has been provided for upward compatibility with TAS Professional 3.0.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

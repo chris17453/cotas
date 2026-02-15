@@ -1,0 +1,34 @@
+{
+  "name": "PORT (DOS only)",
+  "abbreviation": null,
+  "platform": "DOS",
+  "description": "Use this command to output a byte or string of bytes to a specific computer port.",
+  "syntax": "PORT portnum FLD giving/receiving_fld IN/OUT",
+  "parameters": [
+    {
+      "name": "portnum",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The actual computer port number. Normally port numbers are in hex form, this must be in decimal, i.e., port 200h is 512 decimal."
+    },
+    {
+      "name": "giving/receiving_fld",
+      "type": "fn/v",
+      "required": true,
+      "description": "The field that contains the value to be output to the port or input from the port. If you are using a 16550 UART you can have a FLD buffer of more than 1 character, otherwise, you should use get/receive only one character at a time. This command will attempt to get/send the same number of characters as the size of this field."
+    },
+    {
+      "name": "IN/OUT",
+      "type": "IN/OUT",
+      "required": true,
+      "description": "IN gets characters from the port, OUT sends characters out the port."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "System -> poRt",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

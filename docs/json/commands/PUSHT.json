@@ -1,0 +1,24 @@
+{
+  "name": "PUSHT",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Save a value in a trap or group of traps to the internal TAS Pro 5.1 stack so they may be restored later with the POPT (Pop Trap) command.",
+  "syntax": "PUSHT trap_list",
+  "parameters": [
+    {
+      "name": "trap_list",
+      "type": "trap_list",
+      "required": true,
+      "description": "trap1,trap2,...trapx - Required - The list of traps to save."
+    }
+  ],
+  "comments": "When you use the PUSHT command the current trap settings are saved on an internal stack. This stack,\njust like all others used in microcomputers, is a Last In-First Out process. That means that the last value\npushed on the stack must be the first value popped out. The TAS Professional 5.1 stack, however, is\ndifferent from a ‘normal’ stack in that it is intelligent. It knows the sizes of the values being pushed/\npopped and automatically allows for the differences.\nThe standard internal stack size is 1024 bytes. Each PUSHT uses 4 bytes.\nThis is a powerful but potentially dangerous command. When a programmer does a GOSUB or a UDF/\nUDC within a program, the return address is also placed on this same stack, and if an unbalanced\nnumber of PUSHx/POPx commands have been used the program will not return to the proper location.\nAlso, if the POPx items are not in the exact reverse order from the PUSHx list, the incorrect values will\nbe restored. This could cause untold problems. For these reasons, the PUSHx/POPx commands should\nbe used with the greatest of care. However, it is the existence of these commands that helps to make\nTAS Professional 5.1 a very powerful development tool.\n\nPROGRAM EDITOR\n\nprg Control -> Trap -> Push trap\n\nSEE ALSO\n\nPOPT",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "prg Control -> Trap -> Push trap",
+  "see_also": [
+    "POPT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

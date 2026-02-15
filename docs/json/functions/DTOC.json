@@ -1,0 +1,24 @@
+{
+  "name": "DTOC",
+  "signature": "DTOC(1,2)",
+  "platform": null,
+  "purpose": "This function will convert a D type field into an A type field.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The D type field to be converted. The original field value is not changed."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The size of the A type version of the date to return. The default is 8 (mm/dd/yy). You can use any legal date size as the value."
+    }
+  ],
+  "return_type": "A If the receiving field is not long enough the returned value will be truncated.",
+  "comments": null,
+  "example": "SAMPLE PROGRAM\nDATETEST.SRC",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

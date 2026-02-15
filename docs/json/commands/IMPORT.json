@@ -1,0 +1,66 @@
+{
+  "name": "IMPORT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Imports records from a file or memory into the program. When MEM is used, the command imports into an array in memory instead of a standard file. The MEM option is optional. If MEM is included in the command, number becomes the maximum number of elements in the array to be imported to. A counter_field may be supplied to pass the number of records read and the current array number to your program, and can also be used to count the number of records read. The destination is specified by to_filename/@file_number, which is the name or number of the file to be imported to. An optional scope may help determine how many records are imported; for details on the scope specifier, see the general information at the beginning of this chapter. If scope is set to N or F, scope_value specifies the number of records to be imported. You can use for_filter_expression to restrict the records imported; if the expression does not resolve to .T., the record will not be imported. The search continues until end of file and then will quit. You can perform the same task with MEM if you specify MEM, and use counter_field as the array specifier in the expression. If DISP is specified, each time a record is read the program will redisplay the screen fields; this will slow down the operation, with the slowdown depending on how many fields are displayed on the screen; the net effect will probably be negligible unless you are reading through a very large file.",
+  "syntax": "",
+  "parameters": [
+    {
+      "name": "MEM",
+      "type": "flag",
+      "required": false,
+      "description": "Optional - If you are importing to an array in memory instead of a standard file include this option in the command."
+    },
+    {
+      "name": "number",
+      "type": "fn/v",
+      "required": false,
+      "description": "If MEM option is included, then this is Required - If MEM is included in the command, number is the maximum number of elements in the array to be imported to."
+    },
+    {
+      "name": "counter_field",
+      "type": "fn/v",
+      "required": false,
+      "description": "Optional - This is an I type field that will be used for passing the number of records read, and the current array number, to your program. You can also use this to count the number of records read."
+    },
+    {
+      "name": "to_filename/@file_number",
+      "type": "file_expr",
+      "required": true,
+      "description": "The name or number of the file to be imported to."
+    },
+    {
+      "name": "scope",
+      "type": "option",
+      "required": false,
+      "description": "Optional - This option may help determine how many records are imported. For more information about the scope specifier, please see the general information at the beginning of this chapter."
+    },
+    {
+      "name": "scope_value",
+      "type": "f/c/e",
+      "required": false,
+      "description": "Optional - If scope is set to N or F this is the number of records to be imported."
+    },
+    {
+      "name": "for_filter_expression",
+      "type": "lexpr",
+      "required": false,
+      "description": "Optional - You would use this option to restrict the records imported in this command. If the expression did not resolve to .T., the record would not be imported. In this option, the search continues until the program reaches the end of file and then will quit. You can also use this to perform the same task if MEM is specified. Use the counter_field as the array specifier in the expression."
+    },
+    {
+      "name": "DISP",
+      "type": "flag",
+      "required": false,
+      "description": "Optional - Each time a record is read the program will redisplay the screen fields, if you specify this option. This will slow down the operation of this command, with the amount of slow-down depending on how many fields are displayed on the screen. The net effect will probably be negligible unless you are reading through a very large file."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Mult rec cmds -> Import",
+  "see_also": [
+    "EXPORT"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

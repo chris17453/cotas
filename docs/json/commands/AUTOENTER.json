@@ -1,0 +1,15 @@
+{
+  "name": "AUTOENTER",
+  "abbreviation": null,
+  "platform": null,
+  "description": "AUTOENTER",
+  "syntax": "AUTOENTER",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": true,
+  "alias_target": "AUTO ENTER LIST"
+}

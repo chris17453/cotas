@@ -1,0 +1,88 @@
+{
+  "name": "DISPLAY MEMORY AREA (DOS only)",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a TAS Professional 3.0 command here for compatibility. There is no preferred TAS Professional 5.1 command/function.",
+  "syntax": "DISPM mem_area# START start_val OCCURS size_of_element OFST offset_in_element AT\ncol_row_loc WDT #_chrs_to_prt NLNES #_lines_to_prt",
+  "parameters": [
+    {
+      "name": "mem_area#",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "START",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "start_val",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "OCCURS",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "size_of_element",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "OFST",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "offset_in_element",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "col_row_loc",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "WDT",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "#_chrs_to_prt",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "NLNES",
+      "type": "n",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "#_lines_to_prt",
+      "type": "n",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

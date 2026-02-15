@@ -1,0 +1,19 @@
+{
+  "name": "MNTH",
+  "signature": "MNTH(1)",
+  "platform": null,
+  "purpose": "This function will return the month of a date as a number.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The date value to use, must be of D type."
+    }
+  ],
+  "return_type": "I The number range returned is from 1 to 12, January thru December.",
+  "comments": null,
+  "example": null,
+  "sample_program": "SAMPLE PROGRAM\nDATETEST.SRC",
+  "program_editor": null,
+  "see_also": []
+}

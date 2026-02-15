@@ -1,0 +1,15 @@
+{
+  "name": "NO REDISPLAY",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "Normally in the LISTM (List Array) or LISTF (List File) commands, when the program returns to the command from a UDF call, the screen displayed previous to the UDF call is redisplayed. In the case where you now have something new on the screen and don’t wish for it to reappear this should be specified.",
+  "syntax": "NOREDSP",
+  "parameters": [],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

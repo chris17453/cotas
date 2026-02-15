@@ -1,5 +1,0 @@
-# ISNUM()
-
-## Summary
-Function Reference
-

@@ -1,0 +1,37 @@
+{
+  "name": "ON",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Use this command to transfer control to a line label depending on a value. This is almost like a flat CASE command.",
+  "syntax": "ON expression GOTO/GOSUB line_label_list",
+  "parameters": [
+    {
+      "name": "expression",
+      "type": "f/c/e",
+      "required": true,
+      "description": "The value to test. Must resolve to a numeric value."
+    },
+    {
+      "name": "GOTO/GOSUB",
+      "type": "keyword",
+      "required": true,
+      "description": "GOTO or GOSUB to the appropriate line."
+    },
+    {
+      "name": "line_label_list",
+      "type": "label_list",
+      "required": true,
+      "description": "The list of line labels used to determine where to transfer control. The first label corresponds to a value of 1, the second to 2, etc. If the expression resolves to a value of 0 or greater than the number of labels -1 then control is transferred to the last label in the list. The line labels are separated by commas."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": "prg Control -> Goto/gosub -> On",
+  "see_also": [
+    "GOSUB",
+    "GOTO"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

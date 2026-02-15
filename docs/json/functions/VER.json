@@ -1,0 +1,13 @@
+{
+  "name": "VER",
+  "signature": "VER()",
+  "platform": null,
+  "purpose": "This function will return the current TAS Professional 5.1 name and version number.",
+  "parts": [],
+  "return_type": "A",
+  "comments": null,
+  "example": "? ver()\nTAS Professional 5.1",
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

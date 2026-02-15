@@ -1,0 +1,21 @@
+{
+  "name": "SEXIT",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This is a process control command, i.e., it will exit from a SCAN loop. This is one part of a complete command structure.",
+  "syntax": "SEXIT",
+  "parameters": [],
+  "comments": "For more information on the different structured programming commands, and the SEXIT command in particular, please see Chapter 7, Structured Programming Commands.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Mult rec cmds -> Scan -> eXit",
+  "see_also": [
+    "SCAN",
+    "SEXIT_IF",
+    "SLOOP",
+    "SLOOP_IF",
+    "ENDS"
+  ],
+  "is_alias": false,
+  "alias_target": null
+}

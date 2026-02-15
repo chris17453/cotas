@@ -1,0 +1,40 @@
+{
+  "name": "ROW COLOR",
+  "abbreviation": null,
+  "platform": "Windows only",
+  "description": "Use this command to change the color of a single row on the screen.",
+  "syntax": "ROW_COLOR FROM from_row THRU thru_row COLOR background_color\nTEXT_COLOR text_color",
+  "parameters": [
+    {
+      "name": "from_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "from_row - f/c/e - Required - The starting row number. The first row in a window is number 1. This value will always be related to the current active window."
+    },
+    {
+      "name": "thru_row",
+      "type": "f/c/e",
+      "required": true,
+      "description": "thru_row - f/c/e - Required - The ending row number. If you only want to change the color in a single row then this should be the same value as the FROM value."
+    },
+    {
+      "name": "background_color",
+      "type": "n",
+      "required": false,
+      "description": "COLOR background_color"
+    },
+    {
+      "name": "text_color",
+      "type": "n",
+      "required": false,
+      "description": "TEXT_COLOR text_color"
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

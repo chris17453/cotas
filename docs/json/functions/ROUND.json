@@ -1,0 +1,24 @@
+{
+  "name": "ROUND",
+  "signature": "ROUND(1,2)",
+  "platform": null,
+  "purpose": "This function will return an N type value rounded up to a specified number of decimal characters.",
+  "parts": [
+    {
+      "number": "1",
+      "type": "f/c/e",
+      "description": "The N type field value. The original value is unchanged."
+    },
+    {
+      "number": "2",
+      "type": "f/c/e",
+      "description": "The number of significant decimal characters to keep. This cannot be more than 8. If the number specified is more than the defined value for the field being rounded, there will be no effect."
+    }
+  ],
+  "return_type": "N",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

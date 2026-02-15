@@ -1,0 +1,22 @@
+{
+  "name": "MOVE DATE IN MEMORY",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This command does not convert any data but just moves raw characters from one location to another without regard for the type. You must specify either fields or memory areas to use. You may use P and F type pointers in this command. NOTE: Don’t forget to calculate number_of_characters based on internal size and not display size.",
+  "syntax": "MOVE DATE IN MEMORY to_mem_area#",
+  "parameters": [
+    {
+      "name": "to_mem_area#",
+      "type": "f/c/e",
+      "required": false,
+      "description": "The memory area number to transfer to. This must resolve to a value from 1 through 4. If you specify this value then the to_field is evaluated as the offset within this area."
+    }
+  ],
+  "comments": "This command does not convert any data but just moves raw characters from one location to another\nwithout regard for the type. You must specify either fields or memory areas to use.\nYou may use P and F type pointers in this command.\nNOTE: Don’t forget to calculate number_of_characters based on internal size and not\ndisplay size.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

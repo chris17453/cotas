@@ -1,0 +1,28 @@
+{
+  "name": "TRANSACTION",
+  "abbreviation": null,
+  "platform": null,
+  "description": "Using this command you can be assured that an entire set of file updates will be completed. Otherwise, they can be rolled back to an original state.",
+  "syntax": "TRANSX what_to_do ERR error_field",
+  "parameters": [
+    {
+      "name": "what_to_do",
+      "type": "BCR",
+      "required": true,
+      "description": "You must provide a field that will be used to receive any error number provided by the routine. If the command step is successful the value returned is 0. This field must be of type I."
+    },
+    {
+      "name": "error_field",
+      "type": "fn/v",
+      "required": true,
+      "description": "You must provide a field that will be used to receive any error number provided by the routine. If the command step is successful the value returned is 0. This field must be of type I."
+    }
+  ],
+  "comments": "The correct transaction process is:\nTRANSX B\n&& begin\n...\nall file updates done here\n...\nTRANSX C\n&& commit\nHowever, if an error occurs while the file updates are being accomplished (between the TRANSX b and\nTRANSX c steps) you would use the command:\nTRANSX R\n\n&& rollback\n\nand any updates that were completed after the TRANSX b but before the TRANSX c would be undone.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "fiLe -> Transactions",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

@@ -1,0 +1,13 @@
+{
+  "name": "RECORD_CHR",
+  "signature": "RECORD_CHR()",
+  "platform": "DOS only",
+  "purpose": "This function returns the number of characters recorded with the AUTO_RUN command when the RECORD option is set.",
+  "parts": [],
+  "return_type": "I",
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": []
+}

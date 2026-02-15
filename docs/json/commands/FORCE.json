@@ -1,0 +1,22 @@
+{
+  "name": "FORCE",
+  "abbreviation": null,
+  "platform": null,
+  "description": "This can be used to tell the program to ignore any active windows when doing output to the screen.",
+  "syntax": "FORCE ON/OFF",
+  "parameters": [
+    {
+      "name": "ON/OFF",
+      "type": "f",
+      "required": true,
+      "description": "ON/OFF - Required - If this option is ON the program will ignore any windows when displaying information to the screen. To return to normal mode the option would be OFF."
+    }
+  ],
+  "comments": "You can also use the abs option in PMSG (Print Message), CLRLNE (Clear Line), etc. Don’t forget to turn this off (FORCE OFF) when you’re done.",
+  "example": null,
+  "sample_program": null,
+  "program_editor": "User interface -> Windows -> Force",
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}

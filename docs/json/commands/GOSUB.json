@@ -1,0 +1,22 @@
+{
+  "name": "GOSUB",
+  "abbreviation": null,
+  "platform": "TAS Professional 5.1",
+  "description": "This command will temporarily transfer control to a subroutine. The first line of that routine must be a standard line label.",
+  "syntax": "GOSUB gosub_label",
+  "parameters": [
+    {
+      "name": "gosub_label",
+      "type": "label",
+      "required": true,
+      "description": "Transfer program control to the line label."
+    }
+  ],
+  "comments": null,
+  "example": null,
+  "sample_program": null,
+  "program_editor": null,
+  "see_also": [],
+  "is_alias": false,
+  "alias_target": null
+}
