@@ -1696,7 +1696,7 @@ LABEL_92:
 \FIELDS
 BKAP.VENDCODE    0  9  3  0  0 0   10    0    0AYRGBKAPVEND      10
 BKAP.ACTIVE      0 29  3  0  0 0    1    0    0AYRGBKAPVENDNN     1
-EXPR_FLD         0 34  3 17  0 0    0    0    0XNXGMEMORY         0        ==ALABEL_47()
+EXPR_FLD         0 34  3 17  0 0    0    0    0XNXGMEMORY         0        LABEL_47()
 BKAP.CONTACT     0 53  3  0  0 0   25    0    0ANRGBKAPVENDNN    25
 BKAP.VENDNAME    0  9  4  0  0 0   30    0    0ANRGBKAPVEND      30
 BKAP.TELEPHONE   0 53  4  0  0 0   25    0    0AYRGBKAPVENDNN    25

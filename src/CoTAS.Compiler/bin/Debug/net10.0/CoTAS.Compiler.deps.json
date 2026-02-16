@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "CoTAS.Compiler/1.0.0": {
+        "dependencies": {
+          "CoTAS.Parser": "1.0.0"
+        },
+        "runtime": {
+          "CoTAS.Compiler.dll": {}
+        }
+      },
+      "CoTAS.Parser/1.0.0": {
+        "runtime": {
+          "CoTAS.Parser.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CoTAS.Compiler/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CoTAS.Parser/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

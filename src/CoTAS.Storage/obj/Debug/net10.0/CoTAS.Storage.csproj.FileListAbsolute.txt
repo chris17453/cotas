@@ -1,0 +1,13 @@
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/bin/Debug/net10.0/CoTAS.Storage.deps.json
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/bin/Debug/net10.0/CoTAS.Storage.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/bin/Debug/net10.0/CoTAS.Storage.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.GeneratedMSBuildEditorConfig.editorconfig
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.AssemblyInfoInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.AssemblyInfo.cs
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.csproj.CoreCompileInputs.cache
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.sourcelink.json
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/refint/CoTAS.Storage.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.pdb
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/ref/CoTAS.Storage.dll
+/home/nd/repos/PR/cotas/src/CoTAS.Storage/obj/Debug/net10.0/CoTAS.Storage.csproj.AssemblyReference.cache

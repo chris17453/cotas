@@ -1922,7 +1922,7 @@ public sealed class RunFileDecompiler
                     {
                         // Expression display field — name is lost at compile time
                         fldName = $"EXPR_FLD";
-                        exprSuffix = $"==A{_spec.ResolveParam('X', fldLoc)}";
+                        exprSuffix = _spec.ResolveParam('X', fldLoc);
                     }
                     else
                         fldName = $"{fldTyp}:{fldLoc}";
