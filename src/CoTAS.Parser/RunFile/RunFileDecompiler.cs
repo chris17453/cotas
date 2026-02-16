@@ -2040,7 +2040,7 @@ public sealed class RunFileDecompiler
                 {
                     byte a = cs[pos], b = cs[pos + 1], c = cs[pos + 2], d = cs[pos + 3], e = cs[pos + 4];
                     // Positions are 0-based in binary; source uses 1-based
-                    sb.AppendLine($"  {a,2} {b + 1,2} {c + 1,2} {d + 1,2} {e + 1,2}");
+                    sb.AppendLine($" {a,2} {b + 1,2} {c + 1,2} {d + 1,2} {e + 1,2}");
                     pos += 5;
                 }
                 if (pos < cs.Length && cs[pos] == 0) pos++;
@@ -2077,7 +2077,7 @@ public sealed class RunFileDecompiler
                     {
                         // Expression display field — name is lost at compile time
                         fldName = $"EXPR_FLD";
-                        exprSuffix = $"=={_spec.ResolveParam('X', fldLoc)}";
+                        exprSuffix = $"==A{_spec.ResolveParam('X', fldLoc)}";
                     }
                     else
                         fldName = $"{fldTyp}:{fldLoc}";
@@ -2098,8 +2098,8 @@ public sealed class RunFileDecompiler
                     string rwFlag = fldSpec != null ? (fldSpec.IsFileField ? "R" : "N") : "X";
                     int dsize = fldSpec?.DisplaySize ?? 0;
                     int dec = fldSpec?.Decimals ?? 0;
-                    // Trailing size = dsize (isize is 0 for file fields in binary)
-                    int trailingSize = dsize;
+                    // Trailing size: screens repeat dsize, reports use 0 for isize column
+                    int trailingSize = isReport ? 0 : dsize;
 
                     // Resolve buffer name from FileFieldIndex (1-based buffer index)
                     string bufName = "MEMORY";
@@ -2113,7 +2113,10 @@ public sealed class RunFileDecompiler
                     string nnFlag = fldSpec != null && !fldSpec.IsFileField ? "NN" : 
                                     (fldSpec != null && fldSpec.IsFileField && fldSpec.KeyNumber == 0 ? "NN" : "  ");
 
-                    sb.Append($"{fldName,-17}{arrCount,1} {srcCol,2} {srcRow,2} {fldDColor,2}  0 {dec} {dsize,4}    0    {arrCount}{typeChar}{ucFlag}{rwFlag}G{bufName,-8}{nnFlag} {trailingSize,5}");
+                    if (isReport)
+                        sb.Append($"{fldName,-18}{srcCol,3}{srcRow,3}{fldDColor,3} {dec}{dsize,7}{arrCount,5}{trailingSize,5}{typeChar}{ucFlag,6}{rwFlag}{bufName,-45}R");
+                    else
+                        sb.Append($"{fldName,-17}{arrCount,1} {srcCol,2} {srcRow,2} {fldDColor,2}  0 {dec} {dsize,4}    0    {arrCount}{typeChar}{ucFlag}{rwFlag}G{bufName,-8}{nnFlag} {trailingSize,5}");
                     if (!string.IsNullOrEmpty(exprSuffix))
                         sb.Append($"        {exprSuffix}");
                     sb.AppendLine();

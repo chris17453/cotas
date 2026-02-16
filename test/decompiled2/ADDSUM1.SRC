@@ -486,14 +486,14 @@ Cust code   Customer name                   Address                       City  
 
 Total records:
 \FIELDS
-RPT_DATE         0 14  0  0  0 0    8    0    0DNNGMEMORY  NN     8
-PAGE_NUM         0 75  0  0  0 0    5    0    0INNGMEMORY  NN     5
-BKAR.CUSTCODE    0  1  4  0  0 0   10    0    0AYRGBKARCUST      10
-BKAR.CUSTNAME    0 13  4  0  0 0   30    0    0ANRGBKARCUST      30
-BKAR.ADD1        0 44  4  0  0 0   30    0    0ANRGBKARCUSTNN    30
-BKAR.CITY        0 75  4  0  0 0   15    0    0ANRGBKARCUSTNN    15
-BKAR.STATE       0 91  4  0  0 0    2    0    0AYRGBKARCUST       2
-BKAR.ZIP         0 94  4  0  0 0   10    0    0AYRGBKARCUST      10
-BKAR.TELEPHONE   0 105  4  0  0 0   25    0    0ANRGBKARCUSTNN    25
-TOT_RECS         0 16  6  0  0 0    6    0    0RNNGMEMORY  NN     6
+RPT_DATE           14  0  0 0      8    0    0D     NNMEMORY                                       R
+PAGE_NUM           75  0  0 0      5    0    0I     NNMEMORY                                       R
+BKAR.CUSTCODE       1  4  0 0     10    0    0A     YRBKARCUST                                     R
+BKAR.CUSTNAME      13  4  0 0     30    0    0A     NRBKARCUST                                     R
+BKAR.ADD1          44  4  0 0     30    0    0A     NRBKARCUST                                     R
+BKAR.CITY          75  4  0 0     15    0    0A     NRBKARCUST                                     R
+BKAR.STATE         91  4  0 0      2    0    0A     YRBKARCUST                                     R
+BKAR.ZIP           94  4  0 0     10    0    0A     YRBKARCUST                                     R
+BKAR.TELEPHONE    105  4  0 0     25    0    0A     NRBKARCUST                                     R
+TOT_RECS           16  6  0 0      6    0    0R     NNMEMORY                                       R
 \\

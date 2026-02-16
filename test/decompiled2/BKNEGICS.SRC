@@ -340,9 +340,9 @@ RET
         ³                                                             ³
         ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
 \COLOR
-   1  1  1  7 80
-   1  8  1  8 80
-   1  9  1 100 80
+  1  1  1  7 80
+  1  8  1  8 80
+  1  9  1 100 80
 \FIELDS
 FROM_DATE        0 43  5  0  0 0    8    0    0DNNGMEMORY  NN     8
 THRU_DATE        0 43  6  0  0 0    8    0    0DNNGMEMORY  NN     8
@@ -364,21 +364,21 @@ Inv #   Inv Date  IC Cust     IC Name                         Sold from  Ent by
 
       Part:                  Ext:               COGS:               GM%:       %
 \FIELDS
-CURR_DATE        0  1  0  0  0 0    8    0    0DNNGMEMORY  NN     8
-PAGE             0 76  0  0  0 0    5    0    0NNNGMEMORY  NN     5
-FROM_DATE        0 31  1  0  0 0    8    0    0DNNGMEMORY  NN     8
-THRU_DATE        0 53  1  0  0 0    8    0    0DNNGMEMORY  NN     8
-GRSSPRFTPRC      0 28  2  0  0 2    6    0    0NNNGMEMORY  NN     6
-RESTRCTTOLOC     0 62  2  0  0 0   10    0    0ANNGMEMORY  NN    10
-EXCLUDE_RETURNS  0 56  3  0  0 0    1    0    0AYNGMEMORY  NN     1
-BKAR.INV.NUM     0  1  6  0  0 0    6    0    0RNRGBKARINV        6
-BKAR.INV.INVDTE  0  9  6  0  0 0    8    0    0DNRGBKARINV        8
-BKAR.INV.CUSCOD  0 19  6  0  0 0   10    0    0AYRGBKARINV       10
-BKAR.INV.CUSNME  0 31  6  0  0 0   30    0    0ANRGBKARINV NN    30
-BKAR.INV.LOC     0 63  6  0  0 0   10    0    0AYRGBKARINV NN    10
-BKAR.INV.ENTBY   0 74  6  0  0 0    5    0    0AYRGBKARINV        5
-BKAR.INVL.PCODE  0 13  7  0  0 0   15    0    0AYRGBKARINVL      15
-BKAR.INVL.PEXT   0 35  7  0  0 2   12    0    0NNRGBKARINVLNN    12
-PRTCOGS          0 55  7  0  0 2   12    0    0NNNGMEMORY  NN    12
-GMPERC           0 74  7  0  0 2    6    0    0NNNGMEMORY  NN     6
+CURR_DATE           1  0  0 0      8    0    0D     NNMEMORY                                       R
+PAGE               76  0  0 0      5    0    0N     NNMEMORY                                       R
+FROM_DATE          31  1  0 0      8    0    0D     NNMEMORY                                       R
+THRU_DATE          53  1  0 0      8    0    0D     NNMEMORY                                       R
+GRSSPRFTPRC        28  2  0 2      6    0    0N     NNMEMORY                                       R
+RESTRCTTOLOC       62  2  0 0     10    0    0A     NNMEMORY                                       R
+EXCLUDE_RETURNS    56  3  0 0      1    0    0A     YNMEMORY                                       R
+BKAR.INV.NUM        1  6  0 0      6    0    0R     NRBKARINV                                      R
+BKAR.INV.INVDTE     9  6  0 0      8    0    0D     NRBKARINV                                      R
+BKAR.INV.CUSCOD    19  6  0 0     10    0    0A     YRBKARINV                                      R
+BKAR.INV.CUSNME    31  6  0 0     30    0    0A     NRBKARINV                                      R
+BKAR.INV.LOC       63  6  0 0     10    0    0A     YRBKARINV                                      R
+BKAR.INV.ENTBY     74  6  0 0      5    0    0A     YRBKARINV                                      R
+BKAR.INVL.PCODE    13  7  0 0     15    0    0A     YRBKARINVL                                     R
+BKAR.INVL.PEXT     35  7  0 2     12    0    0N     NRBKARINVL                                     R
+PRTCOGS            55  7  0 2     12    0    0N     NNMEMORY                                       R
+GMPERC             74  7  0 2      6    0    0N     NNMEMORY                                       R
 \\
