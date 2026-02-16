@@ -138,6 +138,207 @@ public sealed class RunFileDecompiler
             case TasOpcode.FUNC: return DecompileUdfc(spec, "FUNC");
             case TasOpcode.CMD: return DecompileUdfc(spec, "CMD");
             case TasOpcode.UDC: return DecompileUdc(spec);
+
+            // Data commands
+            case TasOpcode.OPEN: return DecompileOpen(spec);
+            case TasOpcode.OPENV: return DecompileOpen(spec); // same layout
+            case TasOpcode.OPNO: return DecompileOpeno(spec);
+            case TasOpcode.CLOSE: return DecompileClose(spec);
+            case TasOpcode.FIND: return DecompileFind(spec, "FIND");
+            case TasOpcode.FINDV: return DecompileFind(spec, "FINDV");
+            case TasOpcode.SAVE: return DecompileSave(spec);
+            case TasOpcode.DEL: return DecompileDel(spec);
+            case TasOpcode.DALL: return DecompileDall(spec);
+            case TasOpcode.OWNER: return DecompileOwner(spec);
+            case TasOpcode.REL: return DecompileRel(spec);
+            case TasOpcode.CLR: return DecompileClr(spec);
+            case TasOpcode.RDA: return DecompileRda(spec);
+            case TasOpcode.WRTA: return DecompileWrta(spec);
+            case TasOpcode.UPDTA: return DecompileUpdta(spec);
+            case TasOpcode.REMVA: return DecompileGenericVal1("REMVA", spec);
+            case TasOpcode.REDEF: return DecompileRedef(spec);
+            case TasOpcode.ADD: return DecompileAdd(spec);
+            case TasOpcode.ALLOC: return DecompileAlloc(spec);
+            case TasOpcode.DEALOC: return DecompileGenericVal1("DEALOC", spec);
+            case TasOpcode.INSERT: return DecompileInsert(spec);
+            case TasOpcode.SETLINE: return DecompileSetline(spec);
+            case TasOpcode.READ: return DecompileRdWrt(spec, "READ");
+            case TasOpcode.WRITE: return DecompileRdWrt(spec, "WRITE");
+            case TasOpcode.RDREC: return DecompileRdWrt(spec, "RDREC");
+            case TasOpcode.WTREC: return DecompileRdWrt(spec, "WTREC");
+            case TasOpcode.ROPEN: return DecompileGenericVal1("ROPEN", spec);
+            case TasOpcode.FILTER: return DecompileGenericVal1("FILTER", spec);
+
+            // Screen / display commands
+            case TasOpcode.ENTER: return DecompileEnter(spec);
+            case TasOpcode.MSG: return DecompileMsg(spec);
+            case TasOpcode.PMSG: return DecompilePmsg(spec);
+            case TasOpcode.PCHR: return DecompilePchr(spec);
+            case TasOpcode.PFMT: return DecompilePfmt(spec);
+            case TasOpcode.PBOX: return DecompilePbox(spec);
+            case TasOpcode.PBLNK: return DecompilePblnk(spec);
+            case TasOpcode.PVERT: return DecompilePvert(spec);
+            case TasOpcode.SCROLL: return DecompileScroll(spec);
+            case TasOpcode.WINDOW: return DecompileWindow(spec);
+            case TasOpcode.WINDEF: return DecompileWindow(spec);  // same layout
+            case TasOpcode.WINACT: return DecompileWindow(spec);  // same layout
+            case TasOpcode.SAY: return DecompileSay(spec);
+            case TasOpcode.CLRLNE: return DecompileClrline(spec);
+            case TasOpcode.FILL: return DecompileFill(spec);
+            case TasOpcode.MID_CMD: return DecompileMid(spec);
+            case TasOpcode.DELC: return DecompileDelc(spec);
+            case TasOpcode.FORMAT: return DecompileFormat(spec);
+            case TasOpcode.WRAP: return DecompileWrap(spec, "WRAP");
+            case TasOpcode.REWRAP: return DecompileWrap(spec, "REWRAP");
+            case TasOpcode.CURSOR: return DecompileCursor(spec);
+            case TasOpcode.BELL: return DecompileGenericVal1("BELL", spec);
+            case TasOpcode.COLOR: return DecompileGenericVal1("COLOR", spec);
+            case TasOpcode.CLRSF: return "CLRSF";
+            case TasOpcode.CLRSCR: return "CLRSCR";
+            case TasOpcode.DISPF: return DecompileGeneric("DISPF", spec);
+            case TasOpcode.DISPM: return DecompileDispm(spec);
+            case TasOpcode.FILLMEM: return DecompileFillmem(spec);
+            case TasOpcode.PAINT: return DecompilePaint(spec);
+            case TasOpcode.ROW_COLOR: return DecompileRowColor(spec);
+            case TasOpcode.SCRN: return DecompileScrn(spec);
+            case TasOpcode.SHOW_PLINE: return DecompileShowPline(spec);
+            case TasOpcode.REDSP: return DecompileRedsp(spec);
+            case TasOpcode.SAVES: return DecompileSaveScrn(spec);
+            case TasOpcode.MOUNT: return DecompileMount(spec);
+            case TasOpcode.REMOUNT: return DecompileGenericVal1("REMOUNT", spec);
+
+            // Menu/List commands
+            case TasOpcode.MENU: return DecompileMenu(spec, "MENU");
+            case TasOpcode.NMENU: return DecompileMenu(spec, "NMENU");
+            case TasOpcode.LISTF: return DecompileListfm(spec, "LISTF");
+            case TasOpcode.LISTM: return DecompileListfm(spec, "LISTM");
+            case TasOpcode.LIST: return DecompileGeneric("LIST", spec);
+            case TasOpcode.RDLIST: return DecompileRdlist(spec, "RDLIST");
+            case TasOpcode.PRTALL: return DecompileRdlist(spec, "PRTALL");
+            case TasOpcode.RCN_CMD: return DecompileCalcRecs(spec, "RCN");
+
+            // Print control
+            case TasOpcode.PON: return DecompilePon(spec);
+            case TasOpcode.PTOF: return DecompileGenericVal1("PTOF", spec);
+            case TasOpcode.CLSPF: return "CLSPF";
+            case TasOpcode.PRT_NUM: return DecompileGenericVal1("PRT_NUM", spec);
+            case TasOpcode.POSTMSG: return DecompileGenericVal1("POSTMSG", spec);
+            case TasOpcode.PSET: return DecompileGenericVal1("PSET", spec);
+
+            // Transfer / string commands
+            case TasOpcode.XFER: return DecompileXfer(spec);
+            case TasOpcode.SORTA: return DecompileSorta(spec);
+
+            // Peek / Poke
+            case TasOpcode.PEEK: return DecompilePeekPoke(spec, "PEEK");
+            case TasOpcode.POKE: return DecompilePeekPoke(spec, "POKE");
+
+            // Chain / Exec / Run
+            case TasOpcode.CHAIN: return DecompileGenericVal1("CHAIN", spec);
+            case TasOpcode.CHAINR: return DecompileGenericVal1("CHAINR", spec);
+            case TasOpcode.EXEC: return DecompileGenericVal1("EXEC", spec);
+            case TasOpcode.RUN: return DecompileRunPrg(spec);
+
+            // RAP
+            case TasOpcode.RAP: return DecompileRap(spec);
+
+            // Increment / Decrement / Force
+            case TasOpcode.INC: return DecompileGenericVal1("INC", spec);
+            case TasOpcode.DEC: return DecompileGenericVal1("DEC", spec);
+            case TasOpcode.FORCE: return DecompileGenericVal1("FORCE", spec);
+            case TasOpcode.FORCE3: return DecompileGenericVal1("FORCE", spec);
+
+            // Clock / Trace / Sound / Error
+            case TasOpcode.CLOCK: return DecompileClock(spec);
+            case TasOpcode.TRACE: return DecompileTrace(spec);
+            case TasOpcode.SOUND: return DecompileSound(spec);
+            case TasOpcode.ERR: return DecompileErr(spec);
+
+            // GETLBL / UPAR
+            case TasOpcode.GETLBL: return DecompileGetlbl(spec);
+            case TasOpcode.UPAR: return DecompileUpar(spec);
+
+            // Import / Export (calc_recs layout + extensions)
+            case TasOpcode.IMPORT: return DecompileImpExp(spec, "IMPORT");
+            case TasOpcode.EXPORT: return DecompileImpExp(spec, "EXPORT");
+
+            // Button / Hot spot / Load picture
+            case TasOpcode.BUTTON: return DecompileButton(spec);
+            case TasOpcode.HOT_SPOT: return DecompileHotSpot(spec);
+            case TasOpcode.LOAD_PICTURE: return DecompileLoadPicture(spec);
+
+            // Mouse
+            case TasOpcode.MOUSE: return DecompileMouse(spec);
+
+            // Misc flag/simple commands
+            case TasOpcode.REENT: return "REENT";
+            case TasOpcode.BRKRET: return "BRKRET";
+            case TasOpcode.ULKALL: return "ULKALL";
+            case TasOpcode.POPS: return "POPS";
+            case TasOpcode.CLSO: return "CLSO";
+            case TasOpcode.PUSHT: return "PUSHT";
+            case TasOpcode.POPT: return "POPT";
+            case TasOpcode.NOREDSP: return "NOREDSP";
+            case TasOpcode.NORSTRT: return "NORSTRT";
+            case TasOpcode.NOVLDMSG: return "NOVLDMSG";
+            case TasOpcode.KBDUP: return "KBDUP";
+            case TasOpcode.CLRPE: return "CLRPE";
+
+            // Generic val1+val2 pattern commands
+            case TasOpcode.AUTOINC: return DecompileGenericVal1("AUTOINC", spec);
+            case TasOpcode.AUTODEC: return DecompileGenericVal1("AUTODEC", spec);
+            case TasOpcode.AUTOENTER: return DecompileGenericVal1("AUTOENTER", spec);
+            case TasOpcode.AUTONEW: return DecompileGenericVal1("AUTONEW", spec);
+            case TasOpcode.AUTO_RUN: return DecompileGenericVal1("AUTO_RUN", spec);
+            case TasOpcode.TRIM: return DecompileGenericVal1("TRIM", spec);
+            case TasOpcode.UP: return DecompileGenericVal1("UP", spec);
+            case TasOpcode.JUST: return DecompileGenericVal1("JUST", spec);
+            case TasOpcode.GRAY: return DecompileGenericVal1("GRAY", spec);
+            case TasOpcode.CAPTION: return DecompileGenericVal1("CAPTION", spec);
+            case TasOpcode.REVERSE: return DecompileGenericVal1("REV", spec);
+            case TasOpcode.BKG: return DecompileGenericVal1("BKG", spec);
+            case TasOpcode.FRG: return DecompileGenericVal1("FRG", spec);
+            case TasOpcode.SETACT: return DecompileGenericVal1("SETACT", spec);
+            case TasOpcode.PARAM: return DecompileGeneric("PARAM", spec);
+            case TasOpcode.WCOLOR: return DecompileGeneric("WCOLOR", spec);
+            case TasOpcode.DATE: return DecompileGenericVal1("DATE", spec);
+            case TasOpcode.TIME: return DecompileGenericVal1("TIME", spec);
+            case TasOpcode.DELF: return DecompileGenericVal1("DELF", spec);
+            case TasOpcode.RENF: return DecompileGenericVal12("RENF", spec);
+            case TasOpcode.PUSHF: return DecompileGenericVal1("PUSHF", spec);
+            case TasOpcode.POPF: return DecompileGenericVal1("POPF", spec);
+            case TasOpcode.INIFLE: return DecompileGenericVal1("INIFLE", spec);
+            case TasOpcode.PUT_FLD: return DecompileGenericVal12("PUT_FLD", spec);
+            case TasOpcode.REPL: return DecompileGeneric("REPL", spec);
+            case TasOpcode.PLAYWAV: return DecompileGenericVal1("PLAYWAV", spec);
+            case TasOpcode.COMM: return DecompileGeneric("COMM", spec);
+            case TasOpcode.PORT: return DecompileGeneric("PORT", spec);
+            case TasOpcode.ASK: return DecompileGenericVal1("ASK", spec);
+            case TasOpcode.IFDUP: return DecompileGenericVal1("IFDUP", spec);
+            case TasOpcode.IFNA: return DecompileGenericVal1("IFNA", spec);
+            case TasOpcode.SSPCF: return DecompileGenericVal1("SSPCF", spec);
+            case TasOpcode.CDPATH: return DecompileGenericVal1("CDPATH", spec);
+            case TasOpcode.LD_PDRV: return DecompileGenericVal1("LD_PDRV", spec);
+            case TasOpcode.INT_CMD: return DecompileGenericVal1("INT", spec);
+            case TasOpcode.LIST_EXIT: return "LIST_EXIT";
+            case TasOpcode.CO: return DecompileGenericVal1("CO", spec);
+            case TasOpcode.TRANSX: return DecompileGenericVal1("TRANSX", spec);
+            case TasOpcode.SRCH: return DecompileGeneric("SRCH", spec);
+
+            // Memory commands (Pro 3.0 era)
+            case TasOpcode.MEM_PTR: return DecompileGeneric("MEM_PTR", spec);
+            case TasOpcode.MEM_SPC: return DecompileGeneric("MEM_SPC", spec);
+            case TasOpcode.SORT3: return DecompileGeneric("SORT3", spec);
+            case TasOpcode.SAVES3: return DecompileGeneric("SAVES3", spec);
+            case TasOpcode.REDSP3: return DecompileGeneric("REDSP3", spec);
+            case TasOpcode.WRAP3: return DecompileGeneric("WRAP3", spec);
+
+            // Equation variants
+            case TasOpcode.EQU_MID: return DecompileEquMid(spec);
+            case TasOpcode.EQU_DAY: return DecompileGenericVal12("EQU_DAY", spec);
+            case TasOpcode.EQU_XMT: return DecompileGenericVal12("EQU_XMT", spec);
+
+            case TasOpcode.RSCR: return "RSCR";
         }
 
         // Everything else: walk spec bytes sequentially
@@ -542,6 +743,680 @@ public sealed class RunFileDecompiler
         if (parts.Count > 0)
             return $"{label} {string.Join(", ", parts)}";
         return label;
+    }
+
+    // ===== Helper: read param at offset, return empty if out of range =====
+
+    private string P(byte[] spec, int offset)
+    {
+        if (offset + 5 > spec.Length) return "";
+        return _spec.ResolveSpecParam(spec, offset);
+    }
+
+    private string Lbl4(byte[] spec, int offset)
+    {
+        if (offset + 4 > spec.Length) return "";
+        return LabelName(BitConverter.ToInt32(spec, offset));
+    }
+
+    private byte Flag(byte[] spec, int offset)
+    {
+        return offset < spec.Length ? spec[offset] : (byte)0;
+    }
+
+    /// <summary>Build "CMD p1, p2, p3" from resolved params, skipping empties.</summary>
+    private static string Emit(string name, params string[] parts)
+    {
+        var nonEmpty = parts.Where(p => !string.IsNullOrEmpty(p)).ToList();
+        return nonEmpty.Count > 0 ? $"{name} {string.Join(", ", nonEmpty)}" : name;
+    }
+
+    // ===== Generic val1 / val1+val2 helpers =====
+
+    private string DecompileGenericVal1(string name, byte[] spec)
+    {
+        return Emit(name, P(spec, 0));
+    }
+
+    private string DecompileGenericVal12(string name, byte[] spec)
+    {
+        return Emit(name, P(spec, 0), P(spec, 5));
+    }
+
+    // ===== Data Commands =====
+
+    private string DecompileOpen(byte[] spec)
+    {
+        // open_fn(0) + cc(5) + lok(10,1byte) + err_lbl(11,4byte) + owner(15) + path(20) + fd(25) + type(30,1byte) + hndl(31) + rsze(36) + bufnme(41) + create(46,1byte) + clear(47,1byte) + updt(48) + addflds(53,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // filename
+        string cc = P(spec, 5);
+        if (!string.IsNullOrEmpty(cc)) parts.Add(cc);
+        byte lok = Flag(spec, 10);
+        if (lok != 0) parts.Add(lok == (byte)'T' ? "T" : $"{(char)lok}");
+        parts.Add(P(spec, 31)); // handle
+        parts.Add(P(spec, 36)); // recsize
+        string bufnme = P(spec, 41);
+        if (!string.IsNullOrEmpty(bufnme)) parts.Add(bufnme);
+        return Emit("OPENV", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileOpeno(byte[] spec)
+    {
+        return Emit("OPNO", P(spec, 0), P(spec, 5), P(spec, 15), P(spec, 20), P(spec, 25));
+    }
+
+    private string DecompileClose(byte[] spec)
+    {
+        // close_hndl(0) + delete(5,1byte)
+        string hndl = P(spec, 0);
+        byte del = Flag(spec, 5);
+        if (del != 0 && del != (byte)'N') return Emit("CLOSE", hndl, "DELETE");
+        return Emit("CLOSE", hndl);
+    }
+
+    private string DecompileFind(byte[] spec, string name)
+    {
+        // find_hndl(0) + key(5) + val(10) + typ(15,1byte) + err_lbl(16,4byte) + lock(20,1byte) + key_only(21,1byte) + for(22) + while(27) + no_clr(32,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // handle
+        parts.Add(P(spec, 5)); // key
+        parts.Add(P(spec, 10)); // value
+        byte typ = Flag(spec, 15);
+        if (typ != 0) parts.Add(typ.ToString());
+        string errLbl = Lbl4(spec, 16);
+        if (!string.IsNullOrEmpty(errLbl)) parts.Add(errLbl);
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileSave(byte[] spec)
+    {
+        // srec_hndl(0) + no_clear(5,1byte) + no_ask(6,1byte) + nosave_lbl(7,4byte) + err_lbl(11,4byte) + unlock(15,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0));
+        string errLbl = Lbl4(spec, 11);
+        if (!string.IsNullOrEmpty(errLbl)) parts.Add(errLbl);
+        return Emit("SAVE", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileDel(byte[] spec)
+    {
+        // delrec_num(0) + no_ask(5,1byte) + nodel_lbl(6,4byte) + err_lbl(11,4byte)
+        return Emit("DEL", P(spec, 0));
+    }
+
+    private string DecompileDall(byte[] spec)
+    {
+        // delall_hndl(0) + for(5) + while(10) + disp(15,1byte) + cntr(16) + scope(21,1byte) + sval(22) + key(27) + strt(32)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // handle
+        string key = P(spec, 27);
+        if (!string.IsNullOrEmpty(key)) parts.Add(key);
+        string strt = P(spec, 32);
+        if (!string.IsNullOrEmpty(strt)) parts.Add(strt);
+        byte scope = Flag(spec, 21);
+        if (scope == (byte)'W') { parts.Add("WHILE"); parts.Add(P(spec, 10)); }
+        else if (scope == (byte)'F') { parts.Add("FOR"); parts.Add(P(spec, 5)); }
+        return Emit("DALL", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileOwner(byte[] spec)
+    {
+        // owner_hndl(0) + clr_set(5,1byte) + name(6) + crypt(11,1byte) + rd_ok(12,1byte)
+        byte csf = Flag(spec, 5);
+        string action = csf == (byte)'C' ? "CLR" : csf == (byte)'S' ? "SET" : "";
+        return Emit("OWNER", P(spec, 0), action, P(spec, 6));
+    }
+
+    private string DecompileRel(byte[] spec)
+    {
+        // Repeating 20-byte entries: slave_file(0) + slave_key(5) + master_file(10) + master_field(15)
+        var parts = new List<string>();
+        int pos = 0;
+        while (pos + 20 <= spec.Length)
+        {
+            string sf = P(spec, pos);
+            string sk = P(spec, pos + 5);
+            string mf = P(spec, pos + 10);
+            string md = P(spec, pos + 15);
+            if (!string.IsNullOrEmpty(sf)) parts.Add($"{sf}, {sk}, {mf}, {md}");
+            pos += 20;
+        }
+        return parts.Count > 0 ? $"REL {string.Join("; ", parts)}" : "REL";
+    }
+
+    private string DecompileClr(byte[] spec)
+    {
+        // clrbuf_fn(0) + ra(5,1byte)
+        return Emit("CLR", P(spec, 0));
+    }
+
+    private string DecompileRda(byte[] spec)
+    {
+        // rdary: from(0) + to(5) + hndl(10) + key(15) + strt(20) + scope(25,1byte) + sval(26) + for(31) + while(36) + cntr(41) + display(46,1byte)
+        return Emit("RDA", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    private string DecompileWrta(byte[] spec)
+    {
+        // wrtary: from(0) + to(5) + scope(10,1byte) + sval(11) + for(16) + hndl(21) + rec(26) + display(31,1byte) + cntr(32)
+        return Emit("WRTA", P(spec, 0), P(spec, 5), P(spec, 21));
+    }
+
+    private string DecompileUpdta(byte[] spec)
+    {
+        // ua: all(0) + wtd(5,1byte) + times(6) + val(11) + fn(16)
+        byte wtd = Flag(spec, 5);
+        string action = wtd switch { (byte)'C' => "CLR", (byte)'A' => "ADD", (byte)'S' => "SUB", (byte)'F' => "FILL", _ => "" };
+        return Emit("UPDTA", P(spec, 0), action, P(spec, 6), P(spec, 11));
+    }
+
+    private string DecompileRedef(byte[] spec)
+    {
+        // redef: fld(0) + ftyp(5) + fsze(10) + dchr(15) + fnum(20) + ofst(25) + knum(30) + pict(35) + loc(40) + up(45)
+        return Emit("REDEF", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
+    }
+
+    private string DecompileAdd(byte[] spec)
+    {
+        // add_fld: name(0) + ftyp(5) + fsze(10) + fdec(15) + fupc(20) + fmask(25) + fhndl(30) + fofst(35) + ffptr(40) + fary(45) + fknum(50)
+        return Emit("ADD", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 30));
+    }
+
+    private string DecompileAlloc(byte[] spec)
+    {
+        // aloc: fname(0) + ftyp(5) + fsze(10) + fdec(15) + fary(20) + upcse(25) + fmask(30)
+        return Emit("ALLOC", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    private string DecompileInsert(byte[] spec)
+    {
+        // ins: fld(0) + flist(5)
+        return Emit("INSERT", P(spec, 0), P(spec, 5));
+    }
+
+    private string DecompileSetline(byte[] spec)
+    {
+        // setline: recv(0) + flist(5)
+        return Emit("SETLINE", P(spec, 0), P(spec, 5));
+    }
+
+    private string DecompileRdWrt(byte[] spec, string name)
+    {
+        // rdwrt: hndl(0) + pos(5) + nchrs(10) + tofrm(15) + mem_area(20) + ofst(25)
+        return Emit(name, P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
+    }
+
+    // ===== Screen / Display Commands =====
+
+    private string DecompileEnter(byte[] spec)
+    {
+        // enter: col(0) + row(5) + fld(10) + msk(15) + hlp(20) + upa_lbl(25,4byte) + valid(29) + acr(34,1byte) + psw(35,1byte) + upc(36,1byte) + clr(37) + pre(42) + post(47) + dflt(54) + vmsg(59) + ...
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // col
+        parts.Add(P(spec, 5)); // row
+        parts.Add(P(spec, 10)); // field
+        string msk = P(spec, 15);
+        if (!string.IsNullOrEmpty(msk)) parts.Add(msk);
+        string hlp = P(spec, 20);
+        if (!string.IsNullOrEmpty(hlp)) parts.Add(hlp);
+        string valid = P(spec, 29);
+        if (!string.IsNullOrEmpty(valid)) parts.Add(valid);
+        string pre = P(spec, 42);
+        if (!string.IsNullOrEmpty(pre)) parts.Add($"PRE={pre}");
+        string post = P(spec, 47);
+        if (!string.IsNullOrEmpty(post)) parts.Add($"POST={post}");
+        string dflt = P(spec, 54);
+        if (!string.IsNullOrEmpty(dflt)) parts.Add($"DFLT={dflt}");
+        string vmsg = P(spec, 59);
+        if (!string.IsNullOrEmpty(vmsg)) parts.Add($"VMSG={vmsg}");
+        return Emit("ENTER", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileMsg(byte[] spec)
+    {
+        // msg: fld(0) + no_wait(5,1byte)
+        string fld = P(spec, 0);
+        byte noWait = Flag(spec, 5);
+        if (noWait != 0) return Emit("MSG", fld, "NOWAIT");
+        return Emit("MSG", fld);
+    }
+
+    private string DecompilePmsg(byte[] spec)
+    {
+        // prtmsg: col(0) + row(5) + msg(10) + wait(15,1byte) + ncr(16,1byte) + ent(17) + whr(22,1byte) + color(23) + abs(28,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // col
+        parts.Add(P(spec, 5)); // row
+        parts.Add(P(spec, 10)); // message
+        byte wait = Flag(spec, 15);
+        if (wait != 0) parts.Add("WAIT");
+        string color = P(spec, 23);
+        if (!string.IsNullOrEmpty(color)) parts.Add(color);
+        return Emit("PMSG", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompilePchr(byte[] spec)
+    {
+        // prtchr: ptw(0,1byte) + num(1) + fld(6)
+        string fld = P(spec, 6);
+        string num = P(spec, 1);
+        if (!string.IsNullOrEmpty(num) && num != "0" && num != "1")
+            return Emit("PCHR", fld, num);
+        return Emit("PCHR", fld);
+    }
+
+    private string DecompilePfmt(byte[] spec)
+    {
+        // prtfmt: col(0) + row(5) + wait(10,1byte) + ncr(11,1byte) + line(12) + whr(17,1byte) + thru(18) + abs(23,1byte) + bks(24,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // col
+        parts.Add(P(spec, 5)); // row
+        string line = P(spec, 12);
+        if (!string.IsNullOrEmpty(line)) parts.Add(line);
+        string thru = P(spec, 18);
+        if (!string.IsNullOrEmpty(thru)) parts.Add(thru);
+        return Emit("PFMT", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompilePbox(byte[] spec)
+    {
+        // prtbox: col(0) + row(5) + lnth(10) + wdt(15) + lines(20,1byte) + clr(21,1byte) + color(22) + brdr(27) + abs(32,1byte)
+        return Emit("PBOX", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
+    }
+
+    private string DecompilePblnk(byte[] spec)
+    {
+        // pblnk: num(0) + whr(5,1byte)
+        byte whr = Flag(spec, 5);
+        string w = whr switch { (byte)'P' => "P", (byte)'S' => "S", _ => "" };
+        return Emit("PBLNK", P(spec, 0), w);
+    }
+
+    private string DecompilePvert(byte[] spec)
+    {
+        // vert: num(0) + whr(5,1byte)
+        byte whr = Flag(spec, 5);
+        string w = whr switch { (byte)'P' => "P", (byte)'S' => "S", _ => "" };
+        return Emit("PVERT", P(spec, 0), w);
+    }
+
+    private string DecompileScroll(byte[] spec)
+    {
+        // scroll: col(0) + row(5) + ht(10) + wdt(15) + lnes(20) + direction(25,1byte)
+        byte dir = Flag(spec, 25);
+        string d = dir switch { (byte)'U' => "UP", (byte)'D' => "DN", (byte)'L' => "LEFT", (byte)'R' => "RIGHT", _ => "" };
+        return Emit("SCROLL", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20), d);
+    }
+
+    private string DecompileWindow(byte[] spec)
+    {
+        // window: col(0) + row(5) + lt(10) + wdt(15) + wclr(20) + ttlfld(25) + ttlloc(30) + box(35) + bclr(40) + shad(45) + sclr(50) + in_clr(55) + sve_fld(60) + sve_fld_sze(65,4byte) + wtext(69) + btext(74) + dco(79,1byte) + active(80,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0));  // col
+        parts.Add(P(spec, 5));  // row
+        parts.Add(P(spec, 10)); // length
+        parts.Add(P(spec, 15)); // width
+        string wclr = P(spec, 20);
+        if (!string.IsNullOrEmpty(wclr)) parts.Add(wclr);
+        string ttl = P(spec, 25);
+        if (!string.IsNullOrEmpty(ttl)) parts.Add(ttl);
+        string ttlloc = P(spec, 30);
+        if (!string.IsNullOrEmpty(ttlloc)) parts.Add(ttlloc);
+        string box = P(spec, 35);
+        if (!string.IsNullOrEmpty(box)) parts.Add(box);
+        string shad = P(spec, 45);
+        if (!string.IsNullOrEmpty(shad)) parts.Add(shad);
+        string sveFld = P(spec, 60);
+        if (!string.IsNullOrEmpty(sveFld)) parts.Add(sveFld);
+        return Emit("WINDOW", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileSay(byte[] spec)
+    {
+        // say: fld(0) + col(5) + row(10) + color(15) + pict(20)
+        return Emit("SAY", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    private string DecompileClrline(byte[] spec)
+    {
+        // clrline: col(0) + row(5) + chrs(10) + no_color(15,1byte) + color(16) + abs(21,1byte)
+        return Emit("CLRLNE", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 16));
+    }
+
+    private string DecompileFill(byte[] spec)
+    {
+        // fill: fld(0) + chr(5) + times(10) + where(15,1byte)
+        return Emit("FILL", P(spec, 0), P(spec, 5), P(spec, 10));
+    }
+
+    private string DecompileMid(byte[] spec)
+    {
+        // stuff: stuffed(0) + at(5) + num_chrs(10) + stuffee(15) + overwrite(20,1byte) + mem(21)
+        return Emit("MID", P(spec, 15), P(spec, 5), P(spec, 0), P(spec, 10));
+    }
+
+    private string DecompileDelc(byte[] spec)
+    {
+        // delc: fld(0) + at(5) + nchr(10) + mem(15)
+        return Emit("DELC", P(spec, 0), P(spec, 5), P(spec, 10));
+    }
+
+    private string DecompileFormat(byte[] spec)
+    {
+        // format: fld(0) + recv(5) + commas(10,1byte) + flt_dol(11,1byte) + neg_how(12,1byte) + off(13,1byte) + pict(14) + no_zeros(19,1byte)
+        string fld = P(spec, 0);
+        string recv = P(spec, 5);
+        string pict = P(spec, 14);
+        var parts = new List<string> { fld };
+        if (!string.IsNullOrEmpty(recv)) parts.Add(recv);
+        if (!string.IsNullOrEmpty(pict)) parts.Add(pict);
+        return Emit("FORMAT", parts.ToArray());
+    }
+
+    private string DecompileWrap(byte[] spec, string name)
+    {
+        // wrap: fld(0) + col(5) + dlnes(10)
+        return Emit(name, P(spec, 0), P(spec, 5), P(spec, 10));
+    }
+
+    private string DecompileCursor(byte[] spec)
+    {
+        // cursor: strt(0) + stop(5) + on_off(10,1byte) + wait(11,1byte) + dflt(12,1byte)
+        return Emit("CURSOR", P(spec, 0), P(spec, 5));
+    }
+
+    private string DecompileDispm(byte[] spec)
+    {
+        // dmem: col(0) + row(5) + mem_num(10,1byte) + strt(11) + esze(16) + ofst(21) + nchr(26) + nlne(31)
+        return Emit("DISPM", P(spec, 0), P(spec, 5), P(spec, 11), P(spec, 16), P(spec, 26), P(spec, 31));
+    }
+
+    private string DecompileFillmem(byte[] spec)
+    {
+        // fmem: area_num(0,1byte) + strt(1) + nchrs(6) + wchr(11)
+        return Emit("FILLMEM", P(spec, 1), P(spec, 6), P(spec, 11));
+    }
+
+    private string DecompilePaint(byte[] spec)
+    {
+        // paint: frm_x(0) + frm_y(5) + thr_x(10) + thr_y(15) + color(20)
+        return Emit("PAINT", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    private string DecompileRowColor(byte[] spec)
+    {
+        // row_color: from(0) + thru(5) + bkg(10) + text(15)
+        return Emit("ROW_COLOR", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
+    }
+
+    private string DecompileScrn(byte[] spec)
+    {
+        // schr: col(0) + row(5) + dchr(10) + achr(15) + wtd(20,1byte) + tchr(21)
+        return Emit("SCRN", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 21));
+    }
+
+    private string DecompileShowPline(byte[] spec)
+    {
+        // show_pl: col(0) + row(5)
+        return Emit("SHOW_PLINE", P(spec, 0), P(spec, 5));
+    }
+
+    private string DecompileRedsp(byte[] spec)
+    {
+        // redsp: scrn(0) + specs(5,1byte)
+        string scrn = P(spec, 0);
+        if (!string.IsNullOrEmpty(scrn)) return Emit("REDSP", scrn);
+        return "REDSP";
+    }
+
+    private string DecompileSaveScrn(byte[] spec)
+    {
+        // save_scrn: screen(0) + scope(5,1byte)
+        string scrn = P(spec, 0);
+        if (!string.IsNullOrEmpty(scrn)) return Emit("SAVES", scrn);
+        return "SAVES";
+    }
+
+    private string DecompileMount(byte[] spec)
+    {
+        // mount: fmt(0) + typ(5,1byte) + wtp(6,1byte) + rfile(7) + sve_to(12) + winform(17,1byte)
+        byte typ = Flag(spec, 5);
+        string t = typ switch { (byte)'S' => "SCREEN", (byte)'R' => "REPORT", _ => "" };
+        return Emit("MOUNT", P(spec, 0), t, P(spec, 7), P(spec, 12));
+    }
+
+    // ===== Menu / List Commands =====
+
+    private string DecompileMenu(byte[] spec, string name)
+    {
+        // menu: flds(0) + col(5) + row(10) + msg(15) + width(20) + chcs(25) + chose(30) + help(35) + ttl_w(40) + ttlfld(45) + cntr(50) + box(55) + shad_w(60) + hold(65,1byte) + array(66,1byte) + mcolor(67) + ccolor(72) + scolor(77) + larrow_lbl(82,4byte) + rarrow_lbl(86,4byte) + length(90) + bcolor(95) + ...
+        var parts = new List<string>();
+        parts.Add(P(spec, 0));  // field/choices list
+        parts.Add(P(spec, 5));  // col
+        parts.Add(P(spec, 10)); // row
+        parts.Add(P(spec, 20)); // width
+        string chcs = P(spec, 25);
+        if (!string.IsNullOrEmpty(chcs)) parts.Add(chcs);
+        string msg = P(spec, 15);
+        if (!string.IsNullOrEmpty(msg)) parts.Add(msg);
+        string chose = P(spec, 30);
+        if (!string.IsNullOrEmpty(chose)) parts.Add(chose);
+        string help = P(spec, 35);
+        if (!string.IsNullOrEmpty(help)) parts.Add(help);
+        string ttl = P(spec, 45);
+        if (!string.IsNullOrEmpty(ttl)) parts.Add(ttl);
+        string cntr = P(spec, 50);
+        if (!string.IsNullOrEmpty(cntr)) parts.Add(cntr);
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileListfm(byte[] spec, string name)
+    {
+        // act_wind: lst(0) + cntr(5) + actv(10) + chse(15) + rnd(20,1byte) + menu(21,1byte) + oth(22) + srch(27) + fhndl(32) + fkey(37) + for(42) + while(47) + start(52) + no_wait(57,1byte) + enter(58) + no_add(63,1byte) + lnes(64) + hlp(69) + cc(74) + up(79,1byte) + on_mve(80) + styp(85) + list_end(90,1byte) + fline(91) + cbf(96) + blnes(101) + noshift(106,1byte) + ec(107)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // list field
+        parts.Add(P(spec, 5)); // counter
+        string actv = P(spec, 10);
+        if (!string.IsNullOrEmpty(actv)) parts.Add(actv);
+        string chse = P(spec, 15);
+        if (!string.IsNullOrEmpty(chse)) parts.Add(chse);
+        string fhndl = P(spec, 32);
+        if (!string.IsNullOrEmpty(fhndl)) parts.Add(fhndl);
+        string fkey = P(spec, 37);
+        if (!string.IsNullOrEmpty(fkey)) parts.Add(fkey);
+        string forP = P(spec, 42);
+        if (!string.IsNullOrEmpty(forP)) parts.Add(forP);
+        string whileP = P(spec, 47);
+        if (!string.IsNullOrEmpty(whileP)) parts.Add(whileP);
+        string startP = P(spec, 52);
+        if (!string.IsNullOrEmpty(startP)) parts.Add(startP);
+        string hlp = P(spec, 69);
+        if (!string.IsNullOrEmpty(hlp)) parts.Add(hlp);
+        string cc = P(spec, 74);
+        if (!string.IsNullOrEmpty(cc)) parts.Add(cc);
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileRdlist(byte[] spec, string name)
+    {
+        // dlist: flst(0) + title(5) + hndl(10) + key(15) + strt(20) + scope(25,1byte) + sval(26) + for(31) + while(36) + cntr(41) + numb(46) + memory(51,1byte) + pwhr(52,1byte) + prt_f(53) + no_ff(58,1byte)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // field list
+        string title = P(spec, 5);
+        if (!string.IsNullOrEmpty(title)) parts.Add(title);
+        parts.Add(P(spec, 10)); // handle
+        string key = P(spec, 15);
+        if (!string.IsNullOrEmpty(key)) parts.Add(key);
+        string strt = P(spec, 20);
+        if (!string.IsNullOrEmpty(strt)) parts.Add(strt);
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileCalcRecs(byte[] spec, string name)
+    {
+        // calc_recs: from(0) + to(5) + hndl(10) + key(15) + strt(20) + scope(25,1byte) + sval(26) + for(31) + while(36) + cntr(41) + numb(46) + memory(51,1byte) + display(52,1byte)
+        return Emit(name, P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    // ===== Print Control =====
+
+    private string DecompilePon(byte[] spec)
+    {
+        // prt_to: file(0) + wch(5,1byte)
+        byte wch = Flag(spec, 5);
+        string w = wch switch { (byte)'P' => "P", (byte)'S' => "S", (byte)'B' => "B", _ => "" };
+        return Emit("PON", P(spec, 0), w);
+    }
+
+    // ===== Transfer / String =====
+
+    private string DecompileXfer(byte[] spec)
+    {
+        // xfer: ffld(0) + tfld(5) + numchr(10) + fmem(15) + tmem(20) + rec_buff(25,1byte)
+        return Emit("XFER", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+    }
+
+    private string DecompileSorta(byte[] spec)
+    {
+        // sort: fld(0) + num(5) + move(10) + cntr(15) + way(20,1byte)
+        byte way = Flag(spec, 20);
+        string w = way == (byte)'D' ? "DESC" : "";
+        return Emit("SORTA", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), w);
+    }
+
+    // ===== Peek / Poke =====
+
+    private string DecompilePeekPoke(byte[] spec, string name)
+    {
+        // pk: loc_ofs(0) + fld(5) + nchr(10)
+        return Emit(name, P(spec, 0), P(spec, 5), P(spec, 10));
+    }
+
+    // ===== Chain / Run =====
+
+    private string DecompileRunPrg(byte[] spec)
+    {
+        // run_prg: nme(0) + tail(5)
+        return Emit("RUN", P(spec, 0), P(spec, 5));
+    }
+
+    // ===== RAP =====
+
+    private string DecompileRap(byte[] spec)
+    {
+        // rap: name(0) + num(5) + in_mem(10,1byte) + with(11) + no_base_wind(16,1byte) + new_runtime(17,1byte) + no_delete(18,1byte) + no_save(19,1byte)
+        return Emit("RAP", P(spec, 0), P(spec, 5), P(spec, 11));
+    }
+
+    // ===== Clock / Trace / Sound / Error =====
+
+    private string DecompileClock(byte[] spec)
+    {
+        // clock: on_off(0,1byte) + col(1) + row(6) + mil(11,1byte)
+        byte onOff = Flag(spec, 0);
+        string state = onOff switch { (byte)'Y' => "ON", (byte)'N' => "OFF", _ => "" };
+        return Emit("CLOCK", state, P(spec, 1), P(spec, 6));
+    }
+
+    private string DecompileTrace(byte[] spec)
+    {
+        // trace: do_what(0,1byte) + fw(1)
+        byte dw = Flag(spec, 0);
+        string what = dw switch { (byte)'Y' => "ON", (byte)'N' => "OFF", (byte)'S' => "STEP", _ => "" };
+        return Emit("TRACE", what, P(spec, 1));
+    }
+
+    private string DecompileSound(byte[] spec)
+    {
+        // snd: note_ary(0) + beat_ary(5) + max_notes(10) + wav_file(15)
+        return Emit("SOUND", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
+    }
+
+    private string DecompileErr(byte[] spec)
+    {
+        // error: fld(0) + num(5)
+        return Emit("ERR", P(spec, 0), P(spec, 5));
+    }
+
+    // ===== GETLBL / UPAR =====
+
+    private string DecompileGetlbl(byte[] spec)
+    {
+        // get_lbl: loc(0,4byte label) + fld(4)
+        return Emit("GETLBL", Lbl4(spec, 0), P(spec, 4));
+    }
+
+    private string DecompileUpar(byte[] spec)
+    {
+        // up: udf(0) + goto_lbl(5,4byte)
+        string udf = P(spec, 0);
+        string lbl = Lbl4(spec, 5);
+        if (!string.IsNullOrEmpty(lbl)) return Emit("UPAR", udf, lbl);
+        return Emit("UPAR", udf);
+    }
+
+    // ===== Import / Export =====
+
+    private string DecompileImpExp(byte[] spec, string name)
+    {
+        // Same as calc_recs layout + extensions at offset 53+
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // from
+        parts.Add(P(spec, 5)); // to
+        parts.Add(P(spec, 10)); // handle
+        string ftyp = P(spec, 53);
+        if (!string.IsNullOrEmpty(ftyp)) parts.Add(ftyp);
+        string dchr = P(spec, 58);
+        if (!string.IsNullOrEmpty(dchr)) parts.Add(dchr);
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    // ===== Button / Hot Spot / Load Picture =====
+
+    private string DecompileButton(byte[] spec)
+    {
+        // button: col(0) + row(5) + len(10) + wdt(15) + color(20) + caption(25) + txtcolor(30) + key(35) + remove(40,1byte) + save_to(41) + restore_from(46) + off(51,1byte) + on(52,1byte) + using(53)
+        var parts = new List<string>();
+        parts.Add(P(spec, 0));  // col
+        parts.Add(P(spec, 5));  // row
+        parts.Add(P(spec, 10)); // length
+        parts.Add(P(spec, 15)); // width
+        string caption = P(spec, 25);
+        if (!string.IsNullOrEmpty(caption)) parts.Add(caption);
+        string key = P(spec, 35);
+        if (!string.IsNullOrEmpty(key)) parts.Add(key);
+        string color = P(spec, 20);
+        if (!string.IsNullOrEmpty(color)) parts.Add(color);
+        return Emit("BUTTON", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+    }
+
+    private string DecompileHotSpot(byte[] spec)
+    {
+        // hot: col(0) + row(5) + len(10) + wdt(15) + hndl(20) + key(25) + remove(30,1byte)
+        return Emit("HOT_SPOT", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20), P(spec, 25));
+    }
+
+    private string DecompileLoadPicture(byte[] spec)
+    {
+        // load_pict: obj(0) + file(5) + field(10)
+        return Emit("LOAD_PICTURE", P(spec, 0), P(spec, 5), P(spec, 10));
+    }
+
+    // ===== Mouse =====
+
+    private string DecompileMouse(byte[] spec)
+    {
+        // mouse: fn(0) + cc(5) + lok(10,1byte) + err_lbl(11,4byte) + owner(15) + path(20) + fd(25) + on_off(30,1byte)
+        return Emit("MOUSE", P(spec, 0), P(spec, 5), P(spec, 15));
+    }
+
+    // ===== Equation Variants =====
+
+    private string DecompileEquMid(byte[] spec)
+    {
+        // equ_mid: recv_loc(0) + fld(5) + start(10) + size(15) + mem(20)
+        return Emit("EQU_MID", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15));
     }
 
     // ===== Generic: Walk spec bytes sequentially =====
