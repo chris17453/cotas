@@ -11,10 +11,10 @@ namespace CoTAS.Compiler;
 ///
 /// Operation types:
 ///   0x00: binary op — 00 + operator(1) + lhs(5) + rhs(5) + result(4) = 16 bytes
-///   0x01: 0-arg function — 01 + funcNum(1) + result(4) = 6 bytes
-///   0x02: 1-arg function — 02 + funcNum(1) + arg(5) + result(4) = 11 bytes
-///   0x03+: N-arg function — (N+1) + funcNum(1) + args(5*N) + result(4)
-///   0x0C: UDF call — 0C + labelIdx(4) + padding(4) + args(5*N) + result(4)
+///   0x01: 0-arg function — 01 + funcNum(2) + result(4) = 7 bytes
+///   0x02: 1-arg function — 02 + funcNum(2) + arg(5) + result(4) = 12 bytes
+///   0x03+: N-arg function — (N+1) + funcNum(2) + args(5*N) + result(4)
+///   0x14+: UDF call — (argCount+20) + labelIdx(4) + tempBase(4) + args(5*N) + result(4)
 ///   0xB4: array access — B4 + field(5) + indexOffset(4) + result(4) = 14 bytes
 ///   0x0A-0x0F: standalone comparison — op(1) + lhsTemp(4) + rhsTemp(4) + resultTemp(4) = 13 bytes
 /// </summary>
@@ -218,17 +218,18 @@ public sealed class ExpressionEncoder
 
     private OperandRef CompileFunctionCall(FunctionCallExpr func)
     {
-        // Check if it's a UDF call (label reference)
+        // UDF call: opType = argCount + 20 (matching original TAS: CFPCntr+20)
+        // Format: opType(1) + labelIdx(4) + tempBase(4) + args(5*N) + result(4)
         int labelIdx = _labels.FindLabel(func.Name);
         if (labelIdx >= 0)
         {
-            // UDF call: 0C + labelIdx(4) + padding(4) + args(5*N) + result(4)
             var args = func.Arguments.Select(a => CompileNode(a)).ToList();
             int resultOff = AllocTemp();
 
-            _ops.WriteByte(0x0C);
+            _ops.WriteByte((byte)(args.Count + 20));
             WriteInt32(labelIdx);
-            WriteInt32(0); // padding
+            int tempCtrHldr = _nextTempOffset;
+            WriteInt32(tempCtrHldr);
             foreach (var arg in args)
                 WriteOperand(arg);
             WriteInt32(resultOff);
@@ -244,7 +245,9 @@ public sealed class ExpressionEncoder
 
         // opType = argCount + 1 (e.g., 0-arg = 0x01, 1-arg = 0x02, etc.)
         _ops.WriteByte((byte)(argCount + 1));
+        // Function number as 2-byte word (matching original TAS: move(i2,CmpExpr[CmpExprCntr],2))
         _ops.WriteByte(funcNum);
+        _ops.WriteByte(0x00);
         foreach (var arg in compiledArgs)
             WriteOperand(arg);
         WriteInt32(result);
@@ -363,12 +366,12 @@ public sealed class ExpressionEncoder
             }
             case int i:
             {
-                int off = _constants.AddShortInteger(i);
+                int off = _constants.AddInteger(i);
                 return ('C', off);
             }
             case long l:
             {
-                int off = _constants.AddShortInteger((int)l);
+                int off = _constants.AddInteger((int)l);
                 return ('C', off);
             }
             case double d:

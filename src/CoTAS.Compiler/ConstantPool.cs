@@ -37,30 +37,12 @@ public sealed class ConstantPool
     }
 
     /// <summary>
-    /// Add an integer constant in TAS 5.1 binary format.
-    /// Format: 'I'(1) + int32_value(4) = 5 bytes total.
-    /// This is NOT the standard header format — integers use a compact binary encoding.
+    /// Add an integer constant in TAS compact binary format.
+    /// Format: 'I'(1) + int16_value(2) = 3 bytes total.
+    /// Original TAS uses compact format for B/L/I/R types: type(1) + raw_value(N),
+    /// with no dec/displaySize header. Integer values are always stored as 2-byte words.
     /// </summary>
     public int AddInteger(int value)
-    {
-        int offset = (int)_stream.Length;
-        _stream.WriteByte((byte)'I');
-        WriteInt32(value);
-        return offset;
-    }
-
-    /// <summary>
-    /// Add integer zero constant. TAS compiler always emits this at constant pool offset 0.
-    /// Uses compact format: 'I'(1) + int32(4) = 5 bytes.
-    /// </summary>
-    public int AddIntegerZero() => AddInteger(0);
-
-    /// <summary>
-    /// Add an integer using the short format (for expression operands).
-    /// Format: 'I'(1) + int16(2) = 3 bytes total.
-    /// TAS uses this compact format when integer literals appear in expressions.
-    /// </summary>
-    public int AddShortInteger(int value)
     {
         int offset = (int)_stream.Length;
         _stream.WriteByte((byte)'I');
@@ -70,18 +52,28 @@ public sealed class ConstantPool
     }
 
     /// <summary>
-    /// Add a numeric constant (with decimals) stored as ASCII text.
-    /// Format: 'N'(1) + dec(1) + displaySize(2) + ascii_digits(displaySize)
+    /// Add integer zero constant. TAS compiler always emits this at constant pool offset 0.
+    /// Uses compact format: 'I'(1) + int16(2) = 3 bytes.
+    /// </summary>
+    public int AddIntegerZero() => AddInteger(0);
+
+    /// <summary>
+    /// Add a numeric constant as binary double.
+    /// Original TAS format: 'N'(1) + dec(1) + displaySize(2) + double(8) = 12 bytes always.
+    /// displaySize is the formatted display width (number of ASCII chars when rendered),
+    /// but the stored data is always an 8-byte IEEE 754 double.
     /// </summary>
     public int AddNumeric(double value, int decimals)
     {
         string text = decimals > 0
             ? value.ToString($"F{decimals}")
             : value.ToString("G");
+        int displayWidth = text.Length;
         int offset = (int)_stream.Length;
-        byte[] data = Encoding.ASCII.GetBytes(text);
-        WriteConstantHeader('N', (byte)decimals, data.Length);
-        _stream.Write(data);
+        WriteConstantHeader('N', (byte)decimals, displayWidth);
+        Span<byte> buf = stackalloc byte[8];
+        BitConverter.TryWriteBytes(buf, value);
+        _stream.Write(buf);
         return offset;
     }
 
@@ -112,14 +104,39 @@ public sealed class ConstantPool
     }
 
     /// <summary>
-    /// Add a logical constant.
-    /// Format: 'L'(1) + dec(1) + displaySize(2) + byte(1)
+    /// Add a logical constant in TAS compact format.
+    /// Original TAS format: 'L'(1) + byte_value(1) = 2 bytes total.
+    /// B/L/I/R types use compact encoding with NO dec/displaySize header.
     /// </summary>
     public int AddLogical(bool value)
     {
         int offset = (int)_stream.Length;
-        WriteConstantHeader('L', 0, 1);
+        _stream.WriteByte((byte)'L');
         _stream.WriteByte(value ? (byte)1 : (byte)0);
+        return offset;
+    }
+
+    /// <summary>
+    /// Add a byte constant in TAS compact format.
+    /// Format: 'B'(1) + byte_value(1) = 2 bytes total.
+    /// </summary>
+    public int AddByte(byte value)
+    {
+        int offset = (int)_stream.Length;
+        _stream.WriteByte((byte)'B');
+        _stream.WriteByte(value);
+        return offset;
+    }
+
+    /// <summary>
+    /// Add a real/float constant in TAS compact format.
+    /// Format: 'R'(1) + int32_value(4) = 5 bytes total.
+    /// </summary>
+    public int AddReal(int value)
+    {
+        int offset = (int)_stream.Length;
+        _stream.WriteByte((byte)'R');
+        WriteInt32(value);
         return offset;
     }
 

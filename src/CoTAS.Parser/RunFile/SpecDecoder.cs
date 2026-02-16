@@ -105,8 +105,19 @@ public sealed class SpecDecoder
             case 'Y': // Array field reference
                 return ResolveArrayField(location);
 
-            case 'M': // Macro (indirect field reference)
-                return $"MACRO@{location}";
+            case 'M': // Macro (indirect field reference - field value contains target field name)
+            {
+                int fldSize = _run.Header.FieldSpecSize;
+                int idx = fldSize > 0 ? location / fldSize : location;
+                if (idx >= 0 && idx < _run.Fields.Count)
+                {
+                    string name = _run.Fields[idx].Name;
+                    if (!string.IsNullOrEmpty(name) && name.All(c => c >= ' ' && c <= '~'))
+                        return $"@{name}";
+                    return $"@FIELD[{idx}]";
+                }
+                return $"@FIELD[{idx}]";
+            }
 
             case 's': // Single character constant
             {
@@ -114,8 +125,19 @@ public sealed class SpecDecoder
                 return $"'{SanitizeChar(ch)}'";
             }
 
-            case 'q': // Macro array
-                return $"MACROARY@{location}";
+            case 'q': // Macro array (indirect array field reference)
+            {
+                int fldSize = _run.Header.FieldSpecSize;
+                int idx = fldSize > 0 ? location / fldSize : location;
+                if (idx >= 0 && idx < _run.Fields.Count)
+                {
+                    string name = _run.Fields[idx].Name;
+                    if (!string.IsNullOrEmpty(name) && name.All(c => c >= ' ' && c <= '~'))
+                        return $"@{name}[]";
+                    return $"@FIELD[{idx}][]";
+                }
+                return $"@FIELD[{idx}][]";
+            }
 
             case 'G': // GOTO label reference — location is label index
                 return $"LABEL_{location}";
@@ -219,54 +241,52 @@ public sealed class SpecDecoder
                 return $"'{str}'";
             }
 
-            case 'I': // Integer
-                // TAS sometimes stores small integers as type(1)+int16(2) without the
-                // full header. If displaySize seems unreasonable (>256 for an integer),
-                // try reading the 2 bytes after the type byte as an int16 value directly.
-                if (displaySize > 256)
-                {
-                    // Re-read: bytes at offset+1 and offset+2 as int16
-                    if (offset + 3 <= cs.Length)
-                        return BitConverter.ToInt16(cs, offset + 1).ToString();
-                    return "0";
-                }
-                if (dataLen == 4) return BitConverter.ToInt32(cs, dataStart).ToString();
-                if (dataLen == 2) return BitConverter.ToInt16(cs, dataStart).ToString();
-                goto case 'N';
-            case 'N': // Numeric
-            case 'R': // Real
-            case 'B': // Byte
+            case 'I': // Integer - compact format: 'I'(1) + int16(2) = 3 bytes, no header
+                if (offset + 3 <= cs.Length)
+                    return BitConverter.ToInt16(cs, offset + 1).ToString();
+                return "0";
+            case 'B': // Byte - compact format: 'B'(1) + byte(1) = 2 bytes, no header
+                if (offset + 2 <= cs.Length)
+                    return cs[offset + 1].ToString();
+                return "0";
+            case 'R': // Real - compact format: 'R'(1) + int32(4) = 5 bytes, no header
+                if (offset + 5 <= cs.Length)
+                    return BitConverter.ToInt32(cs, offset + 1).ToString();
+                return "0";
+            case 'L': // Logical - compact format: 'L'(1) + byte(1) = 2 bytes, no header
+                if (offset + 2 <= cs.Length)
+                    return cs[offset + 1] != 0 ? ".T." : ".F.";
+                return ".F.";
+            case 'N': // Numeric - header format: 'N'(1) + dec(1) + displaySize(2) + double(8) = 12 bytes
             case 'P': // Packed
             {
-                // Try ASCII first — if all bytes are printable digits/signs/dots, it's text-encoded
-                bool isAsciiNum = true;
-                for (int i = dataStart; i < dataStart + dataLen; i++)
+                // N type has standard header, then binary double (8 bytes)
+                if (offset + 12 <= cs.Length)
+                    return BitConverter.ToDouble(cs, dataStart).ToString("G");
+                // Fallback: try reading as ASCII if binary parse fails
+                if (dataLen > 0)
                 {
-                    byte b = cs[i];
-                    if (b == 0) break; // null terminator
-                    if (!((b >= '0' && b <= '9') || b == '-' || b == '+' || b == '.' || b == ' ' || b == 'E' || b == 'e'))
+                    bool isAsciiNum = true;
+                    for (int i = dataStart; i < dataStart + Math.Min(dataLen, 40); i++)
                     {
-                        isAsciiNum = false;
-                        break;
+                        byte b = cs[i];
+                        if (b == 0) break;
+                        if (!((b >= '0' && b <= '9') || b == '-' || b == '+' || b == '.' || b == ' ' || b == 'E' || b == 'e'))
+                        {
+                            isAsciiNum = false;
+                            break;
+                        }
                     }
+                    if (isAsciiNum)
+                    {
+                        string numStr = SanitizeBytes(cs, dataStart, Math.Min(dataLen, 40), trimEnd: true);
+                        return numStr.Length > 0 ? numStr : "0";
+                    }
+                    if (dataLen >= 8) return BitConverter.ToDouble(cs, dataStart).ToString("G");
+                    if (dataLen >= 4) return BitConverter.ToInt32(cs, dataStart).ToString();
                 }
-                if (isAsciiNum)
-                {
-                    string numStr = SanitizeBytes(cs, dataStart, Math.Min(dataLen, 40), trimEnd: true);
-                    return numStr.Length > 0 ? numStr : "0";
-                }
-                // Binary packed numeric — try to read as int/float based on size
-                if (dataLen == 4) return BitConverter.ToInt32(cs, dataStart).ToString();
-                if (dataLen == 8) return BitConverter.ToDouble(cs, dataStart).ToString("G");
-                if (dataLen == 2) return BitConverter.ToInt16(cs, dataStart).ToString();
-                if (dataLen == 1) return cs[dataStart].ToString();
-                // For unusual numeric sizes, try reading as many bytes as available
-                if (dataLen >= 4) return BitConverter.ToInt32(cs, dataStart).ToString();
                 return "0";
             }
-
-            case 'L': // Logical
-                return dataLen > 0 && cs[dataStart] != 0 ? ".T." : ".F.";
 
             case 'D': // Date
                 return $"DATE({SanitizeBytes(cs, dataStart, Math.Min(dataLen, 8), trimEnd: true)})";
