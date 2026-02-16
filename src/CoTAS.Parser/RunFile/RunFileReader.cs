@@ -321,6 +321,7 @@ public sealed class RunFileReader
                 DisplaySize = ReadInt32(offset + 21),
                 ArrayCount = ReadInt32(offset + 25),
                 IsFileField = _data[offset + 29] != 0,
+                FileFieldIndex = _data[offset + 29],
                 PictureType = (char)_data[offset + 30],
                 PictureLocation = ReadInt32(offset + 31),
                 IsReset = _data[offset + 35] != 0,

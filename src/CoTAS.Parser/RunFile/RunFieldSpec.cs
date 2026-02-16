@@ -31,6 +31,9 @@ public sealed class RunFieldSpec
     /// <summary>Whether this field comes from an opened data file.</summary>
     public bool IsFileField { get; set; }
 
+    /// <summary>Raw FileFld byte value: 0=memory, N=buffer index+1 (1-based).</summary>
+    public byte FileFieldIndex { get; set; }
+
     /// <summary>Picture format type character.</summary>
     public char PictureType { get; set; }
 

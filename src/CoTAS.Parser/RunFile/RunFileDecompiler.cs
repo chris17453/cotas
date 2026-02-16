@@ -24,6 +24,7 @@ public sealed class RunFileDecompiler
     private bool _thenIndent; // indent next line after IF...THEN
     private readonly Dictionary<int, List<string>> _closingKeywords = new();
     private readonly HashSet<int> _suppressedElse = new(); // ELSE inside SELECT (jump to ENDC, not real ELSE)
+    private readonly List<(int offset, char mountType)> _screenOffsets = new();
 
     public RunFileDecompiler(RunFileReader run)
     {
@@ -90,6 +91,16 @@ public sealed class RunFileDecompiler
 
             // Adjust indent AFTER for opening constructs
             AdjustIndentAfter(instr.CommandNumber);
+        }
+
+        // Emit screen/report format definitions collected from MOUNT instructions
+        if (_screenOffsets.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine(";End of Prg");
+            int screenNum = 1;
+            foreach (var (offset, mountType) in _screenOffsets)
+                DecodeScreenFormat(sb, offset, screenNum++, mountType);
         }
 
         return sb.ToString();
@@ -339,11 +350,26 @@ public sealed class RunFileDecompiler
             case TasOpcode.ASK: return DecompileGenericVal1("ASK", spec);
             case TasOpcode.IFDUP:
             {
-                // IFDUP: if_typ(10)=key number, if_loc(11)=buffer/file handle index
-                byte key = Flag(spec, 10);
-                int buf = spec.Length >= 15 ? BitConverter.ToInt32(spec, 11) : 0;
-                string fh = buf >= 0 && buf < _run.Fields.Count ? _run.Fields[buf].Name : buf.ToString();
-                return $"IFDUP {fh}";
+                // IFDUP has same spec layout as IF: expression at offset 10, if_do at 15
+                if (spec.Length < 15) return "IFDUP ???";
+                string expr = _spec.ResolveSpecParam(spec, 10);
+                byte doByte = spec.Length > 15 ? spec[15] : (byte)'D';
+                switch ((char)doByte)
+                {
+                    case 'D': return $"IFDUP {expr}";
+                    case 'G':
+                        if (spec.Length >= 20)
+                            return $"IFDUP {expr} GOTO {LabelName(BitConverter.ToInt32(spec, 16))}";
+                        return $"IFDUP {expr} GOTO ???";
+                    case 'S':
+                        if (spec.Length >= 20)
+                            return $"IFDUP {expr} GOSUB {LabelName(BitConverter.ToInt32(spec, 16))}";
+                        return $"IFDUP {expr} GOSUB ???";
+                    case 'T': return $"IFDUP {expr} THEN";
+                    case 'E': return $"IFDUP {expr} RET";
+                    case 'R': return $"IFDUP {expr} REENT";
+                    default: return $"IFDUP {expr}";
+                }
             }
             case TasOpcode.IFNA: return DecompileGenericVal1("IFNA", spec);
             case TasOpcode.SSPCF: return DecompileGenericVal1("SSPCF", spec);
@@ -1225,8 +1251,29 @@ public sealed class RunFileDecompiler
     {
         // mount: fmt(0) + typ(5,1byte) + wtp(6,1byte) + rfile(7) + sve_to(12) + winform(17,1byte)
         byte typ = Flag(spec, 5);
-        string t = typ switch { (byte)'S' => "SCREEN", (byte)'R' => "REPORT", _ => "" };
-        return Emit("MOUNT", P(spec, 0), t, P(spec, 7), P(spec, 12));
+        string t = typ switch { (byte)'S' => "SCREEN", (byte)'R' => "REPORT", (byte)'B' => "REPORT", _ => "" };
+
+        // Collect the constant offset for screen data extraction
+        if (spec.Length >= 5 && spec[0] == 0)
+        {
+            int fmtLoc = BitConverter.ToInt32(spec, 1);
+            if (fmtLoc >= 0 && fmtLoc + 4 <= _run.ConstantSegment.Length)
+            {
+                int screenOffset = BitConverter.ToInt32(_run.ConstantSegment, fmtLoc);
+                if (screenOffset > 0 && screenOffset < _run.ConstantSegment.Length)
+                {
+                    char mt = typ == 0 ? 'S' : (char)typ;
+                    _screenOffsets.Add((screenOffset, mt));
+                }
+            }
+        }
+
+        string wtp = "";
+        byte wtpByte = Flag(spec, 6);
+        if (wtpByte != 0 && wtpByte != ' ')
+            wtp = ((char)wtpByte).ToString();
+
+        return Emit("MOUNT", t, wtp, P(spec, 7), P(spec, 12));
     }
 
     // ===== Menu / List Commands =====
@@ -1758,5 +1805,173 @@ public sealed class RunFileDecompiler
         }
 
         if (_run.Fields.Count > 0) sb.AppendLine();
+    }
+
+    // ===== Screen/Report Format Decoder =====
+
+    /// <summary>
+    /// Decode a compiled screen/report format from the constant segment
+    /// and emit it in TAS source format (\S5name, \COLOR, \FIELDS, \\).
+    /// Old format (TAS32): [NumFlds:2][sections...]
+    /// New format (TASWN): [SizeOfFormat:2][NumFlds:2][sections...]
+    /// Section markers: 0xC2=text, 0xC6=fields, 0xC3=colors
+    /// </summary>
+    private void DecodeScreenFormat(StringBuilder sb, int offset, int screenNum, char mountType)
+    {
+        var cs = _run.ConstantSegment;
+        if (offset < 0 || offset + 4 >= cs.Length) return;
+
+        bool oldFormat = _run.Header.ProType.StartsWith("TAS32");
+        int numScrnFlds;
+        int pos;
+        int end;
+
+        if (oldFormat)
+        {
+            numScrnFlds = BitConverter.ToUInt16(cs, offset);
+            pos = offset + 2;
+            end = Math.Min(offset + 6801, cs.Length);
+        }
+        else
+        {
+            int sizeOfFormat = BitConverter.ToUInt16(cs, offset);
+            numScrnFlds = BitConverter.ToUInt16(cs, offset + 2);
+            pos = offset + 4;
+            end = Math.Min(offset + sizeOfFormat, cs.Length);
+        }
+
+        // Skip entries with bogus numflds (likely a report with different binary layout)
+        if (numScrnFlds > 500)
+        {
+            sb.AppendLine($"; Skipped format #{screenNum} (report binary, numflds={numScrnFlds})");
+            return;
+        }
+
+        string prefix = mountType == 'B' || mountType == 'R' ? "\\B5" : "\\S5";
+        sb.AppendLine($"{prefix}FORMAT{screenNum}");
+
+        const byte B_MARK = (byte)'B' + 128; // 0xC2
+        const byte F_MARK = (byte)'F' + 128; // 0xC6
+        const byte C_MARK = (byte)'C' + 128; // 0xC3
+
+        int fldSpecSize = _run.Header.FieldSpecSize;
+
+        while (pos < end)
+        {
+            byte marker = cs[pos];
+            if (marker == 0) break;
+
+            if (marker == B_MARK)
+            {
+                pos++;
+                while (pos < cs.Length && cs[pos] != 0)
+                {
+                    int lineStart = pos;
+                    while (pos < cs.Length && cs[pos] != 0x0D && cs[pos] != 0)
+                        pos++;
+                    int lineLen = pos - lineStart;
+                    var lineChars = new char[lineLen];
+                    for (int j = 0; j < lineLen; j++)
+                        lineChars[j] = (char)cs[lineStart + j];
+                    sb.AppendLine(new string(lineChars));
+                    if (pos < cs.Length && cs[pos] == 0x0D) pos++;
+                }
+                if (pos < cs.Length && cs[pos] == 0) pos++;
+            }
+            else if (marker == C_MARK)
+            {
+                sb.AppendLine("\\COLOR");
+                pos++;
+                while (pos + 5 <= cs.Length && cs[pos] != 0)
+                {
+                    byte a = cs[pos], b = cs[pos + 1], c = cs[pos + 2], d = cs[pos + 3], e = cs[pos + 4];
+                    // Positions are 0-based in binary; source uses 1-based
+                    sb.AppendLine($"  {a,2} {b + 1,2} {c + 1,2} {d + 1,2} {e + 1,2}");
+                    pos += 5;
+                }
+                if (pos < cs.Length && cs[pos] == 0) pos++;
+            }
+            else if (marker == F_MARK)
+            {
+                sb.AppendLine("\\FIELDS");
+                pos++;
+                // TScrnFld: Typ(1) Loc(4) Col(1) Row(1) dcolor(1) picture(4) fld_offset(4) = 16 bytes
+                while (pos + 16 <= cs.Length && cs[pos] != 0)
+                {
+                    char fldTyp = (char)cs[pos];
+                    int fldLoc = BitConverter.ToInt32(cs, pos + 1);
+                    byte fldCol = cs[pos + 5];
+                    byte fldRow = cs[pos + 6];
+                    byte fldDColor = cs[pos + 7];
+                    // Col/Row are 0-based in binary; source uses 1-based
+                    int srcCol = fldCol + 1;
+                    int srcRow = fldRow + 1;
+
+                    string fldName;
+                    string exprSuffix = "";
+
+                    if (fldTyp == 'F' && fldSpecSize > 0)
+                    {
+                        int idx = fldLoc / fldSpecSize;
+                        if (idx >= 0 && idx < _run.Fields.Count)
+                            fldName = _run.Fields[idx].Name;
+                        else
+                            fldName = $"FIELD[{idx}]";
+                    }
+                    else if (fldTyp == 'X')
+                    {
+                        // Expression display field — name is lost at compile time
+                        fldName = $"EXPR_FLD";
+                        exprSuffix = $"==A{_spec.ResolveParam('X', fldLoc)}";
+                    }
+                    else
+                        fldName = $"{fldTyp}:{fldLoc}";
+
+                    // Resolve field metadata from the field spec list
+                    RunFieldSpec? fldSpec = null;
+                    if (fldTyp == 'F' && fldSpecSize > 0)
+                    {
+                        int idx = fldLoc / fldSpecSize;
+                        if (idx >= 0 && idx < _run.Fields.Count)
+                            fldSpec = _run.Fields[idx];
+                    }
+
+                    // Source format: NAME  grp col row dc ? dec size ? ?TYPE+UC+RW+G+FILE  NN  isize  [==Aexpr]
+                    int arrCount = fldSpec?.ArrayCount ?? 0;
+                    char typeChar = fldSpec?.FieldType ?? (fldTyp == 'X' ? 'X' : '?');
+                    string ucFlag = fldSpec != null ? (fldSpec.ForceUpperCase ? "Y" : "N") : "N";
+                    string rwFlag = fldSpec != null ? (fldSpec.IsFileField ? "R" : "N") : "X";
+                    int dsize = fldSpec?.DisplaySize ?? 0;
+                    int dec = fldSpec?.Decimals ?? 0;
+                    // Trailing size = dsize (isize is 0 for file fields in binary)
+                    int trailingSize = dsize;
+
+                    // Resolve buffer name from FileFieldIndex (1-based buffer index)
+                    string bufName = "MEMORY";
+                    if (fldSpec != null && fldSpec.IsFileField && fldSpec.FileFieldIndex > 0)
+                    {
+                        int bufIdx = fldSpec.FileFieldIndex - 1;
+                        if (bufIdx >= 0 && bufIdx < _run.Buffers.Count)
+                            bufName = _run.Buffers[bufIdx].Name;
+                    }
+                    // NN flag: present for memory fields and non-key file fields
+                    string nnFlag = fldSpec != null && !fldSpec.IsFileField ? "NN" : 
+                                    (fldSpec != null && fldSpec.IsFileField && fldSpec.KeyNumber == 0 ? "NN" : "  ");
+
+                    sb.Append($"{fldName,-17}{arrCount,1} {srcCol,2} {srcRow,2} {fldDColor,2}  0 {dec} {dsize,4}    0    {arrCount}{typeChar}{ucFlag}{rwFlag}G{bufName,-8}{nnFlag} {trailingSize,5}");
+                    if (!string.IsNullOrEmpty(exprSuffix))
+                        sb.Append($"        {exprSuffix}");
+                    sb.AppendLine();
+                    pos += 16;
+                }
+                if (pos < cs.Length && cs[pos] == 0) pos++;
+            }
+            else
+            {
+                // Unknown marker - skip to end
+                break;
+            }
+        }
+        sb.AppendLine("\\\\");
     }
 }
