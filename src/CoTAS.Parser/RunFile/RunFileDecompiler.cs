@@ -842,15 +842,25 @@ public sealed class RunFileDecompiler
     private string DecompileFind(byte[] spec, string name)
     {
         // find_hndl(0) + key(5) + val(10) + typ(15,1byte) + err_lbl(16,4byte) + lock(20,1byte) + key_only(21,1byte) + for(22) + while(27) + no_clr(32,1byte)
-        var parts = new List<string>();
-        parts.Add(P(spec, 0)); // handle
-        parts.Add(P(spec, 5)); // key
-        parts.Add(P(spec, 10)); // value
+        // Syntax: FINDV typ FNUM hndl KEY key VAL val ERR lbl NLOCK KEYO NOCLR
+        var sb = new System.Text.StringBuilder(name);
         byte typ = Flag(spec, 15);
-        if (typ != 0) parts.Add(typ.ToString());
+        if (typ >= 0x20 && typ < 0x7F) sb.Append($" {(char)typ}");
+        string hndl = P(spec, 0);
+        if (!string.IsNullOrEmpty(hndl)) sb.Append($", {hndl}");
+        string key = P(spec, 5);
+        if (!string.IsNullOrEmpty(key)) sb.Append($", {key}");
+        string val = P(spec, 10);
+        if (!string.IsNullOrEmpty(val)) sb.Append($", {val}");
         string errLbl = Lbl4(spec, 16);
-        if (!string.IsNullOrEmpty(errLbl)) parts.Add(errLbl);
-        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+        if (!string.IsNullOrEmpty(errLbl)) sb.Append($", {errLbl}");
+        byte noclr = Flag(spec, 32);
+        if (noclr == (byte)'Y') sb.Append(", NOCLR");
+        byte keyo = Flag(spec, 21);
+        if (keyo == (byte)'Y') sb.Append(", KEYO");
+        byte nlock = Flag(spec, 20);
+        if (nlock == (byte)'Y') sb.Append(", NLOCK");
+        return sb.ToString();
     }
 
     private string DecompileSave(byte[] spec)
@@ -1008,16 +1018,25 @@ public sealed class RunFileDecompiler
 
     private string DecompilePmsg(byte[] spec)
     {
-        // prtmsg: col(0) + row(5) + msg(10) + wait(15,1byte) + ncr(16,1byte) + ent(17) + whr(22,1byte) + color(23) + abs(28,1byte)
-        var parts = new List<string>();
-        parts.Add(P(spec, 0)); // col
-        parts.Add(P(spec, 5)); // row
-        parts.Add(P(spec, 10)); // message
-        byte wait = Flag(spec, 15);
-        if (wait != 0) parts.Add("WAIT");
+        // prtmsg: col(0) + row(5) + msg(10) + wait(15,1byte='Y') + ncr(16,1byte='Y') + ent(17) + whr(22,1byte) + color(23) + abs(28,1byte='Y')
+        // Syntax: PMSG message AT col,row WAIT NOCR PTW whr COLOR color ABS
+        // Flags use GetSLFlag which checks byte == 'Y'
+        var sb = new System.Text.StringBuilder("PMSG");
+        string msg = P(spec, 10);
+        if (!string.IsNullOrEmpty(msg)) sb.Append($" {msg}");
+        string col = P(spec, 0);
+        string row = P(spec, 5);
+        if (!string.IsNullOrEmpty(col) && !string.IsNullOrEmpty(row) && (col != "0" || row != "0"))
+            sb.Append($" AT {col},{row}");
+        if (Flag(spec, 15) == (byte)'Y') sb.Append(" WAIT");
+        if (Flag(spec, 16) == (byte)'Y') sb.Append(" NOCR");
+        byte whr = Flag(spec, 22);
+        if (whr == (byte)'P') sb.Append(" PTW P");
+        else if (whr == (byte)'S') sb.Append(" PTW S");
         string color = P(spec, 23);
-        if (!string.IsNullOrEmpty(color)) parts.Add(color);
-        return Emit("PMSG", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+        if (!string.IsNullOrEmpty(color)) sb.Append($" COLOR {color}");
+        if (Flag(spec, 28) == (byte)'Y') sb.Append(" ABS");
+        return sb.ToString();
     }
 
     private string DecompilePchr(byte[] spec)

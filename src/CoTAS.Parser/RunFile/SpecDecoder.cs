@@ -342,6 +342,8 @@ public sealed class SpecDecoder
         if (ch >= 0x20 && ch < 0x7F) return ch.ToString();
         if (_controlCharNames.TryGetValue(ch, out var name)) return name;
         if (_keyNames.TryGetValue(ch, out var keyName)) return $"<{keyName}>";
+        // CP437 high bytes (0x80-0xFF) — pass through as raw bytes (box-drawing, accented chars, etc.)
+        if (ch >= 0x80) return ch.ToString();
         return $"\\x{(int)ch:X2}";
     }
 
