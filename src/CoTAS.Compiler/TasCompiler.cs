@@ -85,20 +85,17 @@ public sealed class TasCompiler
         compiler._fields.ImportFromReader(runForDecompile);
         // Labels: import from overlay reader so global label names (LABEL_61 etc.) resolve
         compiler._labels.ImportOffsets(runForDecompile.LabelOffsets, runForDecompile.Header.NumLabels);
-        compiler._overlayLabelCount = runForDecompile.OverlayLabelCount;
+        compiler._overlayLabelCount = 0;
 
-        // Track overlay offsets for adjusting internal references
-        // Since we import overlay fields into the combined field table, field spec offsets
-        // already include overlay fields — no additional offset needed for fields.
-        // But spec/const segments in the output are local-only, so overlay spec/const offsets
-        // are still needed for constant and spec references.
-        compiler._overlaySpecOffset = runForDecompile.OverlaySpecSize;
-        compiler._overlayConstOffset = runForDecompile.OverlayConstSize;
-        compiler._overlayFieldOffset = 0; // Combined field table already has overlay fields
+        // No overlay offsets needed — spec/const/labels are program-relative only.
+        // Overlay only affects fields (prepended to field list).
+        compiler._overlaySpecOffset = 0;
+        compiler._overlayConstOffset = 0;
+        compiler._overlayFieldOffset = 0;
         compiler._spec.OverlayFieldOffset = 0;
-        compiler._spec.OverlayConstOffset = compiler._overlayConstOffset;
+        compiler._spec.OverlayConstOffset = 0;
         compiler._constants.OverlayFieldOffset = 0;
-        compiler._constants.OverlayConstOffset = compiler._overlayConstOffset;
+        compiler._constants.OverlayConstOffset = 0;
 
         // Detect MSG spec format from original (6B short or 15B long)
         var firstMsg = run.Instructions.FirstOrDefault(i => i.CommandNumber == TasOpcode.MSG);

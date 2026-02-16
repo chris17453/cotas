@@ -352,8 +352,29 @@ def build_appendices(commands: list[dict], functions: list[dict]) -> str:
     parts.append('<div class="qref">')
     for cmd in sorted(commands, key=lambda c: c.get("name", "").upper()):
         name = cmd.get("name", "")
+        abbr = cmd.get("abbreviation", "")
         desc = cmd.get("description", "")
-        parts.append(f'<div class="qref-item"><a href="#cmd-{slugify(name)}"><code>{name}</code></a> <span>{desc}</span></div>')
+        syntax = cmd.get("syntax", "")
+        params = cmd.get("parameters", [])
+        see_also = cmd.get("see_also", [])
+
+        parts.append(f'<div class="qref-entry">')
+        parts.append(f'<h4 class="qref-name"><a href="#cmd-{slugify(name)}">{name}</a></h4>')
+        parts.append('<ul class="qref-details">')
+        if desc:
+            parts.append(f'<li>{desc}</li>')
+        if abbr:
+            parts.append(f'<li><strong>Abbreviation:</strong> {abbr}</li>')
+        if syntax:
+            syntax_oneline = syntax.replace('\n', ' ')
+            parts.append(f'<li><strong>Syntax:</strong> <code>{syntax_oneline}</code></li>')
+        if params:
+            param_names = ", ".join(p.get("name", "") for p in params)
+            parts.append(f'<li><strong>Parameters:</strong> {param_names}</li>')
+        if see_also:
+            parts.append(f'<li><strong>See also:</strong> {", ".join(see_also)}</li>')
+        parts.append('</ul>')
+        parts.append('</div>')
     parts.append('</div>')
 
     parts.append('<div class="page-break"></div>')
@@ -366,10 +387,28 @@ def build_appendices(commands: list[dict], functions: list[dict]) -> str:
     parts.append('<div class="qref">')
     for fn in sorted(functions, key=lambda f: f.get("name", "").upper()):
         name = fn.get("name", "")
+        sig = fn.get("signature", "")
         ret = fn.get("return_type", "")
         purpose = fn.get("purpose", fn.get("description", ""))
-        ret_tag = f' <em>{ret}</em>' if ret else ''
-        parts.append(f'<div class="qref-item"><a href="#fn-{slugify(name)}"><code>{name}</code></a>{ret_tag} <span>{purpose}</span></div>')
+        fn_parts = fn.get("parts", [])
+        see_also = fn.get("see_also", [])
+
+        parts.append(f'<div class="qref-entry">')
+        parts.append(f'<h4 class="qref-name"><a href="#fn-{slugify(name)}">{name}</a></h4>')
+        parts.append('<ul class="qref-details">')
+        if purpose:
+            parts.append(f'<li>{purpose}</li>')
+        if sig:
+            parts.append(f'<li><strong>Signature:</strong> <code>{sig}</code></li>')
+        if ret:
+            parts.append(f'<li><strong>Returns:</strong> {ret}</li>')
+        if fn_parts:
+            part_descs = ", ".join(f'{p.get("number", "")}: {p.get("description", "")}' for p in fn_parts)
+            parts.append(f'<li><strong>Parts:</strong> {part_descs}</li>')
+        if see_also:
+            parts.append(f'<li><strong>See also:</strong> {", ".join(see_also)}</li>')
+        parts.append('</ul>')
+        parts.append('</div>')
     parts.append('</div>')
 
     return "\n".join(parts)

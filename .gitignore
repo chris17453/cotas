@@ -31,3 +31,5 @@ doodles/
 # OS
 .DS_Store
 Thumbs.db
+test/decompiled*/
+src/CoTAS.Parser/RunFile/*.bak

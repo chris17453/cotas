@@ -25,6 +25,7 @@ public sealed class RunFileHeader
     public bool NewFldSpec { get; set; }      // offset 62: uses new TFldSpec format (60 bytes vs 48)
     public bool ChkUpVld { get; set; }        // offset 63: check up arrow validation
     public bool IncLabels { get; set; }       // offset 64: include label names in run file
+    public bool ObjUsed { get; set; }         // offset 78: compiled with OBJ file (overlay spec/const are combined)
 
     /// <summary>Size of the header in bytes.</summary>
     public const int Size = 128;

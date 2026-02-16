@@ -96,20 +96,12 @@ public sealed class RunFileReader
     public static RunFileReader LoadAutoOverlay(string filePath)
     {
         var run = Load(filePath);
-        // Check if overlay is needed: spec references beyond our segment,
-        // OR DefFldSegSize implies more fields than we have (overlay fields)
-        bool needsOverlay = false;
-        foreach (var instr in run.Instructions)
-        {
-            if (instr.SpecLineSize > 0 && instr.SpecLinePtr + instr.SpecLineSize > run.SpecSegment.Length)
-            {
-                needsOverlay = true;
-                break;
-            }
-        }
+        // ObjUsed flag means it was compiled with an OBJ file and needs the OVL
+        // Also check DefFldSegSize for programs that need overlay fields but not ObjUsed
+        bool needsOverlay = run.Header.ObjUsed;
         if (!needsOverlay && run.Header.DefFldSegSize > run.Header.NumFlds * run.Header.FieldSpecSize)
         {
-            needsOverlay = true; // Field references extend beyond our own fields
+            needsOverlay = true;
         }
 
         if (needsOverlay)
@@ -127,55 +119,48 @@ public sealed class RunFileReader
     }
 
     /// <summary>
-    /// Prepend overlay segments to this reader's segments.
-    /// After this call, SpecSegment = ovl.Spec + this.Spec, etc.
-    /// Field indices and constant offsets in existing spec data that reference
-    /// the program's own data remain correct because the overlay is PREPENDED.
+    /// Load overlay data. Fields are always prepended.
+    /// When ObjUsed=true, spec and constant segments are also combined
+    /// (OVL data first, program data after) because the program's SLPtr
+    /// and constant offsets reference the combined buffer.
     /// </summary>
     private void PrependOverlay(RunFileReader ovl)
     {
-        OverlaySpecSize = ovl.SpecSegment.Length;
-        OverlayConstSize = ovl.ConstantSegment.Length;
         OverlayFieldCount = ovl.Fields.Count;
-        OverlayLabelCount = ovl.LabelOffsets.Count;
 
-        SpecSegment = CombineArrays(ovl.SpecSegment, SpecSegment);
-        ConstantSegment = CombineArrays(ovl.ConstantSegment, ConstantSegment);
-
-        // Prepend overlay fields
+        // Prepend overlay fields (runtime: FFieldList[0..OvlFlds-1] = OVL, [OvlFlds..] = program)
         var combinedFields = new List<RunFieldSpec>(ovl.Fields.Count + Fields.Count);
         combinedFields.AddRange(ovl.Fields);
         combinedFields.AddRange(Fields);
         Fields.Clear();
         Fields.AddRange(combinedFields);
 
-        // Prepend overlay labels
-        var combinedLabels = new List<int>(ovl.LabelOffsets.Count + LabelOffsets.Count);
-        combinedLabels.AddRange(ovl.LabelOffsets);
-        combinedLabels.AddRange(LabelOffsets);
-        LabelOffsets.Clear();
-        LabelOffsets.AddRange(combinedLabels);
+        if (Header.ObjUsed)
+        {
+            // Combine spec segments: SpecRTBuffer[0..OvlSpec-1] = OVL, [OvlSpec..] = Program
+            OverlaySpecSize = ovl.SpecSegment.Length;
+            var combinedSpec = new byte[ovl.SpecSegment.Length + SpecSegment.Length];
+            Array.Copy(ovl.SpecSegment, 0, combinedSpec, 0, ovl.SpecSegment.Length);
+            Array.Copy(SpecSegment, 0, combinedSpec, ovl.SpecSegment.Length, SpecSegment.Length);
+            SpecSegment = combinedSpec;
+
+            // Combine constant segments: ConstRTBuffer[0..OvlConst-1] = OVL, [OvlConst..] = Program
+            OverlayConstSize = ovl.ConstantSegment.Length;
+            var combinedConst = new byte[ovl.ConstantSegment.Length + ConstantSegment.Length];
+            Array.Copy(ovl.ConstantSegment, 0, combinedConst, 0, ovl.ConstantSegment.Length);
+            Array.Copy(ConstantSegment, 0, combinedConst, ovl.ConstantSegment.Length, ConstantSegment.Length);
+            ConstantSegment = combinedConst;
+        }
     }
-
-    private static byte[] CombineArrays(byte[] a, byte[] b)
-    {
-        byte[] result = new byte[a.Length + b.Length];
-        Array.Copy(a, 0, result, 0, a.Length);
-        Array.Copy(b, 0, result, a.Length, b.Length);
-        return result;
-    }
-
-    /// <summary>Size of the overlay spec segment (0 if no overlay loaded).</summary>
-    public int OverlaySpecSize { get; private set; }
-
-    /// <summary>Size of the overlay constant segment (0 if no overlay loaded).</summary>
-    public int OverlayConstSize { get; private set; }
 
     /// <summary>Number of fields from the overlay (0 if no overlay loaded).</summary>
     public int OverlayFieldCount { get; private set; }
 
-    /// <summary>Number of labels from the overlay (0 if no overlay loaded).</summary>
-    public int OverlayLabelCount { get; private set; }
+    /// <summary>Size of the overlay spec segment (0 if no overlay or ObjUsed=false).</summary>
+    public int OverlaySpecSize { get; private set; }
+
+    /// <summary>Size of the overlay constant segment (0 if no overlay or ObjUsed=false).</summary>
+    public int OverlayConstSize { get; private set; }
 
     /// <summary>
     /// Get a string from the constant segment at the given offset.
@@ -232,6 +217,7 @@ public sealed class RunFileReader
             NewFldSpec = _data[62] != 0,
             ChkUpVld = _data[63] != 0,
             IncLabels = _data[64] != 0,
+            ObjUsed = _data[78] != 0,
         };
 
         if (h.ProType != "TAS32" && h.ProType != "TASWN")
