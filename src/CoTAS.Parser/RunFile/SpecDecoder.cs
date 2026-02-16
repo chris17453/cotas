@@ -474,10 +474,8 @@ public sealed class SpecDecoder
                 break;
             pos += 5;
         }
-        if (parts.Count >= 2)
-            return "[" + string.Join(", ", parts) + "]";
-        if (parts.Count == 1)
-            return parts[0]; // Single param — don't wrap in brackets
+        if (parts.Count >= 1)
+            return string.Join(", ", parts);
         return "''";
     }
 
