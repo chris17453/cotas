@@ -137,6 +137,10 @@ public sealed class RunFileReader
 
         if (Header.ObjUsed)
         {
+            // Code is NOT combined, but jump targets in specs reference combined offsets.
+            // Store the overlay code size so the decompiler can adjust.
+            OverlayCodeSize = ovl.CodeSegment.Length;
+
             // Combine spec segments: SpecRTBuffer[0..OvlSpec-1] = OVL, [OvlSpec..] = Program
             OverlaySpecSize = ovl.SpecSegment.Length;
             var combinedSpec = new byte[ovl.SpecSegment.Length + SpecSegment.Length];
@@ -161,6 +165,9 @@ public sealed class RunFileReader
 
     /// <summary>Size of the overlay constant segment (0 if no overlay or ObjUsed=false).</summary>
     public int OverlayConstSize { get; private set; }
+
+    /// <summary>Size of the overlay code segment (0 if no overlay). Used to adjust jump targets.</summary>
+    public int OverlayCodeSize { get; private set; }
 
     /// <summary>
     /// Get a string from the constant segment at the given offset.

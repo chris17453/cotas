@@ -20,12 +20,17 @@ public sealed class RunFileDecompiler
     private readonly SpecDecoder _spec;
     private readonly Dictionary<int, string> _labelsByInstrIndex = new();
     private int _indent;
+    private bool _lastIfIsBlock;
+    private bool _thenIndent; // indent next line after IF...THEN
+    private readonly Dictionary<int, List<string>> _closingKeywords = new();
+    private readonly HashSet<int> _suppressedElse = new(); // ELSE inside SELECT (jump to ENDC, not real ELSE)
 
     public RunFileDecompiler(RunFileReader run)
     {
         _run = run;
         _spec = new SpecDecoder(run);
         BuildLabelMap();
+        BuildEndifMap();
     }
 
     /// <summary>
@@ -48,8 +53,24 @@ public sealed class RunFileDecompiler
             if (instr.CommandNumber == TasOpcode.SET_SCAN_FLG ||
                 instr.CommandNumber == TasOpcode.START_SCAN)
                 continue;
+            // Skip ELSE opcodes that are just jump-to-ENDC inside SELECT blocks
+            if (instr.CommandNumber == TasOpcode.ELSE && _suppressedElse.Contains(i))
+                continue;
             if (instr.CommandNumber >= 0xFE00) // END marker
                 break;
+
+            // Emit synthesized closing keywords (ENDIF, NEXT, ENDS, ENDC) before this line
+            if (_closingKeywords.TryGetValue(i, out var closings))
+            {
+                foreach (var kw in closings)
+                {
+                    if (_indent > 0) _indent--;
+                    // ENDC closes both the last CASE body and the SELECT block
+                    if (kw == "ENDC" && _indent > 0) _indent--;
+                    sb.Append(new string(' ', _indent * 3));
+                    sb.AppendLine(kw);
+                }
+            }
 
             // Emit label if this instruction is a label target
             if (_labelsByInstrIndex.TryGetValue(i, out var label))
@@ -61,7 +82,9 @@ public sealed class RunFileDecompiler
             string line = DecompileInstruction(instr, i);
             if (!string.IsNullOrEmpty(line))
             {
-                sb.Append(new string(' ', _indent * 3));
+                int extra = _thenIndent ? 1 : 0;
+                _thenIndent = false;
+                sb.Append(new string(' ', (_indent + extra) * 3));
                 sb.AppendLine(line);
             }
 
@@ -405,6 +428,8 @@ public sealed class RunFileDecompiler
         byte doByte = spec.Length > 15 ? spec[15] : (byte)0;
 
         // if_do: 'D' = block IF, 'G' = GOTO, 'S' = GOSUB, 'T' = THEN, 'E' = RET, 'R' = REENT
+        _lastIfIsBlock = doByte == (byte)'D';
+        _thenIndent = !_lastIfIsBlock;
         switch ((char)doByte)
         {
             case 'D': return $"IF {expr}";
@@ -1500,6 +1525,138 @@ public sealed class RunFileDecompiler
     }
 
     /// <summary>
+    /// Pre-scan all block constructs to determine where closing keywords should be emitted.
+    /// Block IF/ELSE, FOR, SCAN, SELECT/CASE all store jump offsets at spec[0..3].
+    /// Jump targets are combined code byte offsets (overlay + program), divided by
+    /// instruction size and minus overlay instruction count to get RUN instruction index.
+    ///
+    /// IF's if_goto: direct code byte offset. ELSE sits at if_goto - 1 (end of true body).
+    /// ELSE's abs_goto: INDIRECT - points to a spec segment offset that CONTAINS
+    /// the actual code byte offset (r_abs_jmp reads from spec buffer then divides).
+    ///
+    /// SELECT/CASE: each CASE body ends with an ELSE that jumps (indirectly) to ENDC.
+    /// These ELSE opcodes are suppressed in output.
+    /// </summary>
+    private void BuildEndifMap()
+    {
+        int instrSize = _run.Header.ProType == "TAS32"
+            ? RunFileHeader.Tas51InstructionSize
+            : RunFileHeader.Tas60InstructionSize;
+        int ovlInstrs = _run.OverlayCodeSize / instrSize;
+        int n = _run.Instructions.Count;
+
+        // First pass: find SELECT blocks and their ENDC positions
+        var selectRanges = new List<(int start, int endc)>();
+        for (int i = 0; i < n; i++)
+        {
+            if (_run.Instructions[i].CommandNumber != TasOpcode.SELECT) continue;
+
+            // First ELSE after SELECT jumps (indirectly) to ENDC
+            for (int j = i + 1; j < n; j++)
+            {
+                if (_run.Instructions[j].CommandNumber != TasOpcode.ELSE) continue;
+                int encPos = ResolveElseGoto(j, instrSize, ovlInstrs);
+                if (encPos > 0 && encPos <= n)
+                {
+                    selectRanges.Add((i, encPos));
+                    AddClosing(encPos, "ENDC");
+                }
+                break;
+            }
+        }
+
+        // Mark ELSE opcodes that jump to ENDC as suppressed
+        foreach (var (start, endc) in selectRanges)
+        {
+            for (int j = start + 1; j < Math.Min(endc, n); j++)
+            {
+                if (_run.Instructions[j].CommandNumber != TasOpcode.ELSE) continue;
+                int target = ResolveElseGoto(j, instrSize, ovlInstrs);
+                if (target == endc)
+                    _suppressedElse.Add(j);
+            }
+        }
+
+        // Second pass: handle IF, FOR, SCAN
+        for (int i = 0; i < n; i++)
+        {
+            var instr = _run.Instructions[i];
+            byte[] spec = _spec.GetSpecBytes(instr);
+
+            switch (instr.CommandNumber)
+            {
+                case TasOpcode.IF:
+                {
+                    if (spec.Length < 16 || spec[15] != (byte)'D') break;
+                    int ifGoto = BitConverter.ToInt32(spec, 0) / instrSize - ovlInstrs;
+                    if (ifGoto <= 0 || ifGoto > n) break;
+
+                    // ELSE sits at ifGoto - 1 (end of true body, before else body)
+                    int elsePos = ifGoto - 1;
+                    if (elsePos > i && elsePos < n &&
+                        _run.Instructions[elsePos].CommandNumber == TasOpcode.ELSE &&
+                        !_suppressedElse.Contains(elsePos))
+                    {
+                        // ELSE jumps indirectly to ENDIF position
+                        int endifPos = ResolveElseGoto(elsePos, instrSize, ovlInstrs);
+                        if (endifPos > 0 && endifPos <= n)
+                            AddClosing(endifPos, "ENDIF");
+                    }
+                    else
+                    {
+                        // No ELSE - if_goto IS the ENDIF position
+                        AddClosing(ifGoto, "ENDIF");
+                    }
+                    break;
+                }
+                case TasOpcode.FOR:
+                {
+                    if (spec.Length < 4) break;
+                    int endLine = BitConverter.ToInt32(spec, 0) / instrSize - ovlInstrs;
+                    if (endLine > 0 && endLine <= n)
+                        AddClosing(endLine, "NEXT");
+                    break;
+                }
+                case TasOpcode.SCAN:
+                {
+                    if (spec.Length < 4) break;
+                    int endLine = BitConverter.ToInt32(spec, 0) / instrSize - ovlInstrs;
+                    if (endLine > 0 && endLine <= n)
+                        AddClosing(endLine, "ENDS");
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resolve an ELSE instruction's indirect jump target.
+    /// ELSE stores a spec segment offset at spec[0..3]. The actual code byte offset
+    /// is read from the spec segment at that location.
+    /// </summary>
+    private int ResolveElseGoto(int instrIndex, int instrSize, int ovlInstrs)
+    {
+        byte[] spec = _spec.GetSpecBytes(_run.Instructions[instrIndex]);
+        if (spec.Length < 4) return -1;
+
+        int specOffset = BitConverter.ToInt32(spec, 0);
+        if (specOffset < 0 || specOffset + 4 > _run.SpecSegment.Length) return -1;
+
+        int codeByteOffset = BitConverter.ToInt32(_run.SpecSegment, specOffset);
+        return codeByteOffset / instrSize - ovlInstrs;
+    }
+
+    private void AddClosing(int line, string keyword)
+    {
+        if (!_closingKeywords.TryGetValue(line, out var list))
+        {
+            list = new List<string>();
+            _closingKeywords[line] = list;
+        }
+        list.Add(keyword);
+    }
+
+    /// <summary>
     /// Get label name by label INDEX (used by GOTO, GOSUB, IF GOTO, TRAP, ON).
     /// Control flow stores label indices, not code byte offsets.
     /// </summary>
@@ -1520,17 +1677,14 @@ public sealed class RunFileDecompiler
         {
             case TasOpcode.ELSE:
             case TasOpcode.ELSE_IF:
-            case TasOpcode.ENDIF:
             case TasOpcode.ENDW:
-            case TasOpcode.NEXT:
             case TasOpcode.OTHERWISE:
-            case TasOpcode.ENDC:
-            case TasOpcode.ENDS:
             case TasOpcode.BRACE_CLOSE:
                 if (_indent > 0) _indent--;
                 break;
             case TasOpcode.CASE:
-                // CASE stays at same level as SELECT
+                // Close previous CASE body (drop from body level to case level)
+                if (_indent > 0) _indent--;
                 break;
         }
     }
@@ -1540,6 +1694,8 @@ public sealed class RunFileDecompiler
         switch (op)
         {
             case TasOpcode.IF:
+                if (_lastIfIsBlock) _indent++;
+                break;
             case TasOpcode.ELSE:
             case TasOpcode.ELSE_IF:
             case TasOpcode.WHILE:
