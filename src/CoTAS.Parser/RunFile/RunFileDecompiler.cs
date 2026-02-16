@@ -24,7 +24,9 @@ public sealed class RunFileDecompiler
     private bool _thenIndent; // indent next line after IF...THEN
     private readonly Dictionary<int, List<string>> _closingKeywords = new();
     private readonly HashSet<int> _suppressedElse = new(); // ELSE inside SELECT (jump to ENDC, not real ELSE)
-    private readonly List<(int offset, char mountType)> _screenOffsets = new();
+    private readonly List<MountInfo> _screenOffsets = new();
+
+    private record MountInfo(int Offset, char MountType, byte[] Spec);
 
     public RunFileDecompiler(RunFileReader run)
     {
@@ -99,8 +101,8 @@ public sealed class RunFileDecompiler
             sb.AppendLine();
             sb.AppendLine(";End of Prg");
             int screenNum = 1;
-            foreach (var (offset, mountType) in _screenOffsets)
-                DecodeScreenFormat(sb, offset, screenNum++, mountType);
+            foreach (var mi in _screenOffsets)
+                DecodeScreenFormat(sb, mi.Offset, screenNum++, mi.MountType, mi.Spec);
         }
 
         return sb.ToString();
@@ -1263,7 +1265,7 @@ public sealed class RunFileDecompiler
                 if (screenOffset > 0 && screenOffset < _run.ConstantSegment.Length)
                 {
                     char mt = typ == 0 ? 'S' : (char)typ;
-                    _screenOffsets.Add((screenOffset, mt));
+                    _screenOffsets.Add(new MountInfo(screenOffset, mt, spec));
                 }
             }
         }
@@ -1810,13 +1812,111 @@ public sealed class RunFileDecompiler
     // ===== Screen/Report Format Decoder =====
 
     /// <summary>
+    /// Collect unique file buffer names and their field counts from format fields.
+    /// Returns ordered list of (bufferName, fieldCount) for the \FILES section.
+    /// </summary>
+    private List<(string Name, int Count)> CollectFileBuffers(byte[] cs, int startPos, int endPos)
+    {
+        const byte F_MARK = (byte)'F' + 128;
+        const byte B_MARK = (byte)'B' + 128;
+        const byte C_MARK = (byte)'C' + 128;
+        int fldSpecSize = _run.Header.FieldSpecSize;
+        var seen = new Dictionary<string, int>();
+        var order = new List<string>();
+
+        int p = startPos;
+        while (p < endPos)
+        {
+            byte marker = cs[p];
+            if (marker == 0) break;
+            if (marker == F_MARK)
+            {
+                p++;
+                while (p + 16 <= cs.Length && cs[p] != 0)
+                {
+                    char fldTyp = (char)cs[p];
+                    int fldLoc = BitConverter.ToInt32(cs, p + 1);
+                    if (fldTyp == 'F' && fldSpecSize > 0)
+                    {
+                        int idx = fldLoc / fldSpecSize;
+                        if (idx >= 0 && idx < _run.Fields.Count)
+                        {
+                            var fs = _run.Fields[idx];
+                            if (fs.IsFileField && fs.FileFieldIndex > 0)
+                            {
+                                int bufIdx = fs.FileFieldIndex - 1;
+                                if (bufIdx >= 0 && bufIdx < _run.Buffers.Count)
+                                {
+                                    string bn = _run.Buffers[bufIdx].Name;
+                                    if (!seen.ContainsKey(bn)) { seen[bn] = 0; order.Add(bn); }
+                                    seen[bn]++;
+                                }
+                            }
+                        }
+                    }
+                    p += 16;
+                }
+                if (p < cs.Length && cs[p] == 0) p++;
+            }
+            else if (marker == B_MARK)
+            {
+                p++;
+                while (p < endPos && cs[p] != 0) { p++; }
+                if (p < endPos && cs[p] == 0) p++;
+            }
+            else if (marker == C_MARK)
+            {
+                p++;
+                while (p < endPos && cs[p] != 0) p += 5;
+                if (p < endPos && cs[p] == 0) p++;
+            }
+            else break;
+        }
+        return order.Select(n => (n, seen[n])).ToList();
+    }
+
+    /// <summary>
+    /// Count the number of text lines in a report format's B_MARK section.
+    /// Report text lines are prefixed with 4-byte pointers; terminates on prefix=0.
+    /// </summary>
+    private int CountReportTextLines(byte[] cs, int startPos, int endPos)
+    {
+        const byte B_MARK = (byte)'B' + 128;
+        int p = startPos;
+        if (p >= endPos || cs[p] != B_MARK) return 0;
+        p++; // skip B_MARK
+        int count = 0;
+        while (p + 4 < endPos)
+        {
+            int nextPtr = BitConverter.ToInt32(cs, p);
+            if (nextPtr == 0) break;
+            p += 4;
+            count++;
+            while (p < endPos && cs[p] != 0x0D) p++;
+            if (p < endPos) p++; // skip CR
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Pre-scan the field section to find the most common file buffer name.
+    /// Used to reconstruct the S5 header's SSREC/SDREC/SCREC record names.
+    /// </summary>
+    private string ScanPrimaryBuffer(byte[] cs, int startPos, int endPos)
+    {
+        var buffers = CollectFileBuffers(cs, startPos, endPos);
+        if (buffers.Count == 0) return "";
+        return buffers.OrderByDescending(b => b.Count).First().Name;
+    }
+
+    /// <summary>
     /// Decode a compiled screen/report format from the constant segment
     /// and emit it in TAS source format (\S5name, \COLOR, \FIELDS, \\).
     /// Old format (TAS32): [NumFlds:2][sections...]
     /// New format (TASWN): [SizeOfFormat:2][NumFlds:2][sections...]
     /// Section markers: 0xC2=text, 0xC6=fields, 0xC3=colors
     /// </summary>
-    private void DecodeScreenFormat(StringBuilder sb, int offset, int screenNum, char mountType)
+    private void DecodeScreenFormat(StringBuilder sb, int offset, int screenNum, char mountType, byte[] mountSpec)
     {
         var cs = _run.ConstantSegment;
         if (offset < 0 || offset + 4 >= cs.Length) return;
@@ -1851,11 +1951,36 @@ public sealed class RunFileDecompiler
         string prefix = isReport ? "\\B5" : "\\S5";
         sb.AppendLine($"{prefix}FORMAT{screenNum}");
 
+        // Emit S5/B5 header line — reconstruct from field bindings and mount spec
+        if (!isReport)
+        {
+            // Pre-scan fields to find primary file buffer
+            string primaryBuf = ScanPrimaryBuffer(cs, pos, end);
+            string recSuffix = string.IsNullOrEmpty(primaryBuf) ? "WORK" : primaryBuf;
+            // Positional header (cols 1-83):
+            // 1-2: indent, 3: mode, 4: edit, 5-6: spaces, 7: flag
+            // 8-22: save rec (15 chars), 23-37: disp rec (15 chars), 38-52: chg rec (15 chars)
+            // 53-66: include (14 chars), 67-80: key (14 chars), 81+: flags
+            string saveRec = $"SSREC_{recSuffix}";
+            string dispRec = $"SDREC_{recSuffix}";
+            string chgRec  = $"SCREC_{recSuffix}";
+            sb.AppendLine($"  1Y  Y{saveRec,-15}{dispRec,-15}{chgRec,-15}{"NONE",-14}{"NONE",-14}YNN");
+        }
+        else
+        {
+            // Report header: count text lines from the binary, use primary file buffer
+            int rptLines = CountReportTextLines(cs, pos, end);
+            string primaryBuf = ScanPrimaryBuffer(cs, pos, end);
+            string rptFile = string.IsNullOrEmpty(primaryBuf) ? "" : primaryBuf;
+            sb.AppendLine($" {rptLines,2} 80100 5 18{rptFile,-8}NNN!");
+        }
+
         const byte B_MARK = (byte)'B' + 128; // 0xC2
         const byte F_MARK = (byte)'F' + 128; // 0xC6
         const byte C_MARK = (byte)'C' + 128; // 0xC3
 
         int fldSpecSize = _run.Header.FieldSpecSize;
+        int fieldSectionStart = pos; // track for \FILES collection
 
         while (pos < end)
         {
@@ -2001,6 +2126,17 @@ public sealed class RunFileDecompiler
                 // Unknown marker - skip to end
                 break;
             }
+        }
+        // Emit structural sections that the compiler expects
+        if (!isReport)
+        {
+            // Collect file references from fields for \FILES section
+            var fileBuffers = CollectFileBuffers(cs, fieldSectionStart, end);
+            sb.AppendLine("\\FILES");
+            foreach (var (name, count) in fileBuffers)
+                sb.AppendLine($"{name}{name} {count,2}");
+            sb.AppendLine("\\INCLUDE");
+            sb.AppendLine("\\KEY");
         }
         sb.AppendLine("\\\\");
     }

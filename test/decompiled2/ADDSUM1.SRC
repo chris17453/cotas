@@ -477,6 +477,7 @@ QUIT
 
 ;End of Prg
 \B5FORMAT1
+  7 80100 5 18        NNN!
       Date:                      CUSTOMER ADDRESS LIST              Page:
 
 Cust code   Customer name                   Address                       City            ST   ZIP       Phone

@@ -555,6 +555,7 @@ GOTO LABEL_96
 
 ;End of Prg
 \S5FORMAT1
+  1Y  YSSREC_WORK     SDREC_WORK     SCREC_WORK     NONE          NONE          YNN
 
 
                       ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
@@ -589,8 +590,12 @@ FROM.EMP.NUM     0 52  4  0  0 0    3    0    0NNNGMEMORY  NN     3
 THRU.EMP.NUM     0 52  5  0  0 0    3    0    0NNNGMEMORY  NN     3
 FROM_DEPT        0 52  7  0  0 0    4    0    0ANNGMEMORY  NN     4
 THRU_DEPT        0 52  8  0  0 0    4    0    0ANNGMEMORY  NN     4
+\FILES
+\INCLUDE
+\KEY
 \\
 \B5FORMAT2
+ 48 80100 5 18        NNN!
                                                                                           Page:
                                                            P A Y R O L L
                                                        Quarterly Information

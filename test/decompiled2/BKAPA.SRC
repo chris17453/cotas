@@ -1672,6 +1672,7 @@ LABEL_92:
 
 ;End of Prg
 \S5FORMAT1
+  1Y  YSSREC_BKAPVEND SDREC_BKAPVEND SCREC_BKAPVEND NONE          NONE          YNN
 
 ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
 º Code:             Active?                Contact:                            º
@@ -1723,8 +1724,13 @@ BKAP.OUT.CREDIT  0 10 16  0  0 2   12    0    0NNRGBKAPVENDNN    12
 BKAP.OUTINV      0 28 16  0  0 2   12    0    0NNRGBKAPVENDNN    12
 BKAP.LASTPURCH   0 51 16  0  0 0    8    0    0DNRGBKAPVENDNN     8
 BKAP.LASTPMT     0 69 16  0  0 0    8    0    0DNRGBKAPVENDNN     8
+\FILES
+BKAPVENDBKAPVEND 28
+\INCLUDE
+\KEY
 \\
 \S5FORMAT2
+  1Y  YSSREC_WORK     SDREC_WORK     SCREC_WORK     NONE          NONE          YNN
 
  Display Purchases By Date Range
 
@@ -1774,8 +1780,12 @@ AVG_PURCH4       0 54  8  0  0 2   10    0    0NNNGMEMORY  NN    10
 ALL_PURCH_QTY    0 28  9  0  0 0    3    0    0INNGMEMORY  NN     3
 ALL_PURCH_DOL    0 38  9  0  0 2   12    0    0NNNGMEMORY  NN    12
 AVG_TOT_PURCH    0 54  9  0  0 2   10    0    0NNNGMEMORY  NN    10
+\FILES
+\INCLUDE
+\KEY
 \\
 \B5FORMAT3
+ 13 80100 5 18        NNN!
                                 Purch by Month                      Page:
 
 
@@ -1801,6 +1811,7 @@ GROSS_MTD_SUBT   0 38  9  0  0 2   12    0    0NNNGMEMORY  NN    12
 GROSS_TOTALS     0 38 12  0  0 2   12    0    0NNNGMEMORY  NN    12
 \\
 \S5FORMAT4
+  1Y  YSSREC_BKAPADDR SDREC_BKAPADDR SCREC_BKAPADDR NONE          NONE          YNN
 
   Name:
   Add1:
@@ -1820,8 +1831,13 @@ BKAP.ADDR.STATE  0 25  5  0  0 0    2    0    0AYRGBKAPADDRNN     2
 BKAP.ADDR.ZIP    0 29  5  0  0 0   10    0    0AYRGBKAPADDRNN    10
 BKAP.ADDR.CNTRY  0  9  6  0  0 0   30    0    0ANRGBKAPADDRNN    30
 BKAP.ADDR.COM    0 12  8  0  0 0   25    0    0ANRGBKAPADDRNN    25
+\FILES
+BKAPADDRBKAPADDR  8
+\INCLUDE
+\KEY
 \\
 \S5FORMAT5
+  1Y  YSSREC_BKAPCONT SDREC_BKAPCONT SCREC_BKAPCONT NONE          NONE          YNN
 
   Contact Name:
  Telephone Num:
@@ -1834,4 +1850,8 @@ BKAP.CONT.NAME   0 18  2  0  0 0   25    0    0ANRGBKAPCONTNN    25
 BKAP.CONT.PHONE  0 18  3  0  0 0   25    0    0AYRGBKAPCONTNN    25
 BKAP.CONT.FAX    0 18  4  0  0 0   25    0    0AYRGBKAPCONTNN    25
 BKAP.CONT.LOC    0 18  5  0  0 0   25    0    0ANRGBKAPCONTNN    25
+\FILES
+BKAPCONTBKAPCONT  4
+\INCLUDE
+\KEY
 \\

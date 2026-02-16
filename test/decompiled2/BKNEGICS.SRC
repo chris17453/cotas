@@ -320,6 +320,7 @@ RET
 
 ;End of Prg
 \S5FORMAT1
+  1Y  YSSREC_WORK     SDREC_WORK     SCREC_WORK     NONE          NONE          YNN
 
         ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
         ³                                                             ³
@@ -348,8 +349,12 @@ THRU_DATE        0 43  6  0  0 0    8    0    0DNNGMEMORY  NN     8
 GRSSPRFTPRC      0 55  8  0  0 2    6    0    0NNNGMEMORY  NN     6
 RESTRCTTOLOC     0 45 10  0  0 0   10    0    0ANNGMEMORY  NN    10
 EXCLUDE_RETURNS  0 46 14  0  0 0    1    0    0AYNGMEMORY  NN     1
+\FILES
+\INCLUDE
+\KEY
 \\
 \B5FORMAT2
+  8 80100 5 18        NNN!
                    IC SALES GROSS PROFIT MARGIN ANALYSIS             Page:
                    From Date:            Thru Date:
        Restricted to GM% <=      %   Restricted to Location:

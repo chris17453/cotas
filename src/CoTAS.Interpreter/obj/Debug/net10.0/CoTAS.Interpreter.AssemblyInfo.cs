@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CoTAS.Interpreter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+077578c476e89e021da9955ed1abf9b37f306e94")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31bb7cc3c8bd525b3746826923704da2432bf1e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("CoTAS.Interpreter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CoTAS.Interpreter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
