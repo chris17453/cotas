@@ -314,7 +314,14 @@ public sealed class RunFileDecompiler
             case TasOpcode.COMM: return DecompileGeneric("COMM", spec);
             case TasOpcode.PORT: return DecompileGeneric("PORT", spec);
             case TasOpcode.ASK: return DecompileGenericVal1("ASK", spec);
-            case TasOpcode.IFDUP: return DecompileGenericVal1("IFDUP", spec);
+            case TasOpcode.IFDUP:
+            {
+                // IFDUP: if_typ(10)=key number, if_loc(11)=buffer/file handle index
+                byte key = Flag(spec, 10);
+                int buf = spec.Length >= 15 ? BitConverter.ToInt32(spec, 11) : 0;
+                string fh = buf >= 0 && buf < _run.Fields.Count ? _run.Fields[buf].Name : buf.ToString();
+                return $"IFDUP {fh}";
+            }
             case TasOpcode.IFNA: return DecompileGenericVal1("IFNA", spec);
             case TasOpcode.SSPCF: return DecompileGenericVal1("SSPCF", spec);
             case TasOpcode.CDPATH: return DecompileGenericVal1("CDPATH", spec);
@@ -483,21 +490,12 @@ public sealed class RunFileDecompiler
 
     private string DecompileCase(byte[] spec)
     {
-        // CASE has label address(4) + values
-        if (spec.Length < 4) return "CASE ???";
+        // IF layout: if_goto(0,4) + if_endif_goto(6,4) + if_typ(10,1) + if_loc(11,4) + if_do(15,1) + if_goto_gosub(16,4)
+        // CASE uses if_typ/if_loc at offset 10 as the comparison value
+        if (spec.Length < 15) return "CASE";
 
-        var parts = new List<string>();
-        int pos = 4;
-        while (pos + 5 <= spec.Length)
-        {
-            char typ = (char)spec[pos];
-            if (typ == '\0') break;
-            string val = _spec.ResolveSpecParam(spec, pos);
-            if (!string.IsNullOrEmpty(val))
-                parts.Add(val);
-            pos += 5;
-        }
-        return parts.Count > 0 ? $"CASE {string.Join(", ", parts)}" : "CASE";
+        string val = P(spec, 10);
+        return !string.IsNullOrEmpty(val) ? $"CASE {val}" : "CASE";
     }
 
     private string DecompileScan(byte[] spec)
@@ -550,10 +548,10 @@ public sealed class RunFileDecompiler
 
     private string DecompileCondJump(byte[] spec, string keyword)
     {
-        // Conditional: expr_typ(1) + expr_loc(4)
-        if (spec.Length >= 5)
+        // While layout: jump_addr(0,4) + expr_typ(4,1) + expr_loc(5,4) = 9 bytes
+        if (spec.Length >= 9)
         {
-            string expr = _spec.ResolveSpecParam(spec, 0);
+            string expr = _spec.ResolveSpecParam(spec, 4);
             return $"{keyword} {expr}";
         }
         return keyword;
@@ -626,7 +624,8 @@ public sealed class RunFileDecompiler
         // trap_lbl(6) = 4 byte label address
         if (spec.Length < 10) return DecompileGeneric("TRAP", spec);
 
-        string keys = _spec.ResolveSpecParam(spec, 0);
+        var (keyType, keyLoc) = _spec.ReadSpecParam(spec, 0);
+        string keys = _spec.DecodeTrapKeys(keyType, keyLoc);
         byte wtd = spec[5];
         int lbl = BitConverter.ToInt32(spec, 6);
 
@@ -640,7 +639,7 @@ public sealed class RunFileDecompiler
             default: action = $"?{(char)wtd}"; break;
         }
 
-        return $"TRAP {keys}, {action}";
+        return $"TRAP {keys} {action}";
     }
 
     private string DecompileXtrap(byte[] spec)

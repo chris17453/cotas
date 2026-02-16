@@ -210,7 +210,7 @@ public sealed class ExpressionDecoder
         int loc = BitConverter.ToInt32(cs, pos + 1);
 
         // Check if this references a temp result from a previous operation
-        if (type == 'F' && temps.ContainsKey(loc))
+        if ((type == 'F' || type == 'X' || type == 'x') && temps.ContainsKey(loc))
             return temps[loc];
 
         return _spec.ResolveParam(type, loc);

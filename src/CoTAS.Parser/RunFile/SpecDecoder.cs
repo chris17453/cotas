@@ -514,6 +514,46 @@ public sealed class SpecDecoder
     public static string GetTrapKeyName(byte code) =>
         _trapKeyNames.TryGetValue(code, out var name) ? name : $"KEY_0x{code:X2}";
 
+    /// <summary>
+    /// Decode a trap key constant: the constant segment contains individual
+    /// key code bytes that map to key names via _trapKeyNames.
+    /// Returns comma-separated key names like "f2,f3,f4,f5".
+    /// </summary>
+    public string DecodeTrapKeys(char type, int location)
+    {
+        if (type != 'C') return ResolveParam(type, location);
+
+        var cs = _run.ConstantSegment;
+        if (location < 0 || location >= cs.Length) return $"CONST@{location}";
+
+        // Trap key constants: type='A', then data bytes are key codes
+        byte cType = cs[location];
+        int dataStart, dataLen;
+        if (cType == 'A' || cType == 'a')
+        {
+            int displaySize = location + 4 <= cs.Length
+                ? BitConverter.ToUInt16(cs, location + 2) : 0;
+            dataStart = location + 4;
+            dataLen = Math.Min(displaySize, cs.Length - dataStart);
+        }
+        else
+        {
+            // Not a string constant, fall back
+            return ResolveParam(type, location);
+        }
+
+        if (dataLen <= 0) return "";
+
+        var keys = new List<string>();
+        for (int i = 0; i < dataLen; i++)
+        {
+            byte b = cs[dataStart + i];
+            if (b == 0) break;
+            keys.Add(GetTrapKeyName(b));
+        }
+        return string.Join(",", keys);
+    }
+
     /// <summary>Count escape sequences (\\x, \\0, \\t, etc.) in a sanitized string.</summary>
     private static int CountEscapes(string s)
     {
