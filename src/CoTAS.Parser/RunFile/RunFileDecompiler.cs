@@ -1825,8 +1825,16 @@ public sealed class RunFileDecompiler
         int numScrnFlds;
         int pos;
         int end;
+        bool isReport = mountType == 'B' || mountType == 'R';
 
-        if (oldFormat)
+        if (isReport)
+        {
+            // Reports have NO numflds/size prefix — data starts directly with section markers
+            numScrnFlds = 0;
+            pos = offset;
+            end = Math.Min(offset + 6801, cs.Length);
+        }
+        else if (oldFormat)
         {
             numScrnFlds = BitConverter.ToUInt16(cs, offset);
             pos = offset + 2;
@@ -1840,14 +1848,7 @@ public sealed class RunFileDecompiler
             end = Math.Min(offset + sizeOfFormat, cs.Length);
         }
 
-        // Skip entries with bogus numflds (likely a report with different binary layout)
-        if (numScrnFlds > 500)
-        {
-            sb.AppendLine($"; Skipped format #{screenNum} (report binary, numflds={numScrnFlds})");
-            return;
-        }
-
-        string prefix = mountType == 'B' || mountType == 'R' ? "\\B5" : "\\S5";
+        string prefix = isReport ? "\\B5" : "\\S5";
         sb.AppendLine($"{prefix}FORMAT{screenNum}");
 
         const byte B_MARK = (byte)'B' + 128; // 0xC2
@@ -1864,19 +1865,47 @@ public sealed class RunFileDecompiler
             if (marker == B_MARK)
             {
                 pos++;
-                while (pos < cs.Length && cs[pos] != 0)
+                if (isReport)
                 {
-                    int lineStart = pos;
-                    while (pos < cs.Length && cs[pos] != 0x0D && cs[pos] != 0)
-                        pos++;
-                    int lineLen = pos - lineStart;
-                    var lineChars = new char[lineLen];
-                    for (int j = 0; j < lineLen; j++)
-                        lineChars[j] = (char)cs[lineStart + j];
-                    sb.AppendLine(new string(lineChars));
-                    if (pos < cs.Length && cs[pos] == 0x0D) pos++;
+                    // Report text: each line prefixed with 4-byte pointer to next line
+                    // When prefix=0, that's the terminator — skip 4+1 bytes total
+                    while (pos + 4 < cs.Length)
+                    {
+                        int nextPtr = BitConverter.ToInt32(cs, pos);
+                        if (nextPtr == 0)
+                        {
+                            pos += 5; // skip null prefix + terminating CR
+                            break;
+                        }
+                        pos += 4;
+                        int lineStart = pos;
+                        while (pos < cs.Length && cs[pos] != 0x0D && cs[pos] != 0)
+                            pos++;
+                        int lineLen = pos - lineStart;
+                        var lineChars = new char[lineLen];
+                        for (int j = 0; j < lineLen; j++)
+                            lineChars[j] = (char)cs[lineStart + j];
+                        sb.AppendLine(new string(lineChars));
+                        if (pos < cs.Length && cs[pos] == 0x0D) pos++;
+                    }
                 }
-                if (pos < cs.Length && cs[pos] == 0) pos++;
+                else
+                {
+                    // Screen text: plain lines terminated by 0x0D, section ends with 0x00
+                    while (pos < cs.Length && cs[pos] != 0)
+                    {
+                        int lineStart = pos;
+                        while (pos < cs.Length && cs[pos] != 0x0D && cs[pos] != 0)
+                            pos++;
+                        int lineLen = pos - lineStart;
+                        var lineChars = new char[lineLen];
+                        for (int j = 0; j < lineLen; j++)
+                            lineChars[j] = (char)cs[lineStart + j];
+                        sb.AppendLine(new string(lineChars));
+                        if (pos < cs.Length && cs[pos] == 0x0D) pos++;
+                    }
+                    if (pos < cs.Length && cs[pos] == 0) pos++;
+                }
             }
             else if (marker == C_MARK)
             {
@@ -1903,9 +1932,10 @@ public sealed class RunFileDecompiler
                     byte fldCol = cs[pos + 5];
                     byte fldRow = cs[pos + 6];
                     byte fldDColor = cs[pos + 7];
-                    // Col/Row are 0-based in binary; source uses 1-based
+                    // Col is 0-based in binary for both screens and reports; source uses 1-based
+                    // Row is 0-based for screens (compiler does -1); for reports, row is XlatTable value (no -1)
                     int srcCol = fldCol + 1;
-                    int srcRow = fldRow + 1;
+                    int srcRow = isReport ? fldRow : fldRow + 1;
 
                     string fldName;
                     string exprSuffix = "";

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CoTAS.Compiler")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+961f9550da1e142eb753cf1c3fabeecde8e946c2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+077578c476e89e021da9955ed1abf9b37f306e94")]
 [assembly: System.Reflection.AssemblyProductAttribute("CoTAS.Compiler")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CoTAS.Compiler")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

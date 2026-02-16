@@ -476,4 +476,23 @@ RET
 QUIT
 
 ;End of Prg
-; Skipped format #1 (report binary, numflds=20418)
+\B5FORMAT1
+      Date:                      CUSTOMER ADDRESS LIST              Page:
+
+Cust code   Customer name                   Address                       City            ST   ZIP       Phone
+==========  ============================== ============================== =============== == ========== =========================
+
+
+Total records:
+\FIELDS
+RPT_DATE         0 14  0  0  0 0    8    0    0DNNGMEMORY  NN     8
+PAGE_NUM         0 75  0  0  0 0    5    0    0INNGMEMORY  NN     5
+BKAR.CUSTCODE    0  1  4  0  0 0   10    0    0AYRGBKARCUST      10
+BKAR.CUSTNAME    0 13  4  0  0 0   30    0    0ANRGBKARCUST      30
+BKAR.ADD1        0 44  4  0  0 0   30    0    0ANRGBKARCUSTNN    30
+BKAR.CITY        0 75  4  0  0 0   15    0    0ANRGBKARCUSTNN    15
+BKAR.STATE       0 91  4  0  0 0    2    0    0AYRGBKARCUST       2
+BKAR.ZIP         0 94  4  0  0 0   10    0    0AYRGBKARCUST      10
+BKAR.TELEPHONE   0 105  4  0  0 0   25    0    0ANRGBKARCUSTNN    25
+TOT_RECS         0 16  6  0  0 0    6    0    0RNNGMEMORY  NN     6
+\\

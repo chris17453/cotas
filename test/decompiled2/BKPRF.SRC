@@ -590,4 +590,83 @@ THRU.EMP.NUM     0 52  5  0  0 0    3    0    0NNNGMEMORY  NN     3
 FROM_DEPT        0 52  7  0  0 0    4    0    0ANNGMEMORY  NN     4
 THRU_DEPT        0 52  8  0  0 0    4    0    0ANNGMEMORY  NN     4
 \\
-; Skipped format #2 (report binary, numflds=26050)
+\B5FORMAT2
+                                                                                          Page:
+                                                           P A Y R O L L
+                                                       Quarterly Information
+
+
+Emp Name                      Soc Sec Num Total Hrs  Total Wages  Medicare Wg  FIT W/H      SDI W/H      SIT W/H      FICA W/H+Exp
+--- ------------------------- ----------- ---------- ------------ ------------ ------------ ------------ ------------ ------------
+
+     Total number of Employees Printed:
+                           FICA Wg/Tips                                                                               Medi W/H+Exp
+                           ------------ ------------ ------------ ------------ ------------ ------------ ------------ ------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\FIELDS
+BKSY.COMP.NAME   0 54  0  0  0 0   25    0    0ANRGBKSYMSTRNN    25
+PAGE             0 98  0  0  0 0    5    0    0NNNGMEMORY  NN     5
+TODAYS.DATE      0 57  3  0  0 0    8    0    0DNNGMEMORY  NN     8
+CURRENT.TIME     0 68  3  0  0 0    7    0    0TNNGMEMORY  NN     7
+BKPR.EMP.NUM     0  1  7  0  0 0    3    0    0INRGBKPRMSTR       3
+EMP_NAME         0  5  7  0  0 0   25    0    0ANNGMEMORY  NN    25
+BKPR.EMP.SSN     0 31  7  0  0 0   11    0    0AYRGBKPRMSTRNN    11
+TOT.HRS          0 43  7  0  0 2   10    0    0NNNGMEMORY  NN    10
+TOT.WAGES        0 54  7  0  0 2   12    0    0NNNGMEMORY  NN    12
+BKPR.EMP.MEDQPY  0 67  7  0  0 2   12    0    0NNRGBKPRMSTRNN    12
+BKPR.EMP.FITQTD  0 80  7  0  0 2   12    0    0NNRGBKPRMSTRNN    12
+BKPR.EMP.SDIQTD  0 93  7  0  0 2   12    0    0NNRGBKPRMSTRNN    12
+BKPR.EMP.STQTD   0 106  7  0  0 2   12    0    0NNRGBKPRMSTRNN    12
+FICA.WH          0 119  7  0  0 2   12    0    0NNNGMEMORY  NN    12
+NUM.EMPS         0 42  8  0  0 0    5    0    0NNNGMEMORY  NN     5
+Y:23703          0 41  9  0  0 0    0    0    0?NXGMEMORY         0
+Y:23713          0 54  9  0  0 0    0    0    0?NXGMEMORY         0
+Y:23723          0 67  9  0  0 0    0    0    0?NXGMEMORY         0
+Y:23733          0 80  9  0  0 0    0    0    0?NXGMEMORY         0
+Y:23743          0 93  9  0  0 0    0    0    0?NXGMEMORY         0
+Y:23753          0 106  9  0  0 0    0    0    0?NXGMEMORY         0
+BKPR.EMP.FCQPAY  0 28 11  0  0 2   12    0    0NNRGBKPRMSTRNN    12
+Y:23763          0 41 11  0  0 0    0    0    0?NXGMEMORY         0
+Y:23773          0 54 11  0  0 0    0    0    0?NXGMEMORY         0
+Y:23783          0 67 11  0  0 0    0    0    0?NXGMEMORY         0
+Y:23793          0 80 11  0  0 0    0    0    0?NXGMEMORY         0
+Y:23803          0 93 11  0  0 0    0    0    0?NXGMEMORY         0
+Y:23813          0 106 11  0  0 0    0    0    0?NXGMEMORY         0
+MED.WH           0 119 11  0  0 2   12    0    0NNNGMEMORY  NN    12
+\\
