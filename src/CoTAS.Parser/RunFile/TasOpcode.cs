@@ -20,7 +20,7 @@ public static class TasOpcode
     public const ushort POSTMSG = 11;       // Post message
     public const ushort DEL = 12;           // Delete record
     public const ushort WRTA = 13;          // Write array
-    public const ushort MENU = 14;          // Menu command
+    public const ushort ENTER = 14;         // Enter data (was swapped with MENU in newer compiler)
     public const ushort ASSIGN = 15;        // Assignment (=)
     public const ushort DISPF = 16;         // Display field
     public const ushort FILL = 17;          // Fill field
@@ -39,7 +39,7 @@ public static class TasOpcode
     public const ushort ON = 30;            // On goto/gosub
     public const ushort OPEN = 31;          // Open file
     public const ushort RET = 32;           // Return
-    public const ushort ENTER = 33;         // Enter data
+    public const ushort MENU = 33;         // Old menu command (was swapped with ENTER in newer compiler)
     public const ushort PBLNK = 34;         // Print blank lines
     public const ushort PBOX = 35;          // Print box
     public const ushort PCHR = 36;          // Print character

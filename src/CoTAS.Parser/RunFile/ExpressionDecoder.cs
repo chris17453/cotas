@@ -55,11 +55,20 @@ public sealed class ExpressionDecoder
         int displaySize = BitConverter.ToUInt16(cs, offset + 2);
         int exprStart = offset + 4;
 
-        if (exprStart >= cs.Length || cs[exprStart] != 0xFD)
+        if (exprStart >= cs.Length)
             return $"EXPR@{offset}";
 
-        // Skip FD marker + tempBase(4)
-        int rpos = exprStart + 5;
+        int rpos;
+        if (cs[exprStart] == 0xFD)
+        {
+            // Top-level expression: skip FD marker + tempBase(4)
+            rpos = exprStart + 5;
+        }
+        else
+        {
+            // Sub-expression (e.g. IIF argument): no FD header, starts directly with ops
+            rpos = exprStart;
+        }
         int exprEnd = exprStart + displaySize;
         if (exprEnd > cs.Length) exprEnd = cs.Length;
 
@@ -102,7 +111,9 @@ public sealed class ExpressionDecoder
                 bool needsParens = IsComparisonOp(op);
 
                 string result;
-                if (opStr == "+" && IsStringConcat(lhs, rhs))
+                if (op == 0x0E) // .NOT. is unary — only uses rhs (Fld2)
+                    result = $".NOT. {rhs}";
+                else if (opStr == "+" && IsStringConcat(lhs, rhs))
                     result = $"{lhs}+{rhs}";
                 else if (needsParens && ContainsBinaryOp(lhs))
                     result = $"({lhs}){opStr}{rhs}";
@@ -231,8 +242,8 @@ public sealed class ExpressionDecoder
         0x0B => ">=",
         0x0C => "<=",
         0x0D => " .AND. ",
-        0x0E => " .OR. ",
-        0x0F => " .NOT. ",
+        0x0E => " .NOT. ",
+        0x0F => " .OR. ",
         _ => $"?{op:X2}?"
     };
 
