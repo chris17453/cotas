@@ -2,7 +2,7 @@
   "name": "NMENU",
   "abbreviation": null,
   "platform": "TAS Professional 5.1",
-  "description": "will display (box not shown):\nChoice1\nChoice2\n———\nChoice3\nChoice4\nYou can also specify your own dividing lines; however, the first two characters must\nbe single/double dashed lines (and they will be displayed). If the user chooses\n‘Choice3’ the program would return 3 in counter_field. This has nothing to do with\nthe name (Choice3) but only reflects the fact that Choice 3 is the 3rd choice in the list,\nignoring the single dashed line. If the user presses the Dn Arrow key the ‘cursor’ will\nskip the single dashed line.\nThis can also be an array field reference. If it is, the array option must be Y. All the\nsame rules apply; the only difference is that there is only one field reference for this\noption instead of a list. The list is actually the array elements.",
+  "description": "will display (box not shown):\nChoice1\nChoice2\n---\nChoice3\nChoice4\nYou can also specify your own dividing lines; however, the first two characters must\nbe single/double dashed lines (and they will be displayed). If the user chooses\n‘Choice3’ the program would return 3 in counter_field. This has nothing to do with\nthe name (Choice3) but only reflects the fact that Choice 3 is the 3rd choice in the list,\nignoring the single dashed line. If the user presses the Dn Arrow key the ‘cursor’ will\nskip the single dashed line.\nThis can also be an array field reference. If it is, the array option must be Y. All the\nsame rules apply; the only difference is that there is only one field reference for this\noption instead of a list. The list is actually the array elements.",
   "syntax": "",
   "parameters": [
     {

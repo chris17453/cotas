@@ -15,7 +15,7 @@
       "name": "type",
       "type": "f/c/e",
       "required": false,
-      "description": "The new type value. May be:\nName\n—————————\nA Alphanumeric\nN Numeric\nD Date\nT Time\nI Integer\nB Byte\nF F type pointer\nP P type pointer\nR Record number\nL Logical\nO TAS Pro 3.0 BCD\n\nInternal size\n———————————————\nmaximum 4 gbytes\n8 bytes\n4 bytes\n4 bytes\n2 bytes\n1 byte\n5 bytes\n14 bytes\n4 bytes\n1 bytes\nmax of 10 bytes"
+      "description": "The new type value. May be:\nName\n---------\nA Alphanumeric\nN Numeric\nD Date\nT Time\nI Integer\nB Byte\nF F type pointer\nP P type pointer\nR Record number\nL Logical\nO TAS Pro 3.0 BCD\n\nInternal size\n---------------\nmaximum 4 gbytes\n8 bytes\n4 bytes\n4 bytes\n2 bytes\n1 byte\n5 bytes\n14 bytes\n4 bytes\n1 bytes\nmax of 10 bytes"
     },
     {
       "name": "size",

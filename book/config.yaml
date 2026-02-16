@@ -1,0 +1,43 @@
+title: "CoTAS Technical Reference Manual"
+subtitle: "A Modern Cross-Platform Replacement for DOS TAS 5.1"
+edition: "First Edition"
+version: "1.0.0"
+authors:
+  - "Chris Watkins"
+publisher: "Watkins Labs"
+year: 2026
+isbn: "TBD"
+
+# Amazon KDP 6x9 trim
+page:
+  width: "6in"
+  height: "9in"
+  margin_top: "0.75in"
+  margin_bottom: "0.75in"
+  margin_inside: "0.875in"
+  margin_outside: "0.625in"
+
+colors:
+  primary: "#6C5CE7"
+  secondary: "#00CEC9"
+  accent: "#FD79A8"
+  warning: "#FDCB6E"
+  success: "#00B894"
+  dark: "#2D3436"
+  darker: "#1E272E"
+  light: "#DFE6E9"
+  code_bg: "#1a1a2e"
+  code_border: "#6C5CE7"
+  chapter_colors:
+    1: "#6C5CE7"   # Introduction - purple
+    2: "#00CEC9"   # Getting Started - teal
+    3: "#0984E3"   # Language Fundamentals - blue
+    4: "#E17055"   # Structured Programming - coral
+    5: "#00B894"   # Command Reference - green
+    6: "#FDCB6E"   # Function Reference - gold
+    7: "#E84393"   # File & Data - pink
+    8: "#74B9FF"   # Screen & UI - sky blue
+    9: "#A29BFE"   # Runtime - lavender
+    10: "#55EFC4"  # Preprocessor - mint
+    11: "#FF7675"  # Errors - red
+    12: "#636E72"  # Windows Legacy - grey

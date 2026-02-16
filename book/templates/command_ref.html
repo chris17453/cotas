@@ -1,0 +1,41 @@
+<div class="ref-entry">
+    <h3 class="ref-name" id="cmd-{{ slug }}"><span class="ref-running" style="string-set: ref-running-header 'COMMAND: {{ name }}'"></span>{{ name }}<span class="ref-badge command">Command</span></h3>
+    {% if abbreviation %}<div class="ref-meta">Abbreviation: <code>{{ abbreviation }}</code></div>{% endif %}
+    {% if platform %}<div class="ref-meta">Platform: {{ platform }}</div>{% endif %}
+
+    <div class="ref-description">{{ description }}</div>
+
+    {% if syntax %}
+    <div class="ref-syntax">
+        <h4>Syntax</h4>
+        <pre><code>{{ syntax }}</code></pre>
+    </div>
+    {% endif %}
+
+    {% if parameters %}
+    <div class="ref-params">
+        <h4>Parameters</h4>
+        <dl class="param-list">
+        {% for p in parameters %}
+        <dt><code>{{ p.name }}</code> <span class="param-type">{{ p.type }}</span> {% if p.required %}<span class="param-req">Required</span>{% else %}<span class="param-opt">Optional</span>{% endif %}</dt>
+        <dd>{{ p.description }}</dd>
+        {% endfor %}
+        </dl>
+    </div>
+    {% endif %}
+
+    {% if comments %}<div class="mt-1"><h4>Comments</h4><p>{{ comments }}</p></div>{% endif %}
+
+    {% if example %}
+    <div class="mt-1">
+        <h4>Example</h4>
+        <pre><code>{{ example }}</code></pre>
+    </div>
+    {% endif %}
+
+    {% if see_also %}
+    <div class="ref-see-also mt-1">
+        <strong>See Also:</strong> {% for s in see_also %}{% if s.href %}<a href="{{ s.href }}"><code>{{ s.name }}</code></a>{% else %}<code>{{ s.name }}</code>{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+    </div>
+    {% endif %}
+</div>

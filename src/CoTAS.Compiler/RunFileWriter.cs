@@ -154,21 +154,24 @@ public sealed class RunFileWriter
         return labels;
     }
 
-    private static byte[] BuildFieldSegment(List<RunFieldSpec> fields, RunFileHeader header)
+    /// <summary>
+    /// Build the field spec segment from field definitions.
+    /// Public for use by TasCompiler's real compilation mode.
+    /// </summary>
+    public static byte[] BuildFieldSpecSegment(List<RunFieldSpec> fields, int fieldSpecSize)
     {
-        int specSize = header.FieldSpecSize;
-        byte[] segment = new byte[fields.Count * specSize];
+        byte[] segment = new byte[fields.Count * fieldSpecSize];
 
         for (int i = 0; i < fields.Count; i++)
         {
-            int offset = i * specSize;
-            WriteFieldSpec(segment, offset, fields[i], specSize);
+            int offset = i * fieldSpecSize;
+            WriteFieldSpec(segment, offset, fields[i], fieldSpecSize, i);
         }
 
         return segment;
     }
 
-    private static void WriteFieldSpec(byte[] buf, int offset, RunFieldSpec field, int specSize)
+    private static void WriteFieldSpec(byte[] buf, int offset, RunFieldSpec field, int specSize, int fieldIndex = 0)
     {
         // Name: 15 bytes
         // Detect if this should be ShortString format (temp fields) or fixed array
@@ -177,6 +180,12 @@ public sealed class RunFileWriter
             // Pascal ShortString: length prefix byte + name bytes
             buf[offset] = (byte)field.Name.Length;
             Encoding.ASCII.GetBytes(field.Name, 0, field.Name.Length, buf, offset + 1);
+            int nameEnd = 1 + field.Name.Length;
+            // TAS temp field pattern: '0' byte + index byte after name, then space-pad
+            buf[offset + nameEnd] = (byte)'0';
+            buf[offset + nameEnd + 1] = (byte)fieldIndex;
+            for (int j = nameEnd + 2; j < 15; j++)
+                buf[offset + j] = (byte)' ';
         }
         else
         {

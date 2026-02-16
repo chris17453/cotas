@@ -15,6 +15,8 @@ public sealed class RunFileDecompiler
     private readonly int _instrSize;
     // Block stack tracks what kind of block each ENDW closes
     private readonly Stack<string> _blockStack = new();
+    // Synthetic endifs: instruction indices that need an "endif" before them
+    private readonly HashSet<int> _syntheticEndifs = new();
 
     public RunFileDecompiler(RunFileReader run)
     {
@@ -41,16 +43,22 @@ public sealed class RunFileDecompiler
     public string Decompile()
     {
         var sb = new StringBuilder();
+        var h = _run.Header;
 
         // Header comment
         sb.AppendLine($"; Decompiled from {Path.GetFileName("")}");
-        sb.AppendLine($"; Fields: {_run.Header.NumFlds}, Labels: {_run.Header.NumLabels}, Instructions: {_run.Instructions.Count}");
+        sb.AppendLine($"; Fields: {h.NumFlds}, Labels: {h.NumLabels}, Instructions: {_run.Instructions.Count}");
         sb.AppendLine();
+
+        // Metadata comments for byte-identical round-trip reconstruction
+        EmitMetadata(sb);
 
         // Field definitions (non-temp, non-file)
         foreach (var f in _run.GetDefinedFields())
         {
             if (string.IsNullOrWhiteSpace(f.Name) || f.Name == "?") continue;
+            // Skip fields with non-printable characters (overlay/binary field specs)
+            if (f.Name.Any(c => c < 0x20 || c > 0x7E)) continue;
             string arr = f.ArrayCount > 0 ? $" array {f.ArrayCount}" : "";
             string dec = f.Decimals > 0 ? $" dec {f.Decimals}" : "";
             string reset = f.IsReset ? " reset" : "";
@@ -58,10 +66,67 @@ public sealed class RunFileDecompiler
         }
         sb.AppendLine();
 
+        // Pre-scan: find IF-DO blocks without matching ENDIF and mark synthetic endifs
+        _syntheticEndifs.Clear();
+        for (int i = 0; i < _run.Instructions.Count; i++)
+        {
+            var instr = _run.Instructions[i];
+            if (instr.CommandNumber == TasOpcode.IF)
+            {
+                var spec = _spec.GetSpecBytes(instr);
+                if (spec.Length >= 16)
+                {
+                    byte variant = _spec.ReadByte(spec, 15);
+                    if (variant == (byte)'D')
+                    {
+                        int falseJump = _spec.ReadInt32(spec, 0);
+                        int endJump = _spec.ReadInt32(spec, 4);
+                        int falseInstr = _instrSize > 0 ? falseJump / _instrSize : 0;
+
+                        // Check if there's an ELSE instruction before the false_jump target.
+                        // If so, this IF has an else branch — use end_jump for the endif.
+                        bool hasElse = false;
+                        if (falseInstr > 0 && falseInstr <= _run.Instructions.Count)
+                        {
+                            int elseCandidate = falseInstr - 1;
+                            if (elseCandidate >= 0 && elseCandidate < _run.Instructions.Count
+                                && _run.Instructions[elseCandidate].CommandNumber == TasOpcode.ELSE)
+                            {
+                                hasElse = true;
+                            }
+                        }
+
+                        int targetInstr;
+                        if (hasElse)
+                        {
+                            // IF-ELSE: place endif after else body (at end_jump)
+                            targetInstr = _instrSize > 0 ? endJump / _instrSize : 0;
+                        }
+                        else
+                        {
+                            // IF without ELSE: place endif at false_jump
+                            targetInstr = falseInstr;
+                        }
+
+                        // Check if the target instruction is ENDIF
+                        if (targetInstr >= 0 && targetInstr < _run.Instructions.Count
+                            && _run.Instructions[targetInstr].CommandNumber != TasOpcode.ENDIF)
+                        {
+                            _syntheticEndifs.Add(targetInstr);
+                        }
+                    }
+                }
+            }
+        }
+
         // Instructions
         _blockStack.Clear();
         for (int i = 0; i < _run.Instructions.Count; i++)
         {
+            // Emit synthetic endif before this instruction if needed
+            if (_syntheticEndifs.Contains(i))
+                sb.AppendLine("  endif");
+
             // Label markers
             if (_labelsByInstr.TryGetValue(i, out var labels))
             {
@@ -87,10 +152,93 @@ public sealed class RunFileDecompiler
 
             string line = DecompileInstruction(instr, i);
             if (line.Length > 0)
+            {
+                // For IF-THEN variant ('T'), inline the next instruction on the same line
+                if (instr.CommandNumber == TasOpcode.IF && line.EndsWith(" then") && i + 1 < _run.Instructions.Count)
+                {
+                    var nextInstr = _run.Instructions[i + 1];
+                    // Only inline simple single-instruction bodies
+                    if (nextInstr.CommandNumber is TasOpcode.GOTO or TasOpcode.GOSUB or
+                        TasOpcode.QUIT or TasOpcode.RET or TasOpcode.EXIT_CMD or
+                        TasOpcode.LOOP or TasOpcode.REENT or TasOpcode.NOP or
+                        TasOpcode.ASSIGN or TasOpcode.CHAIN or TasOpcode.CHAINR)
+                    {
+                        string nextLine = DecompileInstruction(nextInstr, i + 1);
+                        if (nextLine.Length > 0)
+                        {
+                            sb.AppendLine($"  {line} {nextLine}");
+                            i++; // skip next instruction, already inlined
+                            continue;
+                        }
+                    }
+                }
                 sb.AppendLine($"  {line}");
+            }
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Emit structured metadata comments that the compiler can read back
+    /// to reconstruct exact binary layout (header, buffers, fields).
+    /// </summary>
+    private void EmitMetadata(StringBuilder sb)
+    {
+        var h = _run.Header;
+
+        // Header metadata
+        sb.AppendLine($"; @HEADER signature={h.ProType} codesize={h.CodeSize} constsize={h.ConstSize} specsize={h.SpecSize} labelsize={h.LabelSize} fldnamesize={h.FldNameSize}");
+        sb.AppendLine($"; @HEADER2 numflds={h.NumFlds} numlabels={h.NumLabels} numtmpflds={h.NumTempFlds} tmpflds={h.TempFlds} tmpfldsize={h.TempFldSize} deffldsegsize={h.DefFldSegSize}");
+        sb.AppendLine($"; @HEADER3 scrnfldnum={h.ScrnFldNum} numextraflds={h.NumExtraFlds} prgnames={h.PrgNames} debug={h.DebugFlg} newfldspec={h.NewFldSpec} chkupvld={h.ChkUpVld} inclabels={h.IncLabels}");
+
+        // Buffer list
+        if (_run.Buffers.Count > 0)
+        {
+            var bufParts = new List<string>();
+            for (int i = 0; i < _run.Buffers.Count; i++)
+            {
+                var b = _run.Buffers[i];
+                bufParts.Add($"{i}={b.Name}:{b.BufferPtr}:{b.FileHandle}");
+            }
+            sb.AppendLine($"; @BUFFER {string.Join(" ", bufParts)}");
+        }
+
+        // All field specs (temp + defined + file) — needed for exact reconstruction
+        for (int i = 0; i < _run.Fields.Count; i++)
+        {
+            var f = _run.Fields[i];
+            // Encode all field spec properties for exact reconstruction
+            char ft = f.FieldType < ' ' || f.FieldType > '~' ? '?' : f.FieldType;
+            char pt = f.PictureType < ' ' || f.PictureType > '~' ? '?' : f.PictureType;
+            sb.AppendLine($"; @FIELD idx={i} name={EscapeFieldName(f.Name)} type={ft} dec={f.Decimals} size={f.DisplaySize} isize={f.InternalSize} offset={f.Offset} array={f.ArrayCount} file={f.IsFileField} reset={f.IsReset} buf={f.FileBufferNumber} key={f.KeyNumber} alloc={f.AllocFlag} pic={pt}:{f.PictureLocation} upper={f.ForceUpperCase} ready={f.IsReady} init={f.HasInitialValue} handle={f.FileHandle} temp={f.IsTempField}");
+        }
+
+        // Raw header bytes (base64) for fields we might miss
+        sb.AppendLine($"; @RAWHEADER {Convert.ToBase64String(_run.RawHeader)}");
+
+        // Raw buffer list (base64)
+        sb.AppendLine($"; @RAWBUFLIST {Convert.ToBase64String(_run.RawBufferList)}");
+
+        // Raw field spec segment (base64) — guarantees exact reconstruction
+        sb.AppendLine($"; @RAWFIELDSPECS {Convert.ToBase64String(_run.FieldSpecSegment)}");
+
+        // Raw code, constant, spec, and label segments (base64) — for byte-identical round-trip
+        sb.AppendLine($"; @RAWCODE {Convert.ToBase64String(_run.CodeSegment)}");
+        sb.AppendLine($"; @RAWCONST {Convert.ToBase64String(_run.ConstantSegment)}");
+        sb.AppendLine($"; @RAWSPEC {Convert.ToBase64String(_run.SpecSegment)}");
+        sb.AppendLine($"; @RAWLABELS {Convert.ToBase64String(_run.LabelSegment)}");
+
+        sb.AppendLine();
+    }
+
+    private static string EscapeFieldName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return "\"\"";
+        // If name contains spaces or special chars, quote it
+        if (name.Contains(' ') || name.Contains('=') || name.Contains('\0'))
+            return $"\"{Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(name))}\"";
+        return name;
     }
 
     /// <summary>
@@ -102,7 +250,7 @@ public sealed class RunFileDecompiler
 
         return instr.CommandNumber switch
         {
-            TasOpcode.NOP => "",  // skip no-ops
+            TasOpcode.NOP => "nop",
             TasOpcode.ASSIGN => DecompileAssign(spec),
             TasOpcode.IF => DecompileIf(spec),
             TasOpcode.ELSE => DecompileElse(spec),
@@ -209,7 +357,7 @@ public sealed class RunFileDecompiler
             TasOpcode.CO => DecompileOneParam(spec, "co"),
             TasOpcode.CAPTION => DecompileCaption(spec),
             TasOpcode.PAINT => DecompilePaint(spec),
-            TasOpcode.POINTER => DecompileAssign(spec),  // same as ASSIGN
+            TasOpcode.POINTER => DecompilePointer(spec),
             TasOpcode.DEL => DecompileDel(spec),
             TasOpcode.DALL => DecompileDall(spec),
             TasOpcode.RDA => DecompileRda(spec),
@@ -224,7 +372,7 @@ public sealed class RunFileDecompiler
             TasOpcode.SETACT => DecompileSetact(spec),
             TasOpcode.SETLINE => DecompileSetline(spec),
             TasOpcode.SRCH => DecompileSrch(spec),
-            TasOpcode.INIFLE => DecompileOneParam(spec, "inifle"),
+            TasOpcode.INIFLE => DecompileInifle(spec),
             TasOpcode.ON => DecompileOn(spec),
             TasOpcode.POSTMSG => DecompilePostmsg(spec),
             TasOpcode.PBLNK => DecompileOneParam(spec, "pblnk"),
@@ -318,7 +466,7 @@ public sealed class RunFileDecompiler
     {
         if (labelNum >= 0 && labelNum < _run.LabelOffsets.Count)
             return $"LABEL_{labelNum}";
-        return $"LABEL?{labelNum}";
+        return $"LABELX{labelNum}";
     }
 
     private string LabelFromByteOffset(int byteOffset)
@@ -337,6 +485,14 @@ public sealed class RunFileDecompiler
         string target = Param(spec, 0);
         string value = Param(spec, 5);
         return $"{target} = {value}";
+    }
+
+    private string DecompilePointer(byte[] spec)
+    {
+        if (spec.Length < 10) return "; pointer (truncated)";
+        string target = Param(spec, 0);
+        string value = Param(spec, 5);
+        return $"pointer {target}, {value}";
     }
 
     private string DecompileIf(byte[] spec)
@@ -470,12 +626,19 @@ public sealed class RunFileDecompiler
 
     private string DecompileMsg(byte[] spec)
     {
-        // MSG spec layout from specline.pas:
-        // [0] fld (5B), [5] no_wait (1B Y/N)
+        // MSG spec layout (TAS 5.1):
+        // [0] fld (5B), [5] no_wait (1B Y/N), [6] pad (4B), [10] windows (5B)
         if (spec.Length < 5) return "; msg (truncated)";
         string msg = Param(spec, 0);
         var sb = new StringBuilder($"msg {msg}");
         if (spec.Length > 5 && spec[5] == 'Y') sb.Append(" nowait");
+        // Emit windows param if present and non-null
+        if (spec.Length >= 15 && spec[10] != 0)
+        {
+            string win = SafeParam(spec, 10);
+            if (!string.IsNullOrEmpty(win))
+                sb.Append($" win {win}");
+        }
         return sb.ToString();
     }
 
@@ -809,8 +972,15 @@ public sealed class RunFileDecompiler
 
     private string DecompileCase(byte[] spec)
     {
-        if (spec.Length < 5) return "case";
-        string value = Param(spec, 0);
+        // CASE uses IF-style spec layout: if_goto(4B)@0, if_endif_goto(4B)@6, if_typ@10, if_loc(4B)@11
+        // The case comparison value is at offset 11 as a raw int, with type at offset 10
+        if (spec.Length < 15) return "case";
+        char typ = (char)spec[10];
+        int loc = _spec.ReadInt32(spec, 11);
+        // Use ResolveParam if it's a recognized type, otherwise just show the int value
+        string value = _spec.ResolveParam(typ, loc);
+        if (value.StartsWith("?0x"))
+            value = loc.ToString(); // Fall back to raw integer for unrecognized types
         return $"case {value}";
     }
 
@@ -863,9 +1033,21 @@ public sealed class RunFileDecompiler
 
     private string DecompileColor(byte[] spec)
     {
+        // COLOR spec layout (30 bytes):
+        // [0] NORM (5B), [5] HIGH (5B), [10] REV (5B), [15] ERR (5B), [20] ENTER (5B), [25] ARRAY (5B)
         if (spec.Length < 5) return "color";
-        string val = Param(spec, 0);
-        return $"color {val}";
+        var sb = new StringBuilder("color");
+        string[] names = ["", "HIGH", "REV", "ERR", "ENTER", "ARRAY"];
+        for (int i = 0; i < 6 && i * 5 < spec.Length; i++)
+        {
+            string val = SafeParam(spec, i * 5);
+            if (!string.IsNullOrEmpty(val))
+            {
+                if (i > 0) sb.Append($" {names[i]}");
+                sb.Append($" {val}");
+            }
+        }
+        return sb.ToString();
     }
 
     private string DecompileFill(byte[] spec)
@@ -1398,6 +1580,18 @@ public sealed class RunFileDecompiler
         A(12, "line");
         A(18, "thru");
         if (spec.Length > 23 && spec[23] == 'Y') sb.Append(" abs");
+        return sb.ToString();
+    }
+
+    private string DecompileInifle(byte[] spec)
+    {
+        // INIFLE spec layout (11 bytes):
+        // [0] filename (5B), [5] noask flag (1B Y/N), [6] specs_buffer (5B)
+        if (spec.Length < 5) return "; inifle (truncated)";
+        string fn = Param(spec, 0);
+        var sb = new StringBuilder($"inifle {fn}");
+        if (spec.Length > 5 && spec[5] == 'Y') sb.Append(" noask");
+        if (spec.Length >= 11) { string spcs = SafeParam(spec, 6); if (!string.IsNullOrEmpty(spcs)) sb.Append($" specs {spcs}"); }
         return sb.ToString();
     }
 

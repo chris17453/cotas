@@ -15,12 +15,18 @@ __pycache__/
 user_code/
 blank/
 db/
+book/output/
+doodles/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# .NET build artifacts
+**/bin/
+**/obj/
 
 # OS
 .DS_Store

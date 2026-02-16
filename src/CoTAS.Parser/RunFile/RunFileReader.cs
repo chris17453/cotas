@@ -33,10 +33,10 @@ public sealed class RunFileReader
     public byte[] RawBufferList { get; }
 
     /// <summary>Raw constant segment bytes.</summary>
-    public byte[] ConstantSegment { get; }
+    public byte[] ConstantSegment { get; private set; }
 
     /// <summary>Raw spec segment bytes.</summary>
-    public byte[] SpecSegment { get; }
+    public byte[] SpecSegment { get; private set; }
 
     /// <summary>Raw code segment bytes.</summary>
     public byte[] CodeSegment { get; }
@@ -75,6 +75,107 @@ public sealed class RunFileReader
             throw new InvalidDataException($"File too small to be a .RUN file: {data.Length} bytes");
         return new RunFileReader(data, filePath);
     }
+
+    /// <summary>
+    /// Load a .RUN file with an overlay (.OVL) prepended.
+    /// TAS programs reference shared overlay data: the overlay's spec, constant,
+    /// field, and label segments are prepended before the program's own segments.
+    /// SLPtr values in the program then index into the combined spec segment.
+    /// </summary>
+    public static RunFileReader LoadWithOverlay(string filePath, string overlayPath)
+    {
+        var run = Load(filePath);
+        var ovl = Load(overlayPath);
+        run.PrependOverlay(ovl);
+        return run;
+    }
+
+    /// <summary>
+    /// Auto-detect and load overlay if needed. Looks for ADV50.OVL in same directory.
+    /// </summary>
+    public static RunFileReader LoadAutoOverlay(string filePath)
+    {
+        var run = Load(filePath);
+        // Check if overlay is needed: spec references beyond our segment,
+        // OR DefFldSegSize implies more fields than we have (overlay fields)
+        bool needsOverlay = false;
+        foreach (var instr in run.Instructions)
+        {
+            if (instr.SpecLineSize > 0 && instr.SpecLinePtr + instr.SpecLineSize > run.SpecSegment.Length)
+            {
+                needsOverlay = true;
+                break;
+            }
+        }
+        if (!needsOverlay && run.Header.DefFldSegSize > run.Header.NumFlds * run.Header.FieldSpecSize)
+        {
+            needsOverlay = true; // Field references extend beyond our own fields
+        }
+
+        if (needsOverlay)
+        {
+            string dir = Path.GetDirectoryName(Path.GetFullPath(filePath)) ?? ".";
+            string ovlPath = Path.Combine(dir, "ADV50.OVL");
+            if (File.Exists(ovlPath))
+            {
+                var ovl = Load(ovlPath);
+                run.PrependOverlay(ovl);
+            }
+        }
+
+        return run;
+    }
+
+    /// <summary>
+    /// Prepend overlay segments to this reader's segments.
+    /// After this call, SpecSegment = ovl.Spec + this.Spec, etc.
+    /// Field indices and constant offsets in existing spec data that reference
+    /// the program's own data remain correct because the overlay is PREPENDED.
+    /// </summary>
+    private void PrependOverlay(RunFileReader ovl)
+    {
+        OverlaySpecSize = ovl.SpecSegment.Length;
+        OverlayConstSize = ovl.ConstantSegment.Length;
+        OverlayFieldCount = ovl.Fields.Count;
+        OverlayLabelCount = ovl.LabelOffsets.Count;
+
+        SpecSegment = CombineArrays(ovl.SpecSegment, SpecSegment);
+        ConstantSegment = CombineArrays(ovl.ConstantSegment, ConstantSegment);
+
+        // Prepend overlay fields
+        var combinedFields = new List<RunFieldSpec>(ovl.Fields.Count + Fields.Count);
+        combinedFields.AddRange(ovl.Fields);
+        combinedFields.AddRange(Fields);
+        Fields.Clear();
+        Fields.AddRange(combinedFields);
+
+        // Prepend overlay labels
+        var combinedLabels = new List<int>(ovl.LabelOffsets.Count + LabelOffsets.Count);
+        combinedLabels.AddRange(ovl.LabelOffsets);
+        combinedLabels.AddRange(LabelOffsets);
+        LabelOffsets.Clear();
+        LabelOffsets.AddRange(combinedLabels);
+    }
+
+    private static byte[] CombineArrays(byte[] a, byte[] b)
+    {
+        byte[] result = new byte[a.Length + b.Length];
+        Array.Copy(a, 0, result, 0, a.Length);
+        Array.Copy(b, 0, result, a.Length, b.Length);
+        return result;
+    }
+
+    /// <summary>Size of the overlay spec segment (0 if no overlay loaded).</summary>
+    public int OverlaySpecSize { get; private set; }
+
+    /// <summary>Size of the overlay constant segment (0 if no overlay loaded).</summary>
+    public int OverlayConstSize { get; private set; }
+
+    /// <summary>Number of fields from the overlay (0 if no overlay loaded).</summary>
+    public int OverlayFieldCount { get; private set; }
+
+    /// <summary>Number of labels from the overlay (0 if no overlay loaded).</summary>
+    public int OverlayLabelCount { get; private set; }
 
     /// <summary>
     /// Get a string from the constant segment at the given offset.
@@ -211,7 +312,12 @@ public sealed class RunFileReader
         for (int i = 0; i < Header.NumFlds; i++)
         {
             if (offset + specSize > _data.Length)
+            {
+                // Pad remaining fields (e.g. truncated overlay with temp fields)
+                for (int j = i; j < Header.NumFlds; j++)
+                    Fields.Add(new RunFieldSpec { Name = $"TEMP{j - i}", FieldType = 'A' });
                 break;
+            }
 
             var field = new RunFieldSpec
             {
@@ -283,10 +389,12 @@ public sealed class RunFileReader
 
     private byte[] ReadSegment(int offset, int size)
     {
-        if (size <= 0 || offset + size > _data.Length)
+        if (size <= 0 || offset >= _data.Length)
             return [];
-        byte[] seg = new byte[size];
-        Array.Copy(_data, offset, seg, 0, size);
+        // Clamp to available data (handles truncated files like ADV50.OVL)
+        int available = Math.Min(size, _data.Length - offset);
+        byte[] seg = new byte[available];
+        Array.Copy(_data, offset, seg, 0, available);
         return seg;
     }
 }

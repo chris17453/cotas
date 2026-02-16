@@ -1,0 +1,1248 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CoTAS Technical Reference Manual - Print Stylesheet
+   6×9 Amazon KDP trim, CSS Paged Media, DARK MODE
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary: #A29BFE;
+    --secondary: #00CEC9;
+    --accent: #FD79A8;
+    --warning: #FDCB6E;
+    --success: #55EFC4;
+    --dark: #E0E0E0;
+    --darker: #F0F0F0;
+    --light: #2D3436;
+    --page-bg: #111318;
+    --surface: #1A1D24;
+    --surface2: #22262F;
+    --border-color: #2F3541;
+    --muted: #8892A0;
+    --code-bg: #0D0F14;
+    --code-border: #6C5CE7;
+    --body-font: 'Inter', 'Noto Sans', sans-serif;
+    --mono-font: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Page Setup ─────────────────────────────────────────────────── */
+
+@page {
+    size: 6in 9in;
+    margin-top: 0.35in;
+    margin-bottom: 0.3in;
+    margin-inside: 0.35in;
+    margin-outside: 0.2in;
+    background: var(--page-bg);
+
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #555;
+    }
+}
+
+@page :first {
+    @bottom-center { content: none; }
+    @top-left { content: none; }
+    @top-right { content: none; }
+}
+
+@page :left {
+    @top-left {
+        content: "CoTAS Technical Reference Manual";
+        font-family: 'Inter', sans-serif;
+        font-size: 7pt;
+        color: #555;
+        font-style: italic;
+    }
+}
+
+@page :right {
+    @top-right {
+        content: string(chapter-title);
+        font-family: 'Inter', sans-serif;
+        font-size: 7pt;
+        color: #555;
+        font-style: italic;
+    }
+}
+
+@page chapter-start {
+    @top-left { content: none; }
+    @top-right { content: none; }
+}
+
+/* Running header for ref pages: black box with entry name + type */
+@page ref-page {
+    @top-center {
+        content: string(ref-running-header);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 7.5pt;
+        font-weight: 700;
+        color: #00CEC9;
+        background: #000;
+        padding: 0.15em 0.8em;
+        border-radius: 2px;
+        letter-spacing: 0.5px;
+    }
+}
+
+@page ref-page:first {
+    @top-center { content: none; }
+}
+
+/* ── Base Typography ────────────────────────────────────────────── */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 8.5pt;
+}
+
+body {
+    font-family: var(--body-font);
+    font-size: 8.5pt;
+    line-height: 1.45;
+    color: var(--dark);
+    background: var(--page-bg);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--body-font);
+    font-weight: 700;
+    color: var(--darker);
+    margin-top: 1em;
+    margin-bottom: 0.4em;
+    line-height: 1.2;
+}
+
+h1 { font-size: 18pt; color: var(--primary); }
+h2 { font-size: 14pt; color: var(--secondary); }
+h3 { font-size: 11pt; }
+h4 { font-size: 9.5pt; color: var(--muted); }
+
+p {
+    margin-top: 0;
+    margin-bottom: 0.4em;
+    text-align: justify;
+    orphans: 3;
+    widows: 3;
+}
+
+a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* ── Title Page ─────────────────────────────────────────────────── */
+/* 70s/80s retro print magazine cover style */
+
+@page title-page {
+    size: 6in 9in;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    @bottom-center { content: none; }
+    @top-left { content: none; }
+    @top-right { content: none; }
+}
+
+.title-page {
+    page: title-page;
+    page-break-after: always;
+    width: 6in;
+    height: 9in;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 0;
+    box-sizing: border-box;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 206, 201, 0.03) 2px,
+            rgba(0, 206, 201, 0.03) 4px
+        ),
+        linear-gradient(180deg, #000 0%, #0a0a18 100%);
+    position: relative;
+}
+
+/* Retro magazine top banner bar */
+.title-page .retro-banner {
+    width: 100%;
+    background: linear-gradient(90deg, #FF6B6B, #FD79A8, #A29BFE, #00CEC9);
+    padding: 0.2in 0;
+    text-align: center;
+    font-size: 7pt;
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #000;
+}
+
+/* Retro price/issue tag */
+.title-page .retro-issue {
+    position: absolute;
+    top: 0.6in;
+    right: 0.3in;
+    border: 2px solid #00CEC9;
+    padding: 0.15em 0.4em;
+    font-size: 7pt;
+    font-weight: 700;
+    color: #00CEC9;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.title-page h1 {
+    font-size: 80pt;
+    font-weight: 900;
+    color: #00CEC9;
+    margin: 0.8in 0 0 0;
+    letter-spacing: -3px;
+    text-shadow: 0 0 40px rgba(0, 206, 201, 0.3), 0 0 80px rgba(0, 206, 201, 0.1);
+    line-height: 0.85;
+}
+
+.title-page .subtitle {
+    font-size: 11pt;
+    font-weight: 300;
+    color: #DFE6E9;
+    margin: 0.25in 0 0 0;
+    letter-spacing: 1px;
+    max-width: 4.5in;
+    line-height: 1.4;
+}
+
+.title-page .edition {
+    font-size: 8pt;
+    color: #FD79A8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-top: 0.35in;
+}
+
+/* Retro feature bullets */
+.title-page .retro-features {
+    width: 80%;
+    text-align: left;
+    margin: auto auto 0 auto;
+    padding: 0.2in 0.25in;
+    border-top: 1px solid rgba(0, 206, 201, 0.3);
+    border-bottom: 1px solid rgba(0, 206, 201, 0.3);
+}
+
+.title-page .retro-feature {
+    font-size: 7.5pt;
+    color: #B2BEC3;
+    margin: 0.08in 0;
+    padding-left: 0.15in;
+    line-height: 1.45;
+}
+
+.title-page .retro-feature strong {
+    color: #FDCB6E;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 6.5pt;
+    letter-spacing: 1px;
+}
+
+.title-page .authors {
+    font-size: 12pt;
+    color: #A29BFE;
+    margin-top: 0.35in;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.title-page .year {
+    font-size: 8pt;
+    color: #555;
+    padding-bottom: 0.35in;
+    margin-top: 0.1in;
+}
+
+.title-page .logo-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6B6B, #FD79A8, #A29BFE, #00CEC9, #55EFC4);
+    margin: 0;
+}
+
+.title-page .tagline {
+    font-size: 7pt;
+    color: #00CEC9;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 0.15in;
+}
+
+/* ── Copyright Page ─────────────────────────────────────────────── */
+
+.copyright-page {
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+    font-size: 8.5pt;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ── Table of Contents ──────────────────────────────────────────── */
+
+.toc {
+    page-break-after: always;
+}
+
+.toc h1 {
+    font-size: 18pt;
+    color: var(--primary);
+    margin-bottom: 0.6em;
+    text-align: left;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.3em;
+}
+
+.toc-entry {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.15em;
+    font-size: 9pt;
+    line-height: 1.5;
+}
+
+.toc-entry a {
+    text-decoration: none;
+    color: var(--dark);
+    display: flex;
+    align-items: baseline;
+    flex: 1;
+}
+
+.toc-entry.chapter {
+    font-weight: 700;
+    font-size: 9.5pt;
+    margin-top: 0.5em;
+}
+
+.toc-entry.chapter:first-of-type {
+    margin-top: 0;
+}
+
+.toc-number {
+    min-width: 1.5em;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 9pt;
+}
+
+.toc-title {
+    flex: 1;
+}
+
+.toc-section {
+    margin-bottom: 0.1em;
+    font-size: 8.5pt;
+    color: var(--muted);
+    padding-left: 1.5em;
+    line-height: 1.4;
+}
+
+.toc-section a {
+    text-decoration: none;
+    color: var(--muted);
+}
+
+.toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--border-color);
+    margin: 0 0.3em;
+    min-width: 1em;
+}
+
+.toc-page {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+}
+
+/* ── Chapter Opener (Retro Magazine Style) ──────────────────────── */
+
+.chapter-opener {
+    page: chapter-start;
+    page-break-before: always;
+    margin-bottom: 1.5em;
+    padding: 1em 0 0.8em 0;
+    position: relative;
+    border-bottom: none;
+}
+
+/* Retro gradient top bar */
+.chapter-opener::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        #FF6B6B,
+        var(--chapter-color, var(--primary)),
+        #00CEC9);
+}
+
+/* Scanline overlay on chapter number */
+.chapter-number {
+    font-size: 64pt;
+    font-weight: 900;
+    color: var(--chapter-color, var(--primary));
+    opacity: 0.15;
+    line-height: 1;
+    margin-bottom: -0.3em;
+    string-set: chapter-title attr(data-title);
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0,0,0,0.3) 2px,
+            rgba(0,0,0,0.3) 4px
+        );
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.chapter-title {
+    font-size: 22pt;
+    font-weight: 800;
+    color: var(--darker);
+    margin: 0;
+    string-set: chapter-title content();
+    letter-spacing: -0.5px;
+}
+
+.chapter-subtitle {
+    font-size: 9pt;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 0.2em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Retro pull-quote styling */
+.pull-quote {
+    border-left: 4px solid var(--secondary);
+    border-right: 4px solid var(--secondary);
+    padding: 0.5em 0.8em;
+    margin: 1em 0;
+    text-align: center;
+    font-size: 11pt;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--secondary);
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
+
+.pull-quote .attribution {
+    display: block;
+    font-size: 7pt;
+    font-weight: 400;
+    font-style: normal;
+    color: var(--muted);
+    margin-top: 0.3em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ── Letter Divider Pages (A-Z sections in ref chapters) ────────── */
+
+.letter-divider {
+    page-break-before: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 3in;
+    text-align: center;
+    padding: 1em 0;
+}
+
+.letter-divider-letter {
+    font-size: 120pt;
+    font-weight: 900;
+    color: var(--primary);
+    opacity: 0.5;
+    line-height: 1;
+    letter-spacing: -3px;
+}
+
+.letter-divider-label {
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-top: 0.2em;
+}
+
+/* ── Ref Section (named page for running headers) ──────────────── */
+
+.ref-section {
+    page: ref-page;
+}
+
+.ref-running {
+    display: none;
+    string-set: ref-running-header content();
+}
+
+/* ── Code Blocks ────────────────────────────────────────────────── */
+
+pre {
+    background: var(--code-bg);
+    color: #E8E8E8;
+    border-left: 4px solid var(--code-border);
+    border-radius: 0 6px 6px 0;
+    padding: 0.5em 0.7em;
+    font-family: var(--mono-font);
+    font-size: 7.5pt;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    margin: 0.5em 0;
+    page-break-inside: avoid;
+}
+
+code {
+    font-family: var(--mono-font);
+    font-size: 8pt;
+    background: var(--surface2);
+    color: var(--secondary);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────── */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8em 0;
+    font-size: 7.5pt;
+    page-break-inside: avoid;
+    table-layout: fixed;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+table + table {
+    margin-top: 1.5em;
+}
+
+thead th {
+    background: #000;
+    color: var(--secondary);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.5em 0.6em;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody td {
+    padding: 0.45em 0.6em;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+tbody tr:nth-child(even) {
+    background: var(--surface);
+}
+
+tbody tr:hover {
+    background: var(--surface2);
+}
+
+td code, th code {
+    font-size: 8.5pt;
+    background: var(--surface2);
+}
+
+/* ── Callout Boxes ──────────────────────────────────────────────── */
+
+.callout {
+    border-radius: 6px;
+    padding: 0.7em 1em;
+    margin: 0.8em 0;
+    page-break-inside: avoid;
+    font-size: 9.5pt;
+    overflow-wrap: break-word;
+}
+
+.callout-title {
+    font-weight: 700;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.3em;
+}
+
+.callout.tip {
+    background: rgba(85, 239, 196, 0.08);
+    border-left: 4px solid #2d8a6e;
+}
+.callout.tip .callout-title { color: #55EFC4; }
+
+.callout.warning {
+    background: rgba(253, 203, 110, 0.08);
+    border-left: 4px solid #8a7030;
+}
+.callout.warning .callout-title { color: #FDCB6E; }
+
+.callout.new {
+    background: rgba(162, 155, 254, 0.08);
+    border-left: 4px solid #6C5CE7;
+}
+.callout.new .callout-title { color: var(--primary); }
+
+.callout.info {
+    background: rgba(116, 185, 255, 0.08);
+    border-left: 4px solid #2d6a9e;
+}
+.callout.info .callout-title { color: #74B9FF; }
+
+/* ── Command / Function Reference Entries ───────────────────────── */
+
+.ref-entry {
+    page-break-inside: avoid;
+    margin-bottom: 1.5em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ref-entry.ref-page-start {
+    page-break-before: always;
+}
+
+.ref-entry.ref-page-start:first-child {
+    page-break-before: avoid;
+}
+
+.ref-entry:last-child {
+    border-bottom: none;
+}
+
+.ref-name {
+    font-family: var(--mono-font);
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--secondary);
+    margin: 0 0 0.2em 0;
+}
+
+.ref-badge {
+    display: inline-block;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    margin-left: 0.5em;
+    vertical-align: middle;
+}
+
+.ref-badge.command {
+    background: rgba(85, 239, 196, 0.15);
+    color: #55EFC4;
+    border: 1px solid #2d8a6e;
+}
+
+.ref-badge.function {
+    background: rgba(253, 203, 110, 0.15);
+    color: #FDCB6E;
+    border: 1px solid #8a7030;
+}
+
+.ref-meta {
+    font-size: 8.5pt;
+    color: var(--muted);
+    margin-bottom: 0.5em;
+}
+
+.ref-description {
+    margin-bottom: 0.5em;
+}
+
+.ref-syntax pre {
+    border-left-color: var(--secondary);
+}
+
+/* ── Parameter / Parts List (definition-list style) ─────────────── */
+
+.param-list {
+    margin: 0.3em 0 0.5em 0;
+    padding: 0;
+}
+
+.param-list dt {
+    font-family: var(--mono-font);
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--darker);
+    margin-top: 0.5em;
+    padding: 0.25em 0.4em;
+    background: var(--surface);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 3px 3px 0;
+}
+
+.param-list dd {
+    font-size: 7.5pt;
+    color: var(--muted);
+    margin: 0.15em 0 0 1em;
+    padding-left: 0.5em;
+    line-height: 1.45;
+}
+
+.param-type {
+    font-size: 8pt;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.param-req {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #FD79A8;
+    background: rgba(253, 121, 168, 0.1);
+    border: 1px solid rgba(253, 121, 168, 0.3);
+    padding: 0.1em 0.4em;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.3em;
+}
+
+.param-opt {
+    font-size: 7pt;
+    font-weight: 600;
+    color: var(--muted);
+    border: 1px solid var(--border-color);
+    padding: 0.1em 0.4em;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.3em;
+}
+
+.param-num {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 0.2em;
+}
+
+.ref-params table thead th {
+    background: var(--primary);
+}
+
+.ref-see-also {
+    font-size: 9pt;
+    color: var(--muted);
+}
+
+.ref-see-also code {
+    color: var(--secondary);
+}
+
+/* ── Error Reference ────────────────────────────────────────────── */
+
+.error-entry {
+    margin-bottom: 0.3em;
+    padding: 0.25em 0.5em;
+    border-left: 3px solid #8B3A3A;
+    background: rgba(255, 118, 117, 0.06);
+    border-radius: 0 3px 3px 0;
+    page-break-inside: avoid;
+}
+
+.error-code {
+    font-family: var(--mono-font);
+    font-weight: 700;
+    font-size: 8pt;
+    color: #FF7675;
+}
+
+.error-desc {
+    font-size: 7.5pt;
+    margin-top: 0.1em;
+    color: var(--muted);
+}
+
+/* ── Alpha Index Sections ───────────────────────────────────────── */
+
+.alpha-header {
+    font-size: 28pt;
+    font-weight: 900;
+    color: var(--primary);
+    opacity: 0.3;
+    margin: 0.5em 0 0.1em 0;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.1em;
+}
+
+/* ── Utility ────────────────────────────────────────────────────── */
+
+h2 + table, h3 + table, h4 + table {
+    margin-top: 0.4em;
+}
+
+h2 + ul, h3 + ul, h4 + ul,
+h2 + ol, h3 + ol, h4 + ol {
+    margin-top: 0.2em;
+}
+
+ul, ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+li {
+    margin-bottom: 0.25em;
+    line-height: 1.45;
+}
+
+li code {
+    font-size: 8.5pt;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.no-break {
+    page-break-inside: avoid;
+}
+
+.text-muted {
+    color: var(--muted);
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 0.5em; }
+.mt-2 { margin-top: 1em; }
+.mb-1 { margin-bottom: 0.5em; }
+.mb-2 { margin-bottom: 1em; }
+
+/* ── Architecture Diagram (inline) ──────────────────────────────── */
+
+.arch-diagram {
+    background: #000;
+    color: var(--secondary);
+    padding: 1em;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    font-family: var(--mono-font);
+    font-size: 8pt;
+    line-height: 1.6;
+    white-space: pre;
+    text-align: center;
+    margin: 1em 0;
+    page-break-inside: avoid;
+}
+
+/* ── Bytecode Anatomy / Hex Dump Diagrams ──────────────────────── */
+
+.hex-anatomy {
+    background: #000;
+    border: 1px solid var(--secondary);
+    padding: 0.5em;
+    margin: 0.8em 0;
+    page-break-inside: avoid;
+    font-family: var(--mono-font);
+    font-size: 6.5pt;
+    line-height: 1.5;
+    color: #888;
+}
+
+.hex-anatomy .hex-title {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.4em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hex-anatomy .hex-row {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.hex-anatomy .hex-offset {
+    color: #555;
+}
+
+.hex-anatomy .hex-sig {
+    color: #FF6B6B;
+    font-weight: 700;
+}
+
+.hex-anatomy .hex-size {
+    color: #A29BFE;
+}
+
+.hex-anatomy .hex-code {
+    color: #55EFC4;
+}
+
+.hex-anatomy .hex-const {
+    color: #FDCB6E;
+}
+
+.hex-anatomy .hex-field {
+    color: #FD79A8;
+}
+
+.hex-anatomy .hex-label {
+    color: #74B9FF;
+}
+
+.hex-anatomy .hex-annotation {
+    color: #555;
+    font-style: italic;
+    font-size: 6pt;
+    margin-left: 0.5em;
+}
+
+/* ── Before/After Comparison ───────────────────────────────────── */
+
+.comparison-spread {
+    display: flex;
+    gap: 0.4em;
+    margin: 0.8em 0;
+    page-break-inside: avoid;
+}
+
+.comparison-panel {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.comparison-panel .panel-header {
+    background: #000;
+    color: var(--secondary);
+    font-family: var(--mono-font);
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0.3em 0.5em;
+    text-align: center;
+    border-bottom: 2px solid var(--secondary);
+}
+
+.comparison-panel .panel-header.retro {
+    color: #FDCB6E;
+    border-bottom-color: #FDCB6E;
+}
+
+.comparison-panel .panel-body {
+    background: #0a0a0a;
+    padding: 0.4em;
+    font-family: var(--mono-font);
+    font-size: 6.5pt;
+    line-height: 1.5;
+    color: #33FF33;
+    min-height: 2in;
+    white-space: pre;
+}
+
+.comparison-panel .panel-body.modern {
+    color: #55EFC4;
+}
+
+/* ── Pipeline / Flowchart Visualization ────────────────────────── */
+
+.pipeline-viz {
+    background: #000;
+    border: 1px solid var(--border-color);
+    padding: 0.6em;
+    margin: 0.8em 0;
+    font-family: var(--mono-font);
+    font-size: 7pt;
+    line-height: 1.6;
+    color: var(--dark);
+    page-break-inside: avoid;
+    white-space: pre;
+    text-align: center;
+}
+
+.pipeline-viz .pipe-stage {
+    display: inline-block;
+    border: 1px solid var(--secondary);
+    padding: 0.2em 0.5em;
+    margin: 0.1em;
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.pipeline-viz .pipe-arrow {
+    color: var(--muted);
+}
+
+/* ── Opcode Table (CPU-style reference) ────────────────────────── */
+
+.opcode-grid {
+    font-family: var(--mono-font);
+    font-size: 5.5pt;
+    line-height: 1.3;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.5em 0;
+}
+
+.opcode-grid th {
+    background: #000;
+    color: var(--secondary);
+    font-size: 5.5pt;
+    padding: 0.2em 0.3em;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.opcode-grid td {
+    padding: 0.15em 0.2em;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--dark);
+    font-size: 5pt;
+}
+
+.opcode-grid td.op-cmd { color: #55EFC4; }
+.opcode-grid td.op-flow { color: #A29BFE; }
+.opcode-grid td.op-io { color: #FDCB6E; }
+.opcode-grid td.op-file { color: #FD79A8; }
+.opcode-grid td.op-screen { color: #74B9FF; }
+.opcode-grid td.op-empty { color: #333; }
+
+/* ── Flowchart / Decision Tree ─────────────────────────────────── */
+
+.decision-flow {
+    background: #000;
+    border: 1px solid var(--border-color);
+    padding: 0.6em;
+    margin: 0.8em 0;
+    font-family: var(--mono-font);
+    font-size: 7pt;
+    line-height: 1.8;
+    color: var(--dark);
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+/* ── Retro Stat Boxes ──────────────────────────────────────────── */
+
+.stat-row {
+    display: flex;
+    gap: 0.3em;
+    margin: 0.6em 0;
+    page-break-inside: avoid;
+}
+
+.stat-box {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    padding: 0.3em;
+    text-align: center;
+    background: var(--surface);
+}
+
+.stat-box .stat-number {
+    font-size: 18pt;
+    font-weight: 900;
+    color: var(--secondary);
+    line-height: 1.1;
+    font-family: var(--mono-font);
+}
+
+.stat-box .stat-label {
+    font-size: 6pt;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.1em;
+}
+
+/* ── Two-Column Layout (for appendices) ─────────────────────────── */
+
+.two-col {
+    columns: 2;
+    column-gap: 1em;
+    font-size: 7pt;
+}
+
+.two-col .ref-entry {
+    break-inside: avoid;
+}
+
+/* ── Quick Reference (Appendices) ──────────────────────────────── */
+
+.appendix-opener {
+    page-break-before: always;
+    padding: 0.5em 0 0.3em 0;
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: 0.4em;
+}
+
+.appendix-label {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.appendix-title {
+    font-size: 13pt;
+    font-weight: 800;
+    color: var(--darker);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.qref {
+    font-size: 7pt;
+    line-height: 1.3;
+}
+
+.qref-item {
+    break-inside: avoid;
+    padding: 0.15em 0;
+    border-bottom: 0.5px solid var(--border-color);
+    display: flex;
+    gap: 0.4em;
+}
+
+.qref-item code {
+    font-size: 7pt;
+    font-weight: 700;
+    background: none;
+    color: var(--secondary);
+    padding: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.qref-item a {
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.qref-item em {
+    font-size: 6.5pt;
+    color: var(--primary);
+    margin-right: 0.2em;
+    flex-shrink: 0;
+}
+
+.qref-item span {
+    color: var(--muted);
+    font-size: 6.5pt;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── Index ──────────────────────────────────────────────────────── */
+
+.index-section {
+    columns: 2;
+    column-gap: 0.8em;
+    font-size: 7pt;
+    line-height: 1.3;
+}
+
+.index-letter {
+    font-size: 14pt;
+    font-weight: 900;
+    color: var(--primary);
+    opacity: 0.5;
+    margin: 0.4em 0 0.1em 0;
+    border-bottom: 1px solid var(--border-color);
+    break-after: avoid;
+}
+
+.index-item {
+    break-inside: avoid;
+    padding: 0.1em 0;
+}
+
+.index-item a {
+    text-decoration: none;
+}
+
+.index-item code {
+    font-size: 7pt;
+    font-weight: 600;
+    background: none;
+    color: var(--secondary);
+    padding: 0;
+}
+
+.index-badge {
+    font-size: 5.5pt;
+    font-weight: 700;
+    padding: 0.05em 0.3em;
+    border-radius: 2px;
+    margin-left: 0.2em;
+    vertical-align: middle;
+}
+
+.index-badge.command {
+    color: #55EFC4;
+    border: 1px solid #2d8a6e;
+}
+
+.index-badge.function {
+    color: #FDCB6E;
+    border: 1px solid #8a7030;
+}

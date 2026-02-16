@@ -1,0 +1,31 @@
+<div class="ref-entry">
+    <h3 class="ref-name" id="fn-{{ slug }}"><span class="ref-running" style="string-set: ref-running-header 'FUNCTION: {{ name }}'"></span>{{ name }}{% if parts_count %}({{ parts_count }}){% endif %}<span class="ref-badge function">Function</span></h3>
+    {% if returns %}<div class="ref-meta">Returns: <code>{{ returns }}</code></div>{% endif %}
+
+    <div class="ref-description">{{ purpose }}</div>
+
+    {% if parts %}
+    <div class="ref-params">
+        <h4>Parts</h4>
+        <dl class="param-list">
+        {% for p in parts %}
+        <dt><span class="param-num">{{ p.number }}.</span> <span class="param-type">{{ p.type }}</span></dt>
+        <dd>{{ p.description }}</dd>
+        {% endfor %}
+        </dl>
+    </div>
+    {% endif %}
+
+    {% if example %}
+    <div class="mt-1">
+        <h4>Example</h4>
+        <pre><code>{{ example }}</code></pre>
+    </div>
+    {% endif %}
+
+    {% if see_also %}
+    <div class="ref-see-also mt-1">
+        <strong>See Also:</strong> {% for s in see_also %}{% if s.href %}<a href="{{ s.href }}"><code>{{ s.name }}</code></a>{% else %}<code>{{ s.name }}</code>{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+    </div>
+    {% endif %}
+</div>

@@ -5,12 +5,17 @@ namespace CoTAS.Compiler;
 /// <summary>
 /// Builds the constant segment for a .RUN file.
 /// Constants are stored as: type(1) + decimals(1) + displaySize(2) + data(displaySize).
-/// Deduplicates identical constant entries and returns byte offsets.
+/// Each SaveConst call appends a new entry (no deduplication, matching TAS compiler behavior).
 /// </summary>
 public sealed class ConstantPool
 {
     private readonly MemoryStream _stream = new();
-    private readonly Dictionary<string, int> _dedup = new(StringComparer.Ordinal);
+
+    /// <summary>Overlay offset added to field spec offsets inside embedded params.</summary>
+    public int OverlayFieldOffset { get; set; }
+
+    /// <summary>Overlay offset added to constant pool refs inside embedded params.</summary>
+    public int OverlayConstOffset { get; set; }
 
     /// <summary>Current size of the constant pool in bytes.</summary>
     public int Size => (int)_stream.Length;
@@ -24,36 +29,43 @@ public sealed class ConstantPool
     /// </summary>
     public int AddString(string value)
     {
-        string key = $"A:{value}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         byte[] data = Encoding.ASCII.GetBytes(value);
         WriteConstantHeader('A', 0, data.Length);
         _stream.Write(data);
-
-        _dedup[key] = offset;
         return offset;
     }
 
     /// <summary>
-    /// Add an integer constant stored as ASCII text.
-    /// Format: 'I'(1) + dec(1) + displaySize(2) + ascii_digits(displaySize)
+    /// Add an integer constant in TAS 5.1 binary format.
+    /// Format: 'I'(1) + int32_value(4) = 5 bytes total.
+    /// This is NOT the standard header format — integers use a compact binary encoding.
     /// </summary>
     public int AddInteger(int value)
     {
-        string text = value.ToString();
-        string key = $"I:{text}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
-        byte[] data = Encoding.ASCII.GetBytes(text);
-        WriteConstantHeader('I', 0, data.Length);
-        _stream.Write(data);
+        _stream.WriteByte((byte)'I');
+        WriteInt32(value);
+        return offset;
+    }
 
-        _dedup[key] = offset;
+    /// <summary>
+    /// Add integer zero constant. TAS compiler always emits this at constant pool offset 0.
+    /// Uses compact format: 'I'(1) + int32(4) = 5 bytes.
+    /// </summary>
+    public int AddIntegerZero() => AddInteger(0);
+
+    /// <summary>
+    /// Add an integer using the short format (for expression operands).
+    /// Format: 'I'(1) + int16(2) = 3 bytes total.
+    /// TAS uses this compact format when integer literals appear in expressions.
+    /// </summary>
+    public int AddShortInteger(int value)
+    {
+        int offset = (int)_stream.Length;
+        _stream.WriteByte((byte)'I');
+        _stream.WriteByte((byte)(value & 0xFF));
+        _stream.WriteByte((byte)((value >> 8) & 0xFF));
         return offset;
     }
 
@@ -66,16 +78,10 @@ public sealed class ConstantPool
         string text = decimals > 0
             ? value.ToString($"F{decimals}")
             : value.ToString("G");
-        string key = $"N:{decimals}:{text}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         byte[] data = Encoding.ASCII.GetBytes(text);
         WriteConstantHeader('N', (byte)decimals, data.Length);
         _stream.Write(data);
-
-        _dedup[key] = offset;
         return offset;
     }
 
@@ -85,16 +91,10 @@ public sealed class ConstantPool
     /// </summary>
     public int AddDate(string dateText)
     {
-        string key = $"D:{dateText}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         byte[] data = Encoding.ASCII.GetBytes(dateText);
         WriteConstantHeader('D', 0, data.Length);
         _stream.Write(data);
-
-        _dedup[key] = offset;
         return offset;
     }
 
@@ -104,16 +104,10 @@ public sealed class ConstantPool
     /// </summary>
     public int AddTime(string timeText)
     {
-        string key = $"T:{timeText}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         byte[] data = Encoding.ASCII.GetBytes(timeText);
         WriteConstantHeader('T', 0, data.Length);
         _stream.Write(data);
-
-        _dedup[key] = offset;
         return offset;
     }
 
@@ -123,15 +117,9 @@ public sealed class ConstantPool
     /// </summary>
     public int AddLogical(bool value)
     {
-        string key = $"L:{value}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         WriteConstantHeader('L', 0, 1);
         _stream.WriteByte(value ? (byte)1 : (byte)0);
-
-        _dedup[key] = offset;
         return offset;
     }
 
@@ -173,18 +161,20 @@ public sealed class ConstantPool
     /// </summary>
     public int AddArrayRef(byte baseType, int baseLoc, byte indexType, int indexLoc)
     {
-        string key = $"Y:{baseType}:{baseLoc}:{indexType}:{indexLoc}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
-
         int offset = (int)_stream.Length;
         _stream.WriteByte(baseType);
-        WriteInt32(baseLoc);
+        WriteInt32(AdjustLocation(baseType, baseLoc));
         _stream.WriteByte(indexType);
-        WriteInt32(indexLoc);
-
-        _dedup[key] = offset;
+        WriteInt32(AdjustLocation(indexType, indexLoc));
         return offset;
+    }
+
+    private int AdjustLocation(byte type, int loc)
+    {
+        if (type == (byte)'F') return loc + OverlayFieldOffset;
+        if (type == (byte)'C' || type == (byte)'X' || type == (byte)'Y' || type == (byte)'M')
+            return loc + OverlayConstOffset;
+        return loc;
     }
 
     /// <summary>
@@ -193,24 +183,24 @@ public sealed class ConstantPool
     /// </summary>
     public int AddEmbeddedParams(List<(byte Type, int Location)> paramList)
     {
-        int totalSize = paramList.Count * 5;
+        int totalSize = paramList.Count * 5 + 1; // +1 for null terminator
         byte[] data = new byte[totalSize];
         for (int i = 0; i < paramList.Count; i++)
         {
-            data[i * 5] = paramList[i].Type;
-            BitConverter.TryWriteBytes(data.AsSpan(i * 5 + 1), paramList[i].Location);
+            byte ptype = paramList[i].Type;
+            int loc = paramList[i].Location;
+            // Apply overlay offsets based on param type
+            if (ptype == (byte)'F') loc += OverlayFieldOffset;
+            else if (ptype == (byte)'C' || ptype == (byte)'X' || ptype == (byte)'Y' || ptype == (byte)'M')
+                loc += OverlayConstOffset;
+            data[i * 5] = ptype;
+            BitConverter.TryWriteBytes(data.AsSpan(i * 5 + 1), loc);
         }
-
-        // Wrap in a constant header of type 'A'
-        string key = $"EP:{Convert.ToBase64String(data)}";
-        if (_dedup.TryGetValue(key, out int existing))
-            return existing;
+        // data[totalSize-1] is already 0 (null terminator)
 
         int offset = (int)_stream.Length;
         WriteConstantHeader('A', 0, totalSize);
         _stream.Write(data);
-
-        _dedup[key] = offset;
         return offset;
     }
 

@@ -1,0 +1,7 @@
+<div class="chapter-opener" id="chapter-{{ number }}" style="--chapter-color: {{ color }};">
+    <div class="chapter-number">{{ number }}</div>
+    <h1 class="chapter-title" data-title="Chapter {{ number }}: {{ title }}">{{ title }}</h1>
+    {% if subtitle %}<div class="chapter-subtitle">{{ subtitle }}</div>{% endif %}
+</div>
+
+{{ content }}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ config.title }}</title>
+    <style>{{ css }}</style>
+    <style>{{ syntax_css }}</style>
+</head>
+<body>
+
+{# ── Title Page (Retro 70s/80s Magazine Cover) ─────────────────── #}
+<div class="title-page">
+    <div class="retro-banner">THE COMPLETE TECHNICAL REFERENCE</div>
+    <div class="retro-issue">Vol. 1 / 2026</div>
+    <div class="logo-bar"></div>
+    <div class="edition">{{ config.edition }}</div>
+    <h1>CoTAS</h1>
+    <div class="subtitle">{{ config.subtitle }}</div>
+    <div class="tagline">.NET 10 - Web UI - Source &amp; Compiled - MSSQL / MySQL / PostgreSQL</div>
+    <div class="retro-features">
+        <div class="retro-feature"><strong>INSIDE:</strong> 228 opcodes reverse-engineered from binary - the complete instruction set decoded</div>
+        <div class="retro-feature"><strong>DECOMPILER:</strong> Recover lost source code from compiled .RUN files - 96% success rate on 583 programs</div>
+        <div class="retro-feature"><strong>127 COMMANDS</strong> / <strong>170+ FUNCTIONS</strong> / <strong>267 ERROR CODES</strong> - Every one documented</div>
+        <div class="retro-feature"><strong>15 YEARS</strong> of hand-decoding bytecode - from zero documentation to a working runtime</div>
+        <div class="retro-feature"><strong>100% OPEN SOURCE</strong> - Free forever. No license fees. No per-seat charges.</div>
+    </div>
+    <div class="authors">{{ config.authors | join(', ') }}</div>
+    <div class="year">&copy; {{ config.year }} {{ config.publisher }}</div>
+</div>
+
+{# ── Copyright Page ─────────────────────────────────────────── #}
+<div class="copyright-page">
+    <p><strong>{{ config.title }}</strong></p>
+    <p>{{ config.subtitle }}</p>
+    <p>{{ config.edition }}</p>
+    <p>&nbsp;</p>
+    <p>Copyright © {{ config.year }} {{ config.publisher }}. All rights reserved.</p>
+    <p>No part of this publication may be reproduced, distributed, or transmitted
+       in any form or by any means without the prior written permission of the publisher.</p>
+    <p>&nbsp;</p>
+    <p>TAS - <em>The Accounting Solution</em> - was created and developed by Phil Mickelson, 1984.</p>
+    <p>Sole worldwide exclusive re-licensing rights to the TAS Windows Development Environment
+       and the TAS Accounting Source Code purchased in perpetuity by Naresh Daswani, 2003.</p>
+    <p>&nbsp;</p>
+    <p>CoTAS is an independent, clean-room reimplementation of the TAS Professional 5.1
+       language specification. CoTAS does not contain any original TAS source code.</p>
+    <p>&nbsp;</p>
+    <p><em>Trademarks:</em> TAS and TAS Professional are trademarks of their respective owners.
+       All other trademarks mentioned in this book are the property of their respective owners.
+       Use of a term in this book should not be regarded as affecting the validity of any
+       trademark or service mark.</p>
+    <p>&nbsp;</p>
+    <p><em>Version {{ config.version }}</em></p>
+</div>
+
+{# ── Table of Contents ──────────────────────────────────────── #}
+<div class="toc">
+    <h1>Contents</h1>
+    {% for chapter in chapters %}
+    <div class="toc-entry chapter">
+        <a href="#chapter-{{ chapter.number }}">
+            <span class="toc-number">{{ chapter.number }}.</span>
+            <span class="toc-title">{{ chapter.title }}</span>
+        </a>
+    </div>
+    {% if chapter.sections %}
+    {% for section in chapter.sections %}
+    <div class="toc-section">
+        <a href="#chapter-{{ chapter.number }}">{{ section }}</a>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    <div class="toc-entry chapter" style="margin-top: 0.6em;">
+        <a href="#appendix-a">
+            <span class="toc-number"></span>
+            <span class="toc-title">Appendices</span>
+        </a>
+    </div>
+    <div class="toc-section"><a href="#appendix-a">A. Command Quick-Reference</a></div>
+    <div class="toc-section"><a href="#appendix-b">B. Function Quick-Reference</a></div>
+    <div class="toc-entry chapter" style="margin-top: 0.4em;">
+        <a href="#book-index">
+            <span class="toc-number"></span>
+            <span class="toc-title">Index</span>
+        </a>
+    </div>
+</div>
+
+{# ── Chapters ───────────────────────────────────────────────── #}
+{% for chapter in chapters %}
+{{ chapter.html }}
+{% endfor %}
+
+{# ── Appendices ─────────────────────────────────────────────── #}
+{% if appendices_html %}
+{{ appendices_html }}
+{% endif %}
+
+{# ── Index ─────────────────────────────────────────────────── #}
+{% if index_html %}
+{{ index_html }}
+{% endif %}
+
+</body>
+</html>

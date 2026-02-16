@@ -28,11 +28,11 @@ Spec parameters (TSpecLinePtr): `byte Type + int32 Location` = 5 bytes.
 
 ## Progress Summary
 
-| Metric | Initial | After Session 1 | After Session 2 | Change |
-|--------|---------|-----------------|-----------------|--------|
-| Files with unresolved refs | 122 / 582 (21%) | 100 / 582 (17%) | 78 / 583 (13%) | -44 files |
-| Total unresolved lines | 3,068 | 2,863 | 2,772 | -296 lines |
-| Fully resolved files | 460 (79%) | 482 (83%) | 505 (87%) | +45 files |
+| Metric | Initial | After Session 1 | After Session 2 | After Session 3 | Change |
+|--------|---------|-----------------|-----------------|-----------------|--------|
+| Files with unresolved refs | 122 / 582 (21%) | 100 / 582 (17%) | 78 / 583 (13%) | 23 / 583 (4%) | -99 files |
+| Total unresolved lines | 3,068 | 2,863 | 2,772 | 69 | -2,999 lines |
+| Fully resolved files | 460 (79%) | 482 (83%) | 505 (87%) | 560 (96%) | +100 files |
 
 ---
 
@@ -322,22 +322,62 @@ TPci = packed record
 
 ---
 
+## Findings — Session 3 (Overlay Support + CASE Fix)
+
+### 10. ADV50.OVL Overlay — Root Cause of Spec Pointer Overflow (SOLVED)
+
+**Problem**: 441 out of 583 .RUN files had `SLPtr` values exceeding `SpecSize` by exactly **16,867 bytes**. This was the root cause of 2,700+ unresolved lines.
+
+**Root cause**: `ADV50.OVL` (61,700 bytes) is a shared overlay file in TAS32 .RUN format. Its `SpecSize = 16,867`. When the TAS runtime loads a program, the overlay's segments (spec, constants, fields, labels) are prepended to the program's own segments. All `SLPtr` values in the program then index into the COMBINED spec segment: bytes 0–16,866 = overlay spec, bytes 16,867+ = program's own spec.
+
+**Evidence**:
+- All 441 overflowing files had identical overflow of exactly 16,867 bytes
+- ADV50.OVL has `SpecSize=16,867`, `ConstSize=19,583`, `NumFlds=386`, `NumLabels=60`
+- After prepending OVL spec, 100% of SLPtr values in BKARC.RUN fit (1055/1055 OK, 0 bad)
+- TPci header at offset 78 has `ObjUsed: boolean` flag — confirms overlay awareness
+
+**Fix**: Added `RunFileReader.LoadAutoOverlay()` that:
+1. Checks if any instruction's SLPtr exceeds SpecSize
+2. If so, looks for ADV50.OVL in same directory
+3. Loads it and prepends its spec, constant, field, and label segments via `PrependOverlay()`
+4. The CLI `--decompile` command now uses `LoadAutoOverlay()`
+
+**Impact**: Reduced unresolved from 2,772 lines (78 files) to ~100 lines (~30 files). Combined with CASE fix below, final result: 69 lines in 23 files.
+
+### 11. CASE Spec Layout Was Wrong (FIXED)
+
+**Problem**: `DecompileCase()` read the case value as a 5-byte TSpecLinePtr at offset 0, but CASE uses the IF-style spec layout:
+- offset 0: `if_goto` (4B jump target)
+- offset 6: `if_endif_goto` (4B)
+- offset 10: `if_typ` (1B type indicator)
+- offset 11: `if_loc` (4B case comparison value)
+
+The runtime does `GetSLLoc(if_loc)` — reads raw 4-byte int at offset 11.
+
+**Fix**: Changed `DecompileCase` to read type at offset 10, location at offset 11. Falls back to raw integer if type is unrecognized.
+
+**Impact**: Eliminated ~220 CASE-related unresolved references.
+
+---
+
 ## Remaining Work
 
-### High Priority — Spec Pointer Overflow
-1. **Root cause**: 78 files have `SLPtr > SpecSize`. Need to understand how TAS actually addresses spec data.
-2. **Approach**: Find TAS 5.1 DOS runtime source, check if spec/const/label segments are combined in memory.
-3. **Impact**: Fixing this would resolve the majority of remaining 2,772 unresolved lines.
+### Low Priority — Remaining 69 Unresolved Lines in 23 Files
+Most are in self-contained files (don't need OVL) and involve:
+- Expression decoding edge cases (garbled ASSIGN expressions in BKINIPRG, CDATACT2, etc.)
+- Rare spec param types ('A'=0x41, '_'=0x5F) in MENU title/box params
+- A few IF expressions with unrecognized type bytes (0x35, 0x01)
+
+These are cosmetic issues — the decompiler produces readable output for 96% of files.
 
 ### Medium Priority
-4. **UDC/FUNC/CMD with SLSize=0**: Understand how label target is encoded when there are no spec bytes.
-5. **Label name resolution**: Replace `LABEL_N` with actual label names from source.
-6. **Missing function numbers**: Some functions appear as `fn{hex}` when not in the dictionary.
+4. **Label name resolution**: Replace `LABEL_N` with actual label names from source.
+5. **Missing function numbers**: Some functions appear as `fn{hex}` when not in the dictionary.
 
-### Low Priority
-7. **Round-trip validation**: Compile decompiled .SRC back to .RUN and byte-diff.
-8. **Screen definition decompilation**: Screen specs at end of .SRC files.
-9. **Pretty-printing**: Indentation, line wrapping for readability.
+### Future Work
+6. **Round-trip validation**: Compile decompiled .SRC back to .RUN and byte-diff.
+7. **Screen definition decompilation**: Screen specs at end of .SRC files.
+8. **Pretty-printing**: Indentation, line wrapping for readability.
 
 ---
 

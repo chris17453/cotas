@@ -22,6 +22,12 @@ public sealed class SpecBuilder
 {
     private readonly MemoryStream _stream = new();
 
+    /// <summary>Overlay offset added to field spec offsets (overlayFieldCount * fieldSpecSize).</summary>
+    public int OverlayFieldOffset { get; set; }
+
+    /// <summary>Overlay offset added to constant pool offsets.</summary>
+    public int OverlayConstOffset { get; set; }
+
     /// <summary>Current size of the spec segment in bytes.</summary>
     public int Size => (int)_stream.Length;
 
@@ -45,7 +51,7 @@ public sealed class SpecBuilder
     public void WriteFieldParam(int fieldSpecOffset)
     {
         _stream.WriteByte((byte)'F');
-        WriteInt32(fieldSpecOffset);
+        WriteInt32(fieldSpecOffset + OverlayFieldOffset);
     }
 
     /// <summary>
@@ -54,7 +60,7 @@ public sealed class SpecBuilder
     public void WriteConstParam(int constOffset)
     {
         _stream.WriteByte((byte)'C');
-        WriteInt32(constOffset);
+        WriteInt32(constOffset + OverlayConstOffset);
     }
 
     /// <summary>
@@ -72,7 +78,7 @@ public sealed class SpecBuilder
     public void WriteExprParam(int constOffset)
     {
         _stream.WriteByte((byte)'X');
-        WriteInt32(constOffset);
+        WriteInt32(constOffset + OverlayConstOffset);
     }
 
     /// <summary>
@@ -81,7 +87,7 @@ public sealed class SpecBuilder
     public void WriteArrayParam(int constOffset)
     {
         _stream.WriteByte((byte)'Y');
-        WriteInt32(constOffset);
+        WriteInt32(constOffset + OverlayConstOffset);
     }
 
     /// <summary>
@@ -90,7 +96,7 @@ public sealed class SpecBuilder
     public void WriteMacroParam(int constOffset)
     {
         _stream.WriteByte((byte)'M');
-        WriteInt32(constOffset);
+        WriteInt32(constOffset + OverlayConstOffset);
     }
 
     /// <summary>
@@ -117,7 +123,11 @@ public sealed class SpecBuilder
     public void WriteParam(char type, int location)
     {
         _stream.WriteByte((byte)type);
-        WriteInt32(location);
+        int loc = location;
+        if (type == 'F') loc += OverlayFieldOffset;
+        else if (type == 'C' || type == 'X' || type == 'Y' || type == 'M')
+            loc += OverlayConstOffset;
+        WriteInt32(loc);
     }
 
     /// <summary>
@@ -153,6 +163,20 @@ public sealed class SpecBuilder
     {
         for (int i = 0; i < count; i++)
             _stream.WriteByte(0);
+    }
+
+    /// <summary>
+    /// Patch a 4-byte int32 at the given absolute offset in the spec segment.
+    /// Used for jump target fixups after the target instruction is known.
+    /// </summary>
+    public void PatchInt32(int offset, int value)
+    {
+        long savedPos = _stream.Position;
+        _stream.Position = offset;
+        Span<byte> buf = stackalloc byte[4];
+        BitConverter.TryWriteBytes(buf, value);
+        _stream.Write(buf);
+        _stream.Position = savedPos;
     }
 
     /// <summary>

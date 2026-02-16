@@ -16,6 +16,7 @@ public sealed class FieldTable
     private int _tempFieldCount;
     private int _screenFieldCount;
     private int _definedDataSize;
+    private int _overlayFieldCount;
 
     /// <summary>Number of fields defined.</summary>
     public int Count => _fields.Count;
@@ -178,18 +179,25 @@ public sealed class FieldTable
     /// </summary>
     public List<RunFieldSpec> GetAllSpecs() => _fields.Select(f => f.Spec).ToList();
 
+    /// <summary>Get only the local field specs (excluding overlay fields) for output.</summary>
+    public List<RunFieldSpec> GetLocalSpecs() => _fields.Skip(_overlayFieldCount).Select(f => f.Spec).ToList();
+
     /// <summary>
     /// Import fields from a RunFileReader (for round-trip).
     /// </summary>
+    /// <summary>Number of overlay fields (excluded from output but used for name resolution).</summary>
+    public int OverlayFieldCount => _overlayFieldCount;
+
     public void ImportFromReader(RunFileReader run)
     {
         _fieldSpecSize = run.Header.FieldSpecSize;
+        _overlayFieldCount = run.OverlayFieldCount;
         foreach (var f in run.Fields)
         {
             int index = _fields.Count;
             _fields.Add(new FieldEntry(f, f.IsTempField));
             _nameToIndex[f.Name] = index;
-            if (f.IsTempField)
+            if (index >= _overlayFieldCount && f.IsTempField)
                 _tempFieldCount++;
         }
         _nextDefinedOffset = run.Header.DefFldSegSize;

@@ -25,6 +25,81 @@ if (args.Length < 1)
     return 1;
 }
 
+// Full round-trip: .RUN → decompile → .SRC → parse → compile → .RUN → compare bytes
+if (args[0] == "--full-roundtrip" && args.Length >= 2)
+{
+    string runFile = args[1];
+    if (!File.Exists(runFile))
+    {
+        Console.Error.WriteLine($"File not found: {runFile}");
+        return 1;
+    }
+    try
+    {
+        byte[] original = File.ReadAllBytes(runFile);
+
+        bool verbose = args.Contains("-v") || args.Contains("--verbose");
+
+        // Use FullRoundTrip: decompile → parse → compile with metadata
+        var (recompiled, report) = TasCompiler.FullRoundTrip(runFile);
+
+        if (verbose)
+        {
+            Console.Error.Write(report);
+            Console.Error.WriteLine($"Recompiled {recompiled.Length} bytes");
+        }
+
+        // Optionally save the generated file for debugging
+        string? saveGenPath = args.SkipWhile(a => a != "--save-gen").Skip(1).FirstOrDefault();
+        if (saveGenPath != null)
+            File.WriteAllBytes(saveGenPath, recompiled);
+
+        // Step 5: Compare
+        if (original.Length != recompiled.Length)
+        {
+            Console.Error.WriteLine($"FAIL {Path.GetFileName(runFile)}: size mismatch ({original.Length} vs {recompiled.Length} bytes)");
+            return 1;
+        }
+
+        int firstDiff = -1;
+        int diffCount = 0;
+        for (int i = 0; i < original.Length; i++)
+        {
+            if (original[i] != recompiled[i])
+            {
+                if (firstDiff < 0) firstDiff = i;
+                diffCount++;
+            }
+        }
+
+        if (diffCount > 0)
+        {
+            Console.Error.WriteLine($"FAIL {Path.GetFileName(runFile)}: {diffCount} byte(s) differ, first at offset 0x{firstDiff:X4}");
+            int start = Math.Max(0, firstDiff - 4);
+            int end = Math.Min(original.Length, firstDiff + 16);
+            Console.Error.Write("  orig: ");
+            for (int i = start; i < end; i++)
+                Console.Error.Write($"{original[i]:X2}{(i == firstDiff ? "*" : " ")}");
+            Console.Error.WriteLine();
+            Console.Error.Write("  new:  ");
+            for (int i = start; i < end; i++)
+                Console.Error.Write($"{recompiled[i]:X2}{(i == firstDiff ? "*" : " ")}");
+            Console.Error.WriteLine();
+            return 1;
+        }
+
+        Console.WriteLine($"OK {Path.GetFileName(runFile)} ({original.Length} bytes, byte-identical)");
+        return 0;
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"ERROR {Path.GetFileName(runFile)}: {ex.Message}");
+        if (args.Contains("-v") || args.Contains("--verbose"))
+            Console.Error.WriteLine(ex.StackTrace);
+        return 1;
+    }
+}
+
 // Round-trip a .RUN file: read → write → compare bytes
 if (args[0] == "--roundtrip" && args.Length >= 2)
 {
@@ -135,6 +210,50 @@ if (args[0] == "--batch-roundtrip" && args.Length >= 2)
     return (fail + error > 0) ? 1 : 0;
 }
 
+// Batch full round-trip: decompile → parse → compile → compare bytes
+if (args[0] == "--batch-full-roundtrip" && args.Length >= 2)
+{
+    string dir = args[1];
+    var files = Directory.GetFiles(dir, "*.RUN");
+    int pass = 0, fail = 0, error = 0;
+
+    foreach (var file in files.OrderBy(f => f))
+    {
+        try
+        {
+            byte[] original = File.ReadAllBytes(file);
+            var (recompiled, _) = TasCompiler.FullRoundTrip(file);
+
+            bool identical = original.Length == recompiled.Length;
+            if (identical)
+            {
+                for (int i = 0; i < original.Length; i++)
+                {
+                    if (original[i] != recompiled[i]) { identical = false; break; }
+                }
+            }
+
+            if (identical)
+            {
+                pass++;
+            }
+            else
+            {
+                fail++;
+                Console.Error.WriteLine($"FAIL {Path.GetFileName(file)}: {original.Length} vs {recompiled.Length} ({original.Length - recompiled.Length:+#;-#;0})");
+            }
+        }
+        catch (Exception ex)
+        {
+            error++;
+            Console.Error.WriteLine($"ERROR {Path.GetFileName(file)}: {ex.Message}");
+        }
+    }
+
+    Console.WriteLine($"Full round-trip: {pass}/{files.Length} pass, {fail} fail, {error} error");
+    return (fail + error > 0) ? 1 : 0;
+}
+
 // Compile .SRC to .RUN
 if (args[0] == "--compile" && args.Length >= 2)
 {
@@ -187,7 +306,7 @@ if (args[0] == "--decompile" && args.Length >= 2)
     }
     try
     {
-        var run = RunFileReader.Load(runFile);
+        var run = RunFileReader.LoadAutoOverlay(runFile);
         var decompiler = new RunFileDecompiler(run);
         Console.Write(decompiler.Decompile());
         return 0;

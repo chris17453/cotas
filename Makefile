@@ -1,4 +1,4 @@
-.PHONY: build run test clean restore cli web batch-parse
+.PHONY: build run test clean restore cli web batch-parse book book-html
 
 # Default: build everything
 build:
@@ -35,3 +35,11 @@ batch-parse: build
 # Clean build artifacts
 clean:
 	dotnet clean
+
+# Build the CoTAS reference manual PDF
+book:
+	uv run python book/build_book.py
+
+# Build HTML preview only (faster, no WeasyPrint)
+book-html:
+	uv run python book/build_book.py --html-only

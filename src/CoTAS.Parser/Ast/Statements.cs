@@ -31,7 +31,7 @@ public sealed record QuitStmt(int Line) : Statement(Line);
 
 public sealed record ClearScreenStmt(int Line) : Statement(Line);
 
-public sealed record MessageStmt(Expression Text, int Line) : Statement(Line);
+public sealed record MessageStmt(Expression Text, int Line, bool NoWait = false, Expression? WindowsParam = null) : Statement(Line);
 
 public sealed record PreprocessorStmt(string Text, int Line) : Statement(Line);
 

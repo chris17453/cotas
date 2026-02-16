@@ -154,7 +154,11 @@ public sealed class ExpressionDecoder
                 {
                     int idx = indexOff / fldSize;
                     if (idx >= 0 && idx < _run.Fields.Count)
-                        indexStr = _run.Fields[idx].Name;
+                    {
+                        string fname = _run.Fields[idx].Name;
+                        indexStr = (string.IsNullOrEmpty(fname) || fname.Any(c => c < ' ' || c > '~'))
+                            ? $"FIELD[{idx}]" : fname;
+                    }
                     else
                         indexStr = indexOff.ToString();
                 }
@@ -206,7 +210,12 @@ public sealed class ExpressionDecoder
         {
             int idx = offset / fldSize;
             if (idx >= 0 && idx < _run.Fields.Count)
-                return _run.Fields[idx].Name;
+            {
+                string fname = _run.Fields[idx].Name;
+                if (!string.IsNullOrEmpty(fname) && fname.All(c => c >= ' ' && c <= '~'))
+                    return fname;
+                return $"FIELD[{idx}]";
+            }
         }
         return $"temp@{offset:X}";
     }
@@ -238,9 +247,9 @@ public sealed class ExpressionDecoder
         0x0A => "<>",
         0x0B => ">=",
         0x0C => "<=",
-        0x0D => " and ",
-        0x0E => " or ",
-        0x0F => " not ",
+        0x0D => " .AND. ",
+        0x0E => " .OR. ",
+        0x0F => " .NOT. ",
         _ => $"?{op:X2}?"
     };
 
@@ -249,7 +258,7 @@ public sealed class ExpressionDecoder
 
     private static bool ContainsBinaryOp(string expr) =>
         expr.Contains("=") || expr.Contains("<") || expr.Contains(">") ||
-        expr.Contains(" and ") || expr.Contains(" or ");
+        expr.Contains(".AND.") || expr.Contains(".OR.");
 
     private static bool IsValidParamType(char c) =>
         c is 'F' or 'C' or 'N' or 'X' or 'x' or 'Y' or 'M' or 's' or 'q';

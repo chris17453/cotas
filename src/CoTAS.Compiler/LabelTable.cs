@@ -12,6 +12,9 @@ public sealed class LabelTable
     /// <summary>Number of labels.</summary>
     public int Count => _labels.Count;
 
+    /// <summary>Number of labels imported from the original .RUN file.</summary>
+    public int ImportedLabelCount { get; private set; }
+
     /// <summary>
     /// Register a label. Returns the label index.
     /// If the label was previously referenced (forward reference), resolves it.
@@ -85,14 +88,39 @@ public sealed class LabelTable
     /// <summary>
     /// Import labels from a RunFileReader (for round-trip).
     /// </summary>
-    public void ImportOffsets(List<int> offsets)
+    public void ImportOffsets(List<int> offsets, int headerNumLabels = 0)
     {
+        // Import offsets from the label segment
         for (int i = 0; i < offsets.Count; i++)
         {
             string name = $"LABEL_{i}";
             _labels.Add(new LabelEntry(name, offsets[i], true));
             _nameToIndex[name] = i;
         }
+        // Pad to header's NumLabels count (some labels may exist beyond segment entries)
+        int totalLabels = Math.Max(offsets.Count, headerNumLabels);
+        for (int i = offsets.Count; i < totalLabels; i++)
+        {
+            string name = $"LABEL_{i}";
+            _labels.Add(new LabelEntry(name, 0, true));
+            _nameToIndex[name] = i;
+        }
+        ImportedLabelCount = _labels.Count;
+    }
+
+    /// <summary>
+    /// Set label byte offset by index (for round-trip with original data).
+    /// Extends the label list as needed.
+    /// </summary>
+    public void SetLabelOffset(int index, int byteOffset)
+    {
+        while (_labels.Count <= index)
+        {
+            string name = $"LABEL_{_labels.Count}";
+            _labels.Add(new LabelEntry(name, 0, false));
+            _nameToIndex[name] = _labels.Count - 1;
+        }
+        _labels[index] = _labels[index] with { ByteOffset = byteOffset, IsResolved = true };
     }
 
     private record LabelEntry(string Name, int ByteOffset, bool IsResolved);

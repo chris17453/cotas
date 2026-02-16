@@ -82,7 +82,13 @@ public sealed class SpecDecoder
                 int fldSize = _run.Header.FieldSpecSize;
                 int idx = fldSize > 0 ? location / fldSize : location;
                 if (idx >= 0 && idx < _run.Fields.Count)
-                    return _run.Fields[idx].Name;
+                {
+                    string name = _run.Fields[idx].Name;
+                    // If name contains non-printable chars, use FIELD[N] syntax
+                    if (string.IsNullOrEmpty(name) || name.Any(c => c < ' ' || c > '~'))
+                        return $"FIELD[{idx}]";
+                    return name;
+                }
                 return $"FIELD[{idx}]";
             }
 
@@ -208,7 +214,8 @@ public sealed class SpecDecoder
                 // Detect by looking for known type markers (F,C,N,X,Y,M) with null-heavy 4-byte offsets.
                 if (dataLen >= 5 && LooksLikeEmbeddedParams(cs, dataStart, dataLen))
                     return DecodeEmbeddedParams(cs, dataStart, dataLen);
-                string str = SanitizeBytes(cs, dataStart, dataLen, trimEnd: true);
+                // Preserve trailing spaces for round-trip fidelity (trimEnd: false)
+                string str = SanitizeBytes(cs, dataStart, dataLen, trimEnd: false);
                 return $"'{str}'";
             }
 

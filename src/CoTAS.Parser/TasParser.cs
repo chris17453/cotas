@@ -409,9 +409,17 @@ public sealed class TasParser
         int line = Current.Line;
         Advance();
         var text = ParseExpression();
-        // MSG can have additional qualifiers like WINDOWS 'W' — skip them
-        SkipToEndOfLine();
-        return new MessageStmt(text, line);
+        bool nowait = false;
+        Expression? windowsParam = null;
+        // Parse optional qualifiers: NOWAIT, WIN <expr>
+        while (!IsAtEndOfStatement)
+        {
+            string val = Current.Value.ToUpperInvariant();
+            if (val == "NOWAIT") { nowait = true; Advance(); }
+            else if (val == "WIN") { Advance(); windowsParam = ParseExpression(); }
+            else { Advance(); } // skip unknown qualifiers
+        }
+        return new MessageStmt(text, line, nowait, windowsParam);
     }
 
     private QuitStmt ParseQuit()
@@ -628,6 +636,7 @@ public sealed class TasParser
         {
             TokenType.Or => (".OR.", 1),
             TokenType.And => (".AND.", 2),
+            TokenType.Not => (".NOT.", 2), // .NOT. between expressions = .AND. .NOT.
             TokenType.Equal => ("=", 3),
             TokenType.NotEqual => ("<>", 3),
             TokenType.LessThan => ("<", 3),

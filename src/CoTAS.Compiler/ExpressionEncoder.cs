@@ -27,6 +27,12 @@ public sealed class ExpressionEncoder
     private int _nextTempOffset;
     private readonly int _tempBase;
 
+    /// <summary>Overlay offset added to field spec offsets in expression operands.</summary>
+    public int OverlayFieldOffset { get; set; }
+
+    /// <summary>Overlay offset added to constant pool offsets in expression operands.</summary>
+    public int OverlayConstOffset { get; set; }
+
     // Track what each temp offset holds (for referenced by later ops)
     private readonly Dictionary<int, char> _tempTypes = [];
 
@@ -56,7 +62,7 @@ public sealed class ExpressionEncoder
         char resultType = InferType(expr);
         byte decimals = InferDecimals(expr);
 
-        return _constants.AddExpression(resultType, decimals, _ops.ToArray(), _tempBase);
+        return _constants.AddExpression(resultType, decimals, _ops.ToArray(), _nextTempOffset);
     }
 
     /// <summary>
@@ -83,6 +89,10 @@ public sealed class ExpressionEncoder
 
             case ArrayAccessExpr arr:
             {
+                // Handle FIELD[N] syntax from decompiler (direct field index)
+                if (arr.Name.Equals("FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr fldLit && fldLit.Value is int directIdx)
+                    return ('F', directIdx * _fields.FieldSpecSize);
+
                 int fieldIdx = _fields.FindField(arr.Name);
                 if (fieldIdx < 0)
                     throw new InvalidOperationException($"Array field not found: {arr.Name}");
@@ -128,6 +138,10 @@ public sealed class ExpressionEncoder
 
             case ArrayAccessExpr arr:
             {
+                // Handle FIELD[N] syntax from decompiler (direct field index)
+                if (arr.Name.Equals("FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr fldLit2 && fldLit2.Value is int directIdx2)
+                    return new OperandRef('F', directIdx2 * _fields.FieldSpecSize);
+
                 int fieldIdx = _fields.FindField(arr.Name);
                 if (fieldIdx < 0)
                     throw new InvalidOperationException($"Array field not found: {arr.Name}");
@@ -176,6 +190,14 @@ public sealed class ExpressionEncoder
 
             case BinaryExpr bin:
             {
+                // Detect string concatenation chains: flatten and compile right-to-left
+                // TAS compiles "A" + B + "C" as B concat(0x03) "C" → temp, "A" +(0x01) temp
+                if (bin.Operator == "+" && IsStringConcatChain(bin))
+                {
+                    var operands = FlattenAddChain(bin);
+                    return CompileConcatChainRightToLeft(operands);
+                }
+
                 var lhs = CompileNode(bin.Left);
                 var rhs = CompileNode(bin.Right);
                 byte opByte = GetBinaryOpByte(bin.Operator);
@@ -230,6 +252,72 @@ public sealed class ExpressionEncoder
         return new OperandRef('F', result);
     }
 
+    /// <summary>
+    /// Check if a + chain contains any string literal, making it a string concatenation.
+    /// </summary>
+    private static bool IsStringConcatChain(BinaryExpr bin)
+    {
+        if (bin.Operator != "+") return false;
+        foreach (var operand in FlattenAddChain(bin))
+        {
+            if (operand is LiteralExpr lit && lit.Value is string)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Flatten a left-associative chain of + operations into a list of operands.
+    /// ((A + B) + C) → [A, B, C]
+    /// </summary>
+    private static List<Expression> FlattenAddChain(BinaryExpr bin)
+    {
+        var result = new List<Expression>();
+        void Collect(Expression expr)
+        {
+            if (expr is BinaryExpr b && b.Operator == "+")
+            {
+                Collect(b.Left);
+                result.Add(b.Right);
+            }
+            else
+            {
+                result.Add(expr);
+            }
+        }
+        Collect(bin);
+        return result;
+    }
+
+    /// <summary>
+    /// Compile a string concatenation chain right-to-left, matching TAS behavior.
+    /// [A, B, C] → (B concat C) → temp, (A + temp) → result
+    /// Uses 0x03 for the innermost pair, 0x01 for the rest.
+    /// </summary>
+    private OperandRef CompileConcatChainRightToLeft(List<Expression> operands)
+    {
+        // Start with the rightmost two operands
+        int n = operands.Count;
+        var right = CompileNode(operands[n - 1]);
+        var secondRight = CompileNode(operands[n - 2]);
+        int resultOff = AllocTemp();
+        // Innermost pair uses 0x03 (string concat)
+        EmitBinaryOp(0x03, secondRight, right, resultOff);
+        var current = new OperandRef('F', resultOff);
+
+        // Process remaining operands right-to-left
+        for (int i = n - 3; i >= 0; i--)
+        {
+            var operand = CompileNode(operands[i]);
+            resultOff = AllocTemp();
+            // Outer operations use 0x01 (add)
+            EmitBinaryOp(0x01, operand, current, resultOff);
+            current = new OperandRef('F', resultOff);
+        }
+
+        return current;
+    }
+
     private void EmitBinaryOp(byte opByte, OperandRef lhs, OperandRef rhs, int resultOff)
     {
         // 0x00 + operator(1) + lhs(5) + rhs(5) + result(4) = 16 bytes
@@ -243,7 +331,11 @@ public sealed class ExpressionEncoder
     private void WriteOperand(OperandRef op)
     {
         _ops.WriteByte((byte)op.Type);
-        WriteInt32(op.Location);
+        int loc = op.Location;
+        if (op.Type == 'F') loc += OverlayFieldOffset;
+        else if (op.Type == 'C' || op.Type == 'X' || op.Type == 'Y' || op.Type == 'M')
+            loc += OverlayConstOffset;
+        WriteInt32(loc);
     }
 
     private void WriteInt32(int value)
@@ -266,16 +358,19 @@ public sealed class ExpressionEncoder
         {
             case string s:
             {
-                // Single character optimization
-                if (s.Length == 1)
-                    return ('s', s[0]);
                 int off = _constants.AddString(s);
                 return ('C', off);
             }
             case int i:
-                return ('N', i);
+            {
+                int off = _constants.AddShortInteger(i);
+                return ('C', off);
+            }
             case long l:
-                return ('N', (int)l);
+            {
+                int off = _constants.AddShortInteger((int)l);
+                return ('C', off);
+            }
             case double d:
             {
                 // If it's a whole number, use N type
@@ -299,23 +394,9 @@ public sealed class ExpressionEncoder
 
     private static char InferType(Expression expr)
     {
-        return expr switch
-        {
-            LiteralExpr lit => lit.Value switch
-            {
-                string => 'A',
-                int or long => 'I',
-                double => 'N',
-                bool => 'L',
-                _ => 'A'
-            },
-            IdentifierExpr => 'A', // default; real compiler would look up field type
-            BinaryExpr bin => IsComparisonOp(bin.Operator) ? 'L' : InferType(bin.Left),
-            UnaryExpr un => InferType(un.Operand),
-            FunctionCallExpr func => InferFunctionReturnType(func.Name),
-            ArrayAccessExpr => 'A',
-            _ => 'A'
-        };
+        // TAS 5.1 always uses 'A' (alpha) for expression constant header type,
+        // regardless of the actual result type. The interpreter determines types at runtime.
+        return 'A';
     }
 
     private static byte InferDecimals(Expression expr)
@@ -395,6 +476,25 @@ public sealed class ExpressionEncoder
         if (_functionNumbers.TryGetValue(upper, out byte num))
             return num;
         return 0; // Unknown function — will be treated as UDF
+    }
+
+    /// <summary>
+    /// Infer the spec flag byte for a function's return type.
+    /// 'S' = string/alpha, 'N' = numeric, 'L' = logical, 'D' = date, 'T' = time.
+    /// </summary>
+    public static char InferFunctionReturnTypeFlag(string funcName)
+    {
+        char t = InferFunctionReturnType(funcName);
+        return t switch
+        {
+            'A' => 'S',
+            'I' => 'N',
+            'N' => 'N',
+            'L' => 'L',
+            'D' => 'D',
+            'T' => 'T',
+            _ => 'S'
+        };
     }
 
     /// <summary>
@@ -491,7 +591,7 @@ public sealed class ExpressionEncoder
         ["NUMLBLS"] = 0x42,
         ["TPATH"] = 0x4B,
         ["CPATH"] = 0x4C,
-        ["DPATH"] = 0x4D,
+        ["DPATH"] = 0x64,
         ["GETENV"] = 0x4E,
         ["FFILE"] = 0x5C,
         ["FFLD"] = 0x5D,
