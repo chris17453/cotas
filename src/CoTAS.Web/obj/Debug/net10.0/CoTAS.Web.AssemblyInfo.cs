@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CoTAS.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e296595b63727df63a325bec018d6db4f195ffd1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+961f9550da1e142eb753cf1c3fabeecde8e946c2")]
 [assembly: System.Reflection.AssemblyProductAttribute("CoTAS.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CoTAS.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
