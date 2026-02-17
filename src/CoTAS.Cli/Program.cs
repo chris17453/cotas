@@ -290,7 +290,7 @@ if (args[0] == "--compile" && args.Length >= 2)
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine($"Compile error: {ex.Message}");
+        Console.Error.WriteLine($"Compile error: {ex}");
         return 1;
     }
 }

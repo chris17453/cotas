@@ -36,6 +36,9 @@ public sealed class ExpressionEncoder
     // Track what each temp offset holds (for referenced by later ops)
     private readonly Dictionary<int, char> _tempTypes = [];
 
+    // Flag: true when compiling a node that is the left child of a '+' BinaryExpr
+    private bool _insidePlusChain;
+
     public ExpressionEncoder(FieldTable fields, ConstantPool constants, LabelTable labels, int tempBase)
     {
         _fields = fields;
@@ -76,12 +79,24 @@ public sealed class ExpressionEncoder
         {
             case IdentifierExpr id:
             {
-                int fieldIdx = _fields.FindField(id.Name);
-                if (fieldIdx >= 0)
-                    return ('F', _fields.GetFieldSpecOffset(fieldIdx));
+                // Indirect field reference: @name → param type 'M'
+                if (id.Name.StartsWith("@"))
+                {
+                    string realName = id.Name.Substring(1);
+                    int fieldIdx = _fields.FindField(realName);
+                    if (fieldIdx >= 0)
+                        return ('M', _fields.GetFieldSpecOffset(fieldIdx));
+                    // Unknown indirect — treat as constant string
+                    int constOff = _constants.AddString(realName);
+                    return ('C', constOff);
+                }
+
+                int fIdx = _fields.FindField(id.Name);
+                if (fIdx >= 0)
+                    return ('F', _fields.GetFieldSpecOffset(fIdx));
                 // Unknown identifier — treat as constant string
-                int constOff = _constants.AddString(id.Name);
-                return ('C', constOff);
+                int cOff = _constants.AddString(id.Name);
+                return ('C', cOff);
             }
 
             case LiteralExpr lit:
@@ -93,15 +108,38 @@ public sealed class ExpressionEncoder
                 if (arr.Name.Equals("FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr fldLit && fldLit.Value is int directIdx)
                     return ('F', directIdx * _fields.FieldSpecSize);
 
+                // Handle @FIELD[N] — indirect field reference (macro), param type 'M'
+                if (arr.Name.Equals("@FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr mfldLit && mfldLit.Value is int macroIdx)
+                    return ('M', macroIdx * _fields.FieldSpecSize);
+
+                // Handle FIELD[N][M] — array element M of field N (from parser FIELD_IDX:N convention)
+                if (arr.Name.StartsWith("FIELD_IDX:", StringComparison.OrdinalIgnoreCase))
+                {
+                    int fieldIndex = int.Parse(arr.Name.Substring(10));
+                    int fieldOff = fieldIndex * _fields.FieldSpecSize;
+                    var indexParam = CompileToParam(arr.Index);
+                    int arrayRefOff = _constants.AddArrayRef(
+                        (byte)'F', fieldOff,
+                        (byte)indexParam.Type, indexParam.Location);
+                    return ('Y', arrayRefOff);
+                }
+
+                // Handle @FIELD_IDX:N — indirect array (macro array), param type 'q'
+                if (arr.Name.StartsWith("@FIELD_IDX:", StringComparison.OrdinalIgnoreCase))
+                {
+                    int fieldIndex = int.Parse(arr.Name.Substring(11));
+                    return ('q', fieldIndex * _fields.FieldSpecSize);
+                }
+
                 int fieldIdx = _fields.FindField(arr.Name);
                 if (fieldIdx < 0)
                     throw new InvalidOperationException($"Array field not found: {arr.Name}");
 
-                var indexParam = CompileToParam(arr.Index);
-                int arrayRefOff = _constants.AddArrayRef(
+                var indexParam2 = CompileToParam(arr.Index);
+                int arrayRefOff2 = _constants.AddArrayRef(
                     (byte)'F', _fields.GetFieldSpecOffset(fieldIdx),
-                    (byte)indexParam.Type, indexParam.Location);
-                return ('Y', arrayRefOff);
+                    (byte)indexParam2.Type, indexParam2.Location);
+                return ('Y', arrayRefOff2);
             }
 
             case BinaryExpr:
@@ -123,12 +161,21 @@ public sealed class ExpressionEncoder
         {
             case LiteralExpr lit:
             {
-                var (type, loc) = CompileLiteral(lit);
+                var (type, loc) = CompileNodeLiteral(lit);
                 return new OperandRef(type, loc);
             }
 
             case IdentifierExpr id:
             {
+                // Indirect field reference: @name → param type 'M'
+                if (id.Name.StartsWith("@"))
+                {
+                    string realName = id.Name.Substring(1);
+                    int fIdx = _fields.FindField(realName);
+                    if (fIdx >= 0)
+                        return new OperandRef('M', _fields.GetFieldSpecOffset(fIdx));
+                }
+
                 int fieldIdx = _fields.FindField(id.Name);
                 if (fieldIdx >= 0)
                     return new OperandRef('F', _fields.GetFieldSpecOffset(fieldIdx));
@@ -141,6 +188,31 @@ public sealed class ExpressionEncoder
                 // Handle FIELD[N] syntax from decompiler (direct field index)
                 if (arr.Name.Equals("FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr fldLit2 && fldLit2.Value is int directIdx2)
                     return new OperandRef('F', directIdx2 * _fields.FieldSpecSize);
+
+                // Handle @FIELD[N] — indirect field reference (macro), param type 'M'
+                if (arr.Name.Equals("@FIELD", StringComparison.OrdinalIgnoreCase) && arr.Index is LiteralExpr mfldLit2 && mfldLit2.Value is int macroIdx2)
+                    return new OperandRef('M', macroIdx2 * _fields.FieldSpecSize);
+
+                // Handle FIELD[N][M] — array element M of field N (FIELD_IDX:N convention)
+                if (arr.Name.StartsWith("FIELD_IDX:", StringComparison.OrdinalIgnoreCase))
+                {
+                    int fldIndex = int.Parse(arr.Name.Substring(10));
+                    int fldOff = fldIndex * _fields.FieldSpecSize;
+                    var idxRef = CompileNode(arr.Index);
+                    int resOff = AllocTemp();
+                    _ops.WriteByte(0xB4);
+                    WriteOperand(new OperandRef('F', fldOff));
+                    WriteInt32(fldOff);
+                    WriteInt32(resOff);
+                    return new OperandRef('F', resOff);
+                }
+
+                // Handle @FIELD_IDX:N — indirect array (macro array), param type 'q'
+                if (arr.Name.StartsWith("@FIELD_IDX:", StringComparison.OrdinalIgnoreCase))
+                {
+                    int fldIndex = int.Parse(arr.Name.Substring(11));
+                    return new OperandRef('q', fldIndex * _fields.FieldSpecSize);
+                }
 
                 int fieldIdx = _fields.FindField(arr.Name);
                 if (fieldIdx < 0)
@@ -190,17 +262,24 @@ public sealed class ExpressionEncoder
 
             case BinaryExpr bin:
             {
-                // Detect string concatenation chains: flatten and compile right-to-left
-                // TAS compiles "A" + B + "C" as B concat(0x03) "C" → temp, "A" +(0x01) temp
-                if (bin.Operator == "+" && IsStringConcatChain(bin))
-                {
-                    var operands = FlattenAddChain(bin);
-                    return CompileConcatChainRightToLeft(operands);
-                }
+                string normOp = bin.Operator.Trim().ToUpperInvariant();
+                if (normOp is "AND" or ".AND." or ".A." or "OR" or ".OR." or ".O.")
+                    return CompileLogicalOp(bin);
 
+                // For + chains: set flag so inner + nodes use CONCAT (0x03)
+                bool savedFlag = _insidePlusChain;
+                if (bin.Operator == "+")
+                    _insidePlusChain = bin.Left is BinaryExpr lb && lb.Operator == "+";
                 var lhs = CompileNode(bin.Left);
+                _insidePlusChain = savedFlag;
+
                 var rhs = CompileNode(bin.Right);
                 byte opByte = GetBinaryOpByte(bin.Operator);
+
+                // Inner (non-root) + uses CONCAT (0x03), outermost uses ADD (0x01)
+                if (bin.Operator == "+" && _insidePlusChain)
+                    opByte = 0x03;
+
                 int resultOff = AllocTemp();
                 EmitBinaryOp(opByte, lhs, rhs, resultOff);
                 return new OperandRef('F', resultOff);
@@ -214,6 +293,79 @@ public sealed class ExpressionEncoder
             default:
                 throw new InvalidOperationException($"Cannot compile node: {expr.GetType().Name}");
         }
+    }
+
+    /// <summary>
+    /// Compile AND/OR logical operations matching original TAS operation ordering.
+    /// The original TAS compiler emits operations in precedence order:
+    /// 1. Function calls and arithmetic (highest precedence leaves)
+    /// 2. Comparisons
+    /// 3. Logical operators
+    /// This means for AND(EQ(MID,BK), EQ(field,ADD(B,X))):
+    ///   MID first, then ADD, then EQ1, then EQ2, then AND.
+    /// </summary>
+    private OperandRef CompileLogicalOp(BinaryExpr andOr)
+    {
+        // Collect all comparison children
+        var comparisons = new List<BinaryExpr>();
+        CollectComparisonChildren(andOr, comparisons);
+
+        if (comparisons.Count < 2)
+        {
+            // Not a simple AND/OR of comparisons — fall back to standard compilation
+            var lhs = CompileNode(andOr.Left);
+            var rhs = CompileNode(andOr.Right);
+            byte opByte = GetBinaryOpByte(andOr.Operator);
+            int resultOff = AllocTemp();
+            EmitBinaryOp(opByte, lhs, rhs, resultOff);
+            return new OperandRef('F', resultOff);
+        }
+
+        // Phase 1: compile all LHS operands left-to-right
+        var lhsRefs = new OperandRef[comparisons.Count];
+        var rhsRefs = new OperandRef[comparisons.Count];
+        for (int i = 0; i < comparisons.Count; i++)
+            lhsRefs[i] = CompileNode(comparisons[i].Left);
+        // Phase 1b: compile all RHS operands right-to-left (matches original TAS ordering)
+        for (int i = comparisons.Count - 1; i >= 0; i--)
+            rhsRefs[i] = CompileNode(comparisons[i].Right);
+
+        // Phase 2: emit comparisons
+        var results = new List<OperandRef>();
+        for (int i = 0; i < comparisons.Count; i++)
+        {
+            byte cmpOp = GetBinaryOpByte(comparisons[i].Operator);
+            int resultOff = AllocTemp();
+            EmitBinaryOp(cmpOp, lhsRefs[i], rhsRefs[i], resultOff);
+            results.Add(new OperandRef('F', resultOff));
+        }
+
+        // Phase 3: chain AND/OR operations
+        byte logOp = GetBinaryOpByte(andOr.Operator);
+        var current = results[0];
+        for (int i = 1; i < results.Count; i++)
+        {
+            int resultOff = AllocTemp();
+            EmitBinaryOp(logOp, current, results[i], resultOff);
+            current = new OperandRef('F', resultOff);
+        }
+
+        return current;
+    }
+
+    private void CollectComparisonChildren(BinaryExpr bin, List<BinaryExpr> result)
+    {
+        string normOp = bin.Operator.Trim().ToUpperInvariant();
+        bool isLogical = normOp is "AND" or ".AND." or ".A." or "OR" or ".OR." or ".O.";
+        if (!isLogical)
+        {
+            result.Add(bin);
+            return;
+        }
+        if (bin.Left is BinaryExpr leftBin) CollectComparisonChildren(leftBin, result);
+        else result.Add(new BinaryExpr(bin.Left, "=", new LiteralExpr(true, 0), 0)); // wrap non-binary
+        if (bin.Right is BinaryExpr rightBin) CollectComparisonChildren(rightBin, result);
+        else result.Add(new BinaryExpr(bin.Right, "=", new LiteralExpr(true, 0), 0));
     }
 
     private OperandRef CompileFunctionCall(FunctionCallExpr func)
@@ -245,9 +397,8 @@ public sealed class ExpressionEncoder
 
         // opType = argCount + 1 (e.g., 0-arg = 0x01, 1-arg = 0x02, etc.)
         _ops.WriteByte((byte)(argCount + 1));
-        // Function number as 2-byte word (matching original TAS: move(i2,CmpExpr[CmpExprCntr],2))
+        // Function number — 1 byte for TAS 5.1
         _ops.WriteByte(funcNum);
-        _ops.WriteByte(0x00);
         foreach (var arg in compiledArgs)
             WriteOperand(arg);
         WriteInt32(result);
@@ -366,13 +517,12 @@ public sealed class ExpressionEncoder
             }
             case int i:
             {
-                int off = _constants.AddInteger(i);
-                return ('C', off);
+                // Small integers use inline numeric type 'N'
+                return ('N', i);
             }
             case long l:
             {
-                int off = _constants.AddInteger((int)l);
-                return ('C', off);
+                return ('N', (int)l);
             }
             case double d:
             {
@@ -392,6 +542,35 @@ public sealed class ExpressionEncoder
                 int off = _constants.AddString(lit.Value?.ToString() ?? "");
                 return ('C', off);
             }
+        }
+    }
+
+    /// <summary>
+    /// Compile a literal for use inside expression RPN bytecode.
+    /// Integer literals are stored in the constant pool (as I entries) and
+    /// referenced via C type, matching the original TAS compiler behavior.
+    /// </summary>
+    private (char Type, int Location) CompileNodeLiteral(LiteralExpr lit)
+    {
+        switch (lit.Value)
+        {
+            case int i:
+            {
+                int off = _constants.AddInteger(i);
+                return ('C', off);
+            }
+            case long l:
+            {
+                int off = _constants.AddInteger((int)l);
+                return ('C', off);
+            }
+            case double d when d == Math.Floor(d) && d >= int.MinValue && d <= int.MaxValue:
+            {
+                int off = _constants.AddInteger((int)d);
+                return ('C', off);
+            }
+            default:
+                return CompileLiteral(lit);
         }
     }
 

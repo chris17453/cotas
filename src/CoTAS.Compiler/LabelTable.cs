@@ -21,16 +21,8 @@ public sealed class LabelTable
     /// </summary>
     public int AddLabel(string name, int instructionByteOffset)
     {
-        if (_nameToIndex.TryGetValue(name, out int existing))
-        {
-            // Forward reference — now resolve it
-            _labels[existing] = _labels[existing] with { ByteOffset = instructionByteOffset, IsResolved = true };
-            return existing;
-        }
-
-        int index = _labels.Count;
-        _labels.Add(new LabelEntry(name, instructionByteOffset, true));
-        _nameToIndex[name] = index;
+        int index = EnsureLabelSlot(name);
+        _labels[index] = _labels[index] with { ByteOffset = instructionByteOffset, IsResolved = true };
         return index;
     }
 
@@ -41,14 +33,42 @@ public sealed class LabelTable
     /// </summary>
     public int GetOrCreateRef(string name)
     {
+        return EnsureLabelSlot(name);
+    }
+
+    /// <summary>
+    /// Ensures a label slot exists at the correct index.
+    /// For LABEL_N names, forces index = N to match TAS convention.
+    /// </summary>
+    private int EnsureLabelSlot(string name)
+    {
         if (_nameToIndex.TryGetValue(name, out int existing))
             return existing;
 
-        // Forward reference — offset will be filled in later
-        int index = _labels.Count;
-        _labels.Add(new LabelEntry(name, 0, false));
-        _nameToIndex[name] = index;
-        return index;
+        // For LABEL_N names, use N as the index to match TAS numbering
+        int targetIndex;
+        if (name.StartsWith("LABEL_", StringComparison.OrdinalIgnoreCase)
+            && int.TryParse(name.AsSpan(6), out int labelNum))
+        {
+            targetIndex = labelNum;
+        }
+        else
+        {
+            targetIndex = _labels.Count;
+        }
+
+        // Extend list to accommodate the target index
+        while (_labels.Count <= targetIndex)
+        {
+            int padIdx = _labels.Count;
+            string padName = $"LABEL_{padIdx}";
+            _labels.Add(new LabelEntry(padName, 0, false));
+            if (!_nameToIndex.ContainsKey(padName))
+                _nameToIndex[padName] = padIdx;
+        }
+
+        _nameToIndex[name] = targetIndex;
+        return targetIndex;
     }
 
     /// <summary>
@@ -82,8 +102,23 @@ public sealed class LabelTable
 
     /// <summary>
     /// Get all label byte offsets in order (for the label segment).
+    /// Only includes entries up to the highest defined (resolved) label index.
     /// </summary>
-    public List<int> GetAllOffsets() => _labels.Select(l => l.ByteOffset).ToList();
+    public List<int> GetAllOffsets()
+    {
+        // Find the highest resolved label index
+        int maxResolved = -1;
+        for (int i = 0; i < _labels.Count; i++)
+        {
+            if (_labels[i].IsResolved)
+                maxResolved = i;
+        }
+
+        var offsets = new List<int>();
+        for (int i = 0; i <= maxResolved; i++)
+            offsets.Add(_labels[i].ByteOffset);
+        return offsets;
+    }
 
     /// <summary>
     /// Import labels from a RunFileReader (for round-trip).

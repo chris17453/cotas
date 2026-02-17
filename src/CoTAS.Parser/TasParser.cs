@@ -107,18 +107,85 @@ public sealed class TasParser
         var names = new List<string>();
         names.Add(ExpectAnyIdentifier("field name"));
 
-        while (Check(TokenType.Comma))
-        {
-            Advance(); // comma
-            names.Add(ExpectAnyIdentifier("field name"));
-        }
-
+        // Decompiler outputs: DEFINE name, type, size [, arraySize]
+        // Original syntax:    DEFINE name [, name2...] [TYPE t] [SIZE n] [DEC d] [ARRAY n] [RESET]
+        // Detect positional format: after first name, if comma + single-letter type indicator
         string? fieldType = null;
         int? size = null;
         int? decimals = null;
         int? arraySize = null;
         bool reset = false;
 
+        if (Check(TokenType.Comma))
+        {
+            // Peek ahead to see if next token is a type letter (A, I, N, D, L, V, T)
+            // or a type with decimals like "N(2)"
+            int savedPos = _pos;
+            Advance(); // consume comma
+
+            string nextVal = Current.Value.ToUpperInvariant();
+            bool isPositional = false;
+
+            if (Current.Type == TokenType.Identifier && nextVal.Length <= 4
+                && (nextVal.StartsWith("A") || nextVal.StartsWith("I") || nextVal.StartsWith("N")
+                 || nextVal.StartsWith("D") || nextVal.StartsWith("L") || nextVal.StartsWith("V")
+                 || nextVal.StartsWith("T")))
+            {
+                // Check if followed by comma+number (positional) or end of line
+                int peekPos = _pos + 1;
+                if (peekPos < _tokens.Count
+                    && (_tokens[peekPos].Type == TokenType.Comma
+                     || _tokens[peekPos].Type == TokenType.Newline
+                     || _tokens[peekPos].Type == TokenType.Eof))
+                {
+                    isPositional = true;
+                }
+            }
+
+            if (isPositional)
+            {
+                // Positional format: DEFINE name, type, size [, arraySize]
+                string typeStr = Current.Value.ToUpperInvariant();
+                Advance(); // consume type
+
+                // Parse type with optional decimals: "N(2)" or just "N"
+                if (typeStr.StartsWith("N(") && typeStr.EndsWith(")"))
+                {
+                    fieldType = "N";
+                    if (int.TryParse(typeStr.AsSpan(2, typeStr.Length - 3), out int d))
+                        decimals = d;
+                }
+                else
+                {
+                    fieldType = typeStr;
+                }
+
+                if (Check(TokenType.Comma))
+                {
+                    Advance(); // comma
+                    size = ExpectInteger("size");
+                }
+
+                if (Check(TokenType.Comma))
+                {
+                    Advance(); // comma
+                    arraySize = ExpectInteger("array size");
+                }
+            }
+            else
+            {
+                // Not positional — restore and fall through to multi-name parsing
+                _pos = savedPos;
+                // Continue collecting comma-separated names
+                while (Check(TokenType.Comma))
+                {
+                    Advance(); // comma
+                    names.Add(ExpectAnyIdentifier("field name"));
+                }
+            }
+        }
+
+        // Parse keyword-based attributes (TYPE, SIZE, DEC, ARRAY, RESET)
         while (!IsAtEndOfStatement)
         {
             if (Check(TokenType.Type))
@@ -152,7 +219,32 @@ public sealed class TasParser
             }
         }
 
-        return new DefineStmt(names, fieldType, size, decimals, arraySize, reset, line);
+        // Parse optional FILEFLD metadata (decompiler round-trip info)
+        int? fileBuf = null, fileKey = null, fileOff = null, fileFfi = null;
+        bool forceUpper = false;
+        if (!IsAtEndOfStatement && Current.Type == TokenType.Identifier
+            && Current.Value.Equals("FILEFLD", StringComparison.OrdinalIgnoreCase))
+        {
+            Advance(); // consume FILEFLD
+            fileBuf = ExpectInteger("file buffer number");
+            if (Check(TokenType.Comma)) Advance();
+            fileKey = ExpectInteger("file key number");
+            if (Check(TokenType.Comma)) Advance();
+            fileOff = ExpectInteger("file offset");
+            if (Check(TokenType.Comma)) Advance();
+            fileFfi = ExpectInteger("file field index");
+        }
+
+        // Parse optional UPPER flag
+        if (!IsAtEndOfStatement && Current.Type == TokenType.Identifier
+            && Current.Value.Equals("UPPER", StringComparison.OrdinalIgnoreCase))
+        {
+            forceUpper = true;
+            Advance();
+        }
+
+        return new DefineStmt(names, fieldType, size, decimals, arraySize, reset, line,
+            fileBuf, fileKey, fileOff, fileFfi, forceUpper);
     }
 
     private Statement ParseIf()
@@ -598,15 +690,20 @@ public sealed class TasParser
             case TokenType.At:
                 return ParseIdentifierExpr();
 
+            // Indirect field reference: @FIELD[N] or @name
+            case TokenType.AtSign:
+                Advance(); // consume @
+                return ParseIdentifierExpr(indirect: true);
+
             default:
                 throw new ParseException($"Unexpected token {token.Type}({token.Value}) at line {token.Line}:{token.Column}");
         }
     }
 
-    private Expression ParseIdentifierExpr()
+    private Expression ParseIdentifierExpr(bool indirect = false)
     {
         var token = Advance();
-        string name = token.Value;
+        string name = indirect ? "@" + token.Value : token.Value;
 
         // Function call or array access: name(args...)
         if (Check(TokenType.LeftParen))
@@ -625,6 +722,41 @@ public sealed class TasParser
             }
             Expect(TokenType.RightParen, "')'");
             return new FunctionCallExpr(name, args, token.Line);
+        }
+
+        // Array access: name[index] or name[index][subindex]
+        if (Check(TokenType.LeftBracket))
+        {
+            Advance(); // [
+            var index = ParseExpression();
+            Expect(TokenType.RightBracket, "']'");
+
+            // Double subscript: FIELD[N][M] — array element M of field N
+            // Or FIELD[N][] — empty subscript means whole field (indirect ref)
+            if (Check(TokenType.LeftBracket))
+            {
+                Advance(); // [
+                Expression? subIndex = null;
+                if (!Check(TokenType.RightBracket))
+                    subIndex = ParseExpression();
+                Expect(TokenType.RightBracket, "']'");
+
+                if (subIndex != null)
+                {
+                    // Encode as ArrayAccessExpr("FIELD", subIndex) but we need the field index.
+                    // Use FIELD_IDX:N naming convention so the compiler can resolve it.
+                    if (name.Equals("FIELD", StringComparison.OrdinalIgnoreCase) && index is LiteralExpr lit && lit.Value is int idx)
+                        return new ArrayAccessExpr($"FIELD_IDX:{idx}", subIndex, token.Line);
+                    if (name.StartsWith("@FIELD", StringComparison.OrdinalIgnoreCase) && index is LiteralExpr lit2 && lit2.Value is int idx2)
+                        return new ArrayAccessExpr($"@FIELD_IDX:{idx2}", subIndex, token.Line);
+                    // General case: nested array (rare)
+                    return new ArrayAccessExpr(name, subIndex, token.Line);
+                }
+                // Empty subscript FIELD[N][] or @FIELD[N][] — treat as simple field ref
+                // Fall through to return the simple ArrayAccessExpr below
+            }
+
+            return new ArrayAccessExpr(name, index, token.Line);
         }
 
         return new IdentifierExpr(name, token.Line);

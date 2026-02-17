@@ -54,19 +54,20 @@ public sealed class FieldTable
         if (internalSize == 0)
             internalSize = CalculateInternalSize(fieldType, displaySize, decimals, arrayCount);
 
-        int dataOffset = _nextDefinedOffset;
+        // TAS stores offset=0 for all DEFINE fields (runtime allocates dynamically)
         _nextDefinedOffset += internalSize * Math.Max(1, arrayCount);
 
         var spec = new RunFieldSpec
         {
             Name = name,
-            Offset = dataOffset,
+            Offset = 0, // TAS stores offset=0 for DEFINE fields
             FieldType = fieldType,
             Decimals = decimals,
             DisplaySize = displaySize,
             ArrayCount = arrayCount,
             IsReset = reset,
             InternalSize = internalSize,
+            PictureLocation = -1, // TAS uses -1 to indicate no picture for DEFINE fields
         };
 
         _fields.Add(new FieldEntry(spec, false));
@@ -100,6 +101,7 @@ public sealed class FieldTable
             Decimals = decimals,
             DisplaySize = displaySize,
             InternalSize = internalSize,
+            IsReady = true,
         };
 
         _fields.Add(new FieldEntry(spec, true));
@@ -211,7 +213,7 @@ public sealed class FieldTable
         return fieldType switch
         {
             'A' => displaySize,
-            'I' => 4,
+            'I' => 2,
             'N' => displaySize + 1, // sign + digits + decimal point
             'D' => 8,
             'T' => 6,

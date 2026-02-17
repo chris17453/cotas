@@ -19,6 +19,7 @@ public sealed class TasCompiler
     private readonly List<RunBytecodeInstruction> _instructions = [];
     private readonly List<RunBufferEntry> _buffers = [];
     private readonly bool _isTas51 = true;
+    private GenericCompiler? _genericCompiler;
     private int _instrSize = RunFileHeader.Tas51InstructionSize;
     private bool _useLongMsgSpec = true; // 15B MSG format (default for most files)
     private bool _useLongOpenvSpec = true; // 53B OPENV format (default for most files)
@@ -46,11 +47,26 @@ public sealed class TasCompiler
     /// </summary>
     public byte[] Compile(TasProgram program)
     {
+        // Seed constant pool with integer zero at offset 0 (TAS convention)
+        _constants.AddIntegerZero();
+        // TAS compiler always adds 2 null padding bytes after integer zero seed
+        _constants.AddRaw(new byte[] { 0x00, 0x00 });
+
+        // Add 30 temp fields (TEMP00-TEMP29) — TAS always allocates these
+        for (int i = 0; i < 30; i++)
+        {
+            string tempName = $"TEMP{i:D2}";
+            _fields.AddTempField(tempName, 'S', 0);
+        }
+
         // Pass 1: collect fields, labels, and prep
         CollectPass(program.Statements);
 
         // Pass 2: emit instructions
         EmitPass(program.Statements);
+
+        // Emit END marker (0xFE00) to terminate program
+        EmitInstruction(0xFE00, 0, 0);
 
         // Build the .RUN binary
         return BuildRunFile();
@@ -109,7 +125,10 @@ public sealed class TasCompiler
 
         // Step 5: Emit integer zero at constant pool offset 0 (only if original has it)
         if (run.ConstantSegment.Length >= 5 && run.ConstantSegment[0] == 0x49) // 'I' = integer
+        {
             compiler._constants.AddIntegerZero();
+            compiler._constants.AddRaw(new byte[] { 0x00, 0x00 }); // TAS convention padding
+        }
 
         // Step 6: Compile AST → instructions + constants + spec
         compiler.CollectPass(program.Statements);
@@ -157,18 +176,14 @@ public sealed class TasCompiler
     }
 
     /// <summary>
-    /// Generate the 128-byte header. Starts from original raw header (for timestamps at bytes 65-77),
-    /// then overwrites all computed fields with generated values.
+    /// Generate the 128-byte header. All fields are computed from generated data.
     /// </summary>
     private static byte[] GenerateHeader(byte[] originalRawHeader, RunFileHeader originalHeader,
         int codeSize, int constSize, int specSize, int labelSize, int fldNameSize,
         int numFields, int numLabels)
     {
-        // Start with original header to preserve timestamps and any unknown bytes
         byte[] header = new byte[RunFileHeader.Size];
-        Array.Copy(originalRawHeader, header, Math.Min(originalRawHeader.Length, RunFileHeader.Size));
 
-        // Overwrite computed segment sizes; preserve all other fields from original header
         using var ms = new MemoryStream(header);
         using var w = new BinaryWriter(ms);
 
@@ -198,7 +213,15 @@ public sealed class TasCompiler
         w.Write((byte)(originalHeader.NewFldSpec ? 1 : 0));  // offset 62
         w.Write((byte)(originalHeader.ChkUpVld ? 1 : 0));   // offset 63
         w.Write((byte)(originalHeader.IncLabels ? 1 : 0));   // offset 64
-        // Bytes 65+ preserved from original (timestamps, etc.)
+
+        // Offsets 65, 69, 73: segment sizes + DOS base address for backward compatibility.
+        // The original TAS compiler stored these as size + internal memory base pointer.
+        // We use the most common base (0x7A121 = 500001) to match legacy .RUN files.
+        const int dosBase = 0x7A121;
+        ms.Position = 65;
+        w.Write(specSize + dosBase);    // offset 65
+        w.Write(constSize + dosBase);   // offset 69
+        w.Write(codeSize + dosBase);    // offset 73
 
         return header;
     }
@@ -366,7 +389,35 @@ public sealed class TasCompiler
 
         foreach (string name in def.FieldNames)
         {
-            _fields.AddDefinedField(name, fieldType, size, decimals, arraySize, def.Reset);
+            if (def.FileFieldIndex.HasValue)
+            {
+                // File field with metadata from decompiler — add with explicit offset
+                _fields.AddFileField(name, fieldType, size, decimals,
+                    internalSize: 0,
+                    keyNumber: (byte)(def.FileKeyNumber ?? 0),
+                    bufferNumber: (byte)(def.FileBufferNumber ?? 0),
+                    fileHandle: 0,
+                    arrayCount: arraySize);
+                // Override offset and FileFieldIndex (AddFileField sets them from its own tracking)
+                int idx = _fields.FindField(name);
+                if (idx >= 0)
+                {
+                    var specs = _fields.GetAllSpecs();
+                    specs[idx].Offset = def.FileOffset ?? 0;
+                    specs[idx].FileFieldIndex = (byte)(def.FileFieldIndex ?? 0);
+                    if (def.ForceUpperCase) specs[idx].ForceUpperCase = true;
+                }
+            }
+            else
+            {
+                _fields.AddDefinedField(name, fieldType, size, decimals, arraySize, def.Reset);
+                if (def.ForceUpperCase)
+                {
+                    int idx = _fields.FindField(name);
+                    if (idx >= 0)
+                        _fields.GetAllSpecs()[idx].ForceUpperCase = true;
+                }
+            }
         }
     }
 
@@ -762,19 +813,217 @@ public sealed class TasCompiler
 
     private void EmitScan(ScanStmt scan)
     {
-        // SCAN is complex — emit START_SCAN + SCAN header + body + SET_SCAN_FLG + ENDS
-        // For now, emit generic params from tokens
+        // SCAN spec layout (43 bytes) — matches decompiler DecompileScan:
+        // [0-3]   scan_end_jump (4B int32, patched later to byte offset of instruction after SET_SCAN_FLG)
+        // [4-8]   handle (5B spec param)
+        // [9-13]  key (5B spec param)
+        // [14-18] start (5B spec param)
+        // [19]    scope (1B: 'A'=all, 'R'=range, 'N'=next, 'F'=for, 'W'=while)
+        // [20-24] sval (5B spec param)
+        // [25-29] for expression (5B spec param)
+        // [30-34] while expression (5B spec param)
+        // [35]    display flag ('Y'/'N')
+        // [36]    no_lock flag ('Y'/'N')
+        // [37]    scope holder (1B)
+        // [38-41] scope num holder (4B)
+        // [42]    reverse flag ('Y'/'N')
+        //
+        // Decompiler output: SCAN handle, key [, startval] [, WHILE|FOR, expr] [, additional...]
+        // The runtime sequence is: START_SCAN (no spec) → SCAN (43B) → body → SET_SCAN_FLG (9B)
+
+        // Emit START_SCAN (no spec, but spec ptr = SCAN's spec offset — will be patched)
+        int startScanIdx = _instructions.Count;
         EmitSimple(TasOpcode.START_SCAN, 0);
 
-        int specOff = _spec.BeginSpec();
-        WriteTokenParams(scan.Options);
-        int specSize = _spec.GetSpecSize(specOff);
-        EmitInstruction(TasOpcode.SCAN, specOff, specSize);
+        // Parse SCAN options into structured parts
+        var allToks = scan.Options;
 
+        // Split at top-level commas (not inside parens)
+        var segments = SplitAtTopLevelCommas(allToks);
+
+        // Build SCAN spec (43 bytes)
+        int specOff = _spec.BeginSpec();
+        int jumpPatchOff = specOff; // offset of the 4-byte jump target
+
+        // [0-3] jump to instruction after ENDS (patched later)
+        _spec.WriteInt32(0); // placeholder — patched after body
+
+        // [4-8] handle = first segment
+        if (segments.Count >= 1 && segments[0].Count > 0)
+            WriteScanTokensAsParam(segments[0]);
+        else
+            _spec.WriteNullParam();
+
+        // [9-13] key = second segment
+        if (segments.Count >= 2 && segments[1].Count > 0)
+            WriteScanTokensAsParam(segments[1]);
+        else
+            _spec.WriteNullParam();
+
+        // [14-18] start value = third segment (if not a keyword like WHILE/FOR or a condition expression)
+        // Check if segments contain WHILE/FOR/NLOCK/DISP/REV keywords or comparison/logical operators
+        int nextSeg = 2;
+        bool hasStart = false;
+        if (segments.Count > 2)
+        {
+            string firstTokVal = segments[2].Count > 0 ? segments[2][0].Value.ToUpperInvariant() : "";
+            bool isKeyword = firstTokVal == "WHILE" || firstTokVal == "FOR" || firstTokVal == "NLOCK"
+                || firstTokVal == "DISP" || firstTokVal == "REV";
+            bool isCondition = segments[2].Any(t =>
+                t.Type == TokenType.Equal || t.Type == TokenType.NotEqual ||
+                t.Type == TokenType.LessThan || t.Type == TokenType.LessEqual ||
+                t.Type == TokenType.GreaterThan || t.Type == TokenType.GreaterEqual ||
+                t.Type == TokenType.And || t.Type == TokenType.Or);
+            if (!isKeyword && !isCondition)
+            {
+                WriteScanTokensAsParam(segments[2]);
+                hasStart = true;
+                nextSeg = 3;
+            }
+        }
+        if (!hasStart)
+            _spec.WriteNullParam();
+
+        // [19] scope flag — look for WHILE or FOR in remaining segments
+        byte scopeFlag = (byte)'A'; // default
+        List<Token>? forExprTokens = null;
+        List<Token>? whileExprTokens = null;
+        bool dispFlag = false, nlockFlag = false, revFlag = false;
+
+        for (int s = nextSeg; s < segments.Count; s++)
+        {
+            if (segments[s].Count == 0) continue;
+            string kw = segments[s][0].Value.ToUpperInvariant();
+            switch (kw)
+            {
+                case "WHILE":
+                    scopeFlag = (byte)'W';
+                    if (s + 1 < segments.Count)
+                        whileExprTokens = segments[++s];
+                    break;
+                case "FOR":
+                    scopeFlag = (byte)'F';
+                    if (s + 1 < segments.Count)
+                        forExprTokens = segments[++s];
+                    break;
+                case "NLOCK": nlockFlag = true; break;
+                case "DISP": dispFlag = true; break;
+                case "REV": revFlag = true; break;
+                default:
+                    // Might be an expression for scope value or for/while
+                    // If we haven't seen WHILE/FOR yet, treat as for expression
+                    if (forExprTokens == null && whileExprTokens == null)
+                        forExprTokens = segments[s];
+                    break;
+            }
+        }
+
+        _spec.WriteByte(scopeFlag);
+
+        // [20-24] scope value
+        _spec.WriteNullParam();
+
+        // [25-29] for expression
+        if (forExprTokens != null && forExprTokens.Count > 0)
+            WriteScanTokensAsParam(forExprTokens);
+        else
+            _spec.WriteNullParam();
+
+        // [30-34] while expression
+        if (whileExprTokens != null && whileExprTokens.Count > 0)
+            WriteScanTokensAsParam(whileExprTokens);
+        else
+            _spec.WriteNullParam();
+
+        // [35] display flag
+        _spec.WriteByte(dispFlag ? (byte)'Y' : (byte)'N');
+        // [36] no_lock flag
+        _spec.WriteByte(nlockFlag ? (byte)'Y' : (byte)'N');
+        // [37] scope holder
+        _spec.WriteByte(0);
+        // [38-41] scope num holder
+        _spec.WriteInt32(0);
+        // [42] reverse flag
+        _spec.WriteByte(revFlag ? (byte)'Y' : (byte)'N');
+
+        int specSize = _spec.GetSpecSize(specOff);
+
+        // Patch START_SCAN to point to SCAN's spec offset
+        _instructions[startScanIdx] = new RunBytecodeInstruction
+        {
+            CommandNumber = TasOpcode.START_SCAN,
+            Exit = 0,
+            SpecLineSize = 0,
+            SpecLinePtr = specOff
+        };
+
+        EmitInstruction(TasOpcode.SCAN, specOff, specSize);
+        int scanInstrIdx = _instructions.Count - 1;
+
+        // Emit body
         EmitPass(scan.Body);
 
-        EmitSimple(TasOpcode.SET_SCAN_FLG, 0);
-        EmitSimple(TasOpcode.ENDS, 0);
+        // Emit SET_SCAN_FLG with 9-byte spec: jump_back_addr(4) + null_param(5)
+        int endSpecOff = _spec.BeginSpec();
+        int scanCodeOffset = scanInstrIdx * _instrSize; // byte offset of SCAN instruction
+        _spec.WriteInt32(scanCodeOffset);
+        _spec.WriteNullParam();
+        int endSpecSize = _spec.GetSpecSize(endSpecOff);
+        EmitInstruction(TasOpcode.SET_SCAN_FLG, endSpecOff, endSpecSize);
+
+        // Patch SCAN's jump target to point to the instruction AFTER SET_SCAN_FLG
+        int afterEndsOffset = _instructions.Count * _instrSize;
+        _spec.PatchInt32(jumpPatchOff, afterEndsOffset);
+    }
+
+    /// <summary>
+    /// Split a token list at top-level commas (not inside parentheses).
+    /// </summary>
+    private static List<List<Token>> SplitAtTopLevelCommas(List<Token> tokens)
+    {
+        var result = new List<List<Token>>();
+        var current = new List<Token>();
+        int depth = 0;
+        foreach (var tok in tokens)
+        {
+            if (tok.Type == TokenType.LeftParen) depth++;
+            else if (tok.Type == TokenType.RightParen) depth--;
+
+            if (tok.Type == TokenType.Comma && depth == 0)
+            {
+                result.Add(current);
+                current = new List<Token>();
+            }
+            else
+            {
+                current.Add(tok);
+            }
+        }
+        if (current.Count > 0)
+            result.Add(current);
+        return result;
+    }
+
+    /// <summary>
+    /// Write a list of tokens as a single spec param.
+    /// If single token → WriteTokenParam. If multiple → compile as expression.
+    /// </summary>
+    private void WriteScanTokensAsParam(List<Token> tokens)
+    {
+        if (tokens.Count == 1)
+        {
+            WriteTokenParam(tokens[0]);
+        }
+        else if (tokens.Count > 1)
+        {
+            // Multiple tokens = expression
+            var expr = ParseTokensAsExpression(tokens);
+            WriteExprParam(expr);
+        }
+        else
+        {
+            _spec.WriteNullParam();
+        }
     }
 
     private void EmitExpressionStmt(ExpressionStmt exprStmt)
@@ -888,187 +1137,24 @@ public sealed class TasCompiler
             return;
         }
 
-        // Special handling for commands with known spec layouts
-        switch (opcode)
+        // Table-driven compiler handles ALL non-special commands
+        var result = GetGenericCompiler().CompileCommand(gen);
+        if (result.HasValue)
         {
-            case TasOpcode.NOP:
-                EmitSimple(TasOpcode.NOP, 0);
-                return;
-            case TasOpcode.GOTO:
-                EmitGenericGoto(gen);
-                return;
-            case TasOpcode.GOSUB:
-                EmitGenericGosub(gen);
-                return;
-            case TasOpcode.ASSIGN:
-            case TasOpcode.POINTER:
-                EmitGenericAssign(gen, opcode);
-                return;
-            case TasOpcode.IF:
-                EmitGenericIf(gen);
-                return;
-            case TasOpcode.TRAP:
-                EmitGenericTrap(gen);
-                return;
-            case TasOpcode.OPENV:
-            case TasOpcode.OPEN:
-                EmitGenericOpenv(gen, opcode);
-                return;
-            case TasOpcode.FINDV:
-            case TasOpcode.FIND:
-                EmitGenericFindv(gen, opcode);
-                return;
-            case TasOpcode.SAVE:
-                EmitGenericSave(gen);
-                return;
-            case TasOpcode.CO:
-                EmitCo(gen);
-                return;
-            case TasOpcode.CHAIN:
-            case TasOpcode.CHAINR:
-                EmitGenericChain(gen, opcode);
-                return;
-            case TasOpcode.ENTER:
-            case TasOpcode.ASK:
-                EmitGenericEnterAsk(gen, opcode);
-                return;
-            case TasOpcode.WINDOW:
-            case TasOpcode.WINDEF:
-                EmitGenericWindow(gen, opcode);
-                return;
-            case TasOpcode.FOR:
-                // FOR handled by dedicated ForStmt
-                EmitGenericParams(gen, opcode);
-                return;
-            case TasOpcode.FILL:
-                EmitGenericFill(gen);
-                return;
-            case TasOpcode.MID_CMD:
-                EmitGenericMid(gen);
-                return;
-            case TasOpcode.XFER:
-                EmitGenericXfer(gen);
-                return;
-            case TasOpcode.SCAN:
-                EmitGenericParams(gen, opcode);
-                return;
-            case TasOpcode.COLOR:
-                EmitGenericColor(gen);
-                return;
-            case TasOpcode.FORMAT:
-                EmitGenericFormat(gen);
-                return;
-            case TasOpcode.SAY:
-            case TasOpcode.DISPF:
-            case TasOpcode.CURSOR:
-            case TasOpcode.CLRLNE:
-                EmitGenericPositionalCmd(gen, opcode);
-                return;
-            case TasOpcode.PMSG:
-                EmitGenericPmsg(gen);
-                return;
-            case TasOpcode.QUIT:
-                EmitQuit();
-                return;
-            case TasOpcode.MSG:
-                EmitGenericMsg(gen);
-                return;
-            case TasOpcode.SAVES:
-            case TasOpcode.SAVES3:
-            case TasOpcode.REDSP:
-            case TasOpcode.REDSP3:
-                EmitGenericSavesRedsp(gen, opcode);
-                return;
-            case TasOpcode.UDC:
-            case TasOpcode.FUNC:
-            case TasOpcode.CMD:
-                EmitGenericUdfc(gen, opcode);
-                return;
-            case TasOpcode.INIFLE:
-                EmitGenericInifle(gen);
-                return;
-            case TasOpcode.INC:
-            case TasOpcode.DEC:
-            case TasOpcode.TRIM:
-            case TasOpcode.PUSHF:
-            case TasOpcode.POPF:
-            case TasOpcode.DEALOC:
-            case TasOpcode.CLR:
-            case TasOpcode.ROPEN:
-            case TasOpcode.PBLNK:
-            case TasOpcode.PVERT:
-            case TasOpcode.PRTALL:
-            case TasOpcode.PON:
-            case TasOpcode.RCN_CMD:
-            case TasOpcode.REMVA:
-            case TasOpcode.DELF:
-            case TasOpcode.CDPATH:
-                EmitGenericOneParam(gen, opcode);
-                return;
-            case TasOpcode.PARAM:
-                EmitGenericParam(gen);
-                return;
-            case TasOpcode.GOTOL:
-            case TasOpcode.UPAR:
-            case TasOpcode.FILTER:
-            case TasOpcode.DATE:
-            case TasOpcode.TIME:
-            case TasOpcode.KBDUP:
-            case TasOpcode.GRAY:
-            case TasOpcode.RDLIST:
-            case TasOpcode.REMOUNT:
-            case TasOpcode.PUT_FLD:
-            case TasOpcode.EXEC:
-            case TasOpcode.BKG:
-            case TasOpcode.FRG:
-            case TasOpcode.REVERSE:
-            case TasOpcode.PUSHT:
-            case TasOpcode.POPT:
-                EmitGenericOneParam(gen, opcode);
-                return;
-            case TasOpcode.CLOSE:
-                EmitGenericClose(gen);
-                return;
-            case TasOpcode.DEL:
-                EmitGenericDel(gen);
-                return;
-            case TasOpcode.RENF:
-            case TasOpcode.SRCH:
-            case TasOpcode.SETACT:
-            case TasOpcode.ERR:
-            case TasOpcode.WCOLOR:
-            case TasOpcode.SETLINE:
-            case TasOpcode.INSERT:
-            case TasOpcode.POSTMSG:
-            case TasOpcode.TRANSX:
-            case TasOpcode.RUN:
-            case TasOpcode.EQU_DAY:
-            case TasOpcode.EQU_XMT:
-                EmitGenericTwoParams(gen, opcode);
-                return;
-            case TasOpcode.WRAP:
-            case TasOpcode.REWRAP:
-                EmitGenericThreeParams(gen, opcode);
-                return;
-            case TasOpcode.GETLBL:
-                EmitGenericGetlbl(gen);
-                return;
-            case TasOpcode.ON:
-                EmitGenericOn(gen);
-                return;
-            case TasOpcode.FORCE:
-            case TasOpcode.FORCE3:
-                EmitGenericForce(gen);
-                return;
-            case TasOpcode.SCRN:
-                EmitGenericScrn(gen);
-                return;
-            case TasOpcode.RAP:
-                EmitGenericRap(gen);
-                return;
+            EmitInstruction(opcode, result.Value.SpecOffset, result.Value.SpecSize);
+
+            // Register buffer name for OPENV/OPEN commands
+            if (opcode is TasOpcode.OPENV or TasOpcode.OPEN &&
+                gen.Tokens.Count > 0 && gen.Tokens[0].Type == TokenType.StringLiteral)
+            {
+                string bufName = gen.Tokens[0].Value.ToUpperInvariant();
+                if (bufName.Length <= 8 && !_buffers.Any(b => b.Name == bufName))
+                    _buffers.Add(new RunBufferEntry { Name = bufName.PadRight(8) });
+            }
+            return;
         }
 
-        // Default: emit command with all tokens as 5-byte params
+        // Commands not in CommandTable — emit with raw token params as last resort
         EmitGenericParams(gen, opcode);
     }
 
@@ -1125,13 +1211,107 @@ public sealed class TasCompiler
 
     private void EmitGenericTrap(GenericCommandStmt gen)
     {
-        // TRAP: [key(5)] [action(5)]
+        // TRAP spec layout (10 bytes):
+        // [0-4]  trap key bitmap (5B param: C -> constant with key code bytes)
+        // [5]    action byte: 'G'=GOTO, 'S'=GOSUB, 'I'=IGNR, 'D'=DFLT
+        // [6-9]  label index (4B int32)
+        //
+        // Decompiler output: TRAP key1[,key2...] GOTO|GOSUB|IGNR|DFLT [LABEL_N]
         int specOff = _spec.BeginSpec();
-        var toks = FilterSignificantTokens(gen.Tokens);
-        if (toks.Count >= 1) WriteTokenParam(toks[0]); else _spec.WriteNullParam();
-        if (toks.Count >= 2) WriteTokenParam(toks[1]); else _spec.WriteNullParam();
+        // Include Goto token type since GOTO is a keyword in the lexer
+        var toks = gen.Tokens.Where(t =>
+            t.Type is TokenType.Identifier or TokenType.StringLiteral or
+            TokenType.IntegerLiteral or TokenType.NumericLiteral or
+            TokenType.Goto or TokenType.True or TokenType.False).ToList();
+
+        // Parse trap keys (everything before GOTO/GOSUB/IGNR/DFLT)
+        var keyNames = new List<string>();
+        int actionIdx = -1;
+        for (int i = 0; i < toks.Count; i++)
+        {
+            string v = toks[i].Value.ToUpperInvariant();
+            if (v is "GOTO" or "GOSUB" or "IGNR" or "DFLT")
+            {
+                actionIdx = i;
+                break;
+            }
+            keyNames.Add(v);
+        }
+
+        // Encode trap key codes as a binary constant (A header + key code bytes + null)
+        var keyCodes = new List<byte>();
+        foreach (string kn in keyNames)
+        {
+            byte code = TrapKeyNameToCode(kn);
+            if (code != 0) keyCodes.Add(code);
+        }
+        keyCodes.Add(0x00); // null terminator
+        // Write as string constant: 'A'(1) + dec(1) + displaySize(2) + data
+        int keyConstOff = (int)_constants.Size;
+        var keyData = new byte[4 + keyCodes.Count];
+        keyData[0] = (byte)'A';
+        keyData[1] = 0; // decimals
+        keyData[2] = (byte)(keyCodes.Count & 0xFF);
+        keyData[3] = (byte)((keyCodes.Count >> 8) & 0xFF);
+        keyCodes.CopyTo(keyData, 4);
+        _constants.AddRaw(keyData);
+
+        // Write key param as constant reference
+        _spec.WriteConstParam(keyConstOff);
+
+        // Write action byte
+        char action = 'D';
+        if (actionIdx >= 0)
+        {
+            action = toks[actionIdx].Value.ToUpperInvariant() switch
+            {
+                "GOTO" => 'G',
+                "GOSUB" => 'S',
+                "IGNR" => 'I',
+                "DFLT" => 'D',
+                _ => 'D'
+            };
+        }
+        _spec.WriteByte((byte)action);
+
+        // Write label index (4B int32)
+        if (actionIdx >= 0 && actionIdx + 1 < toks.Count)
+        {
+            string labelName = toks[actionIdx + 1].Value;
+            int labelIdx = _labels.GetOrCreateRef(labelName);
+            _spec.WriteInt32(labelIdx);
+        }
+        else
+            _spec.WriteInt32(0);
+
         int specSize = _spec.GetSpecSize(specOff);
         EmitInstruction(TasOpcode.TRAP, specOff, specSize);
+    }
+
+    private static byte TrapKeyNameToCode(string name)
+    {
+        // Reverse lookup of SpecDecoder._trapKeyNames
+        var map = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["f1"] = 0x01, ["f2"] = 0x02, ["f3"] = 0x03, ["f4"] = 0x04, ["f5"] = 0x05,
+            ["f6"] = 0x06, ["f7"] = 0x07, ["f8"] = 0x08, ["f9"] = 0x09, ["f10"] = 0x0A,
+            ["ESC"] = 0x0B, ["INT"] = 0x0C, ["T_ESC"] = 0x0D,
+            ["UPAR"] = 0x0E, ["DNAR"] = 0x0F, ["LT_A"] = 0x10, ["RT_A"] = 0x11,
+            ["LT_A_AS"] = 0x12, ["RT_A_AS"] = 0x13, ["HOME"] = 0x14, ["END"] = 0x15,
+            ["PG_UP"] = 0x16, ["PG_DN"] = 0x17, ["INSRT"] = 0x18, ["DEL_KEY"] = 0x19,
+            ["WD_LT"] = 0x1A, ["WD_RT"] = 0x1B, ["TAB"] = 0x1C, ["BCK_TAB"] = 0x1D,
+            ["RSRCH"] = 0x1E, ["L_EXIT"] = 0x1F, ["RLCK"] = 0x20, ["FERR"] = 0x21,
+            ["PERR"] = 0x22, ["PG_BRK"] = 0x23,
+            ["sf1"] = 0x24, ["sf2"] = 0x25, ["sf3"] = 0x26, ["sf4"] = 0x27, ["sf5"] = 0x28,
+            ["sf6"] = 0x29, ["sf7"] = 0x2A, ["sf8"] = 0x2B, ["sf9"] = 0x2C, ["sf10"] = 0x2D,
+            ["ctl_f1"] = 0x2E, ["ctl_f2"] = 0x2F, ["ctl_f3"] = 0x30, ["ctl_f4"] = 0x31,
+            ["ctl_f5"] = 0x32, ["ctl_f6"] = 0x33, ["ctl_f7"] = 0x34, ["ctl_f8"] = 0x35,
+            ["ctl_f9"] = 0x36, ["ctl_f10"] = 0x37,
+            ["CTL_PG_UP"] = 0x38, ["CTL_PG_DN"] = 0x39,
+            ["alt_f1"] = 0x3A, ["alt_f2"] = 0x3B, ["alt_f3"] = 0x3C,
+            ["MOUSE_MOV"] = 0x56, ["MOUSE_LBD"] = 0x57,
+        };
+        return map.TryGetValue(name, out var code) ? code : (byte)0;
     }
 
     private void EmitGenericOpenv(GenericCommandStmt gen, ushort opcode)
@@ -1142,70 +1322,121 @@ public sealed class TasCompiler
         // [46]create(1) [47]noclr(1) [48]update(5)
         int specOff = _spec.BeginSpec();
 
-        var toks = gen.Tokens;
-        var kw = ParseKeywordTokens(toks, "FNUM", "PATH", "BUF", "SIZE", "LOCK",
-            "CREATE", "ERR", "EXT", "OWNER", "FD", "TYPE", "NOCLR", "UPDATE");
+        var toks = FilterSignificantTokens(gen.Tokens);
 
-        // [0] filename (5)
-        if (toks.Count > 0) WriteTokenParam(toks[0]); else _spec.WriteNullParam();
+        // Detect positional format: OPENV filename, cc, lock, handle [, recsize] [, bufname]
+        // vs keyword format: OPENV filename FNUM h EXT cc LOCK l ...
+        bool isPositional = toks.All(t => t.Type != TokenType.Identifier
+            || !new[] { "FNUM", "EXT", "LOCK", "PATH", "BUF", "SIZE", "TYPE", "CREATE", "ERR", "OWNER", "FD", "NOCLR", "UPDATE" }
+                .Contains(t.Value.ToUpperInvariant()));
 
-        // [5] ext/cc (5)
-        if (kw.TryGetValue("EXT", out var ext)) WriteTokenParam(ext);
-        else _spec.WriteNullParam();
-
-        // [10] lock mode byte (1)
-        if (kw.TryGetValue("LOCK", out var lockTok))
-            _spec.WriteByte((byte)char.ToUpperInvariant(lockTok.Value[0]));
-        else
-            _spec.WriteByte((byte)'N');
-
-        // [11] err_label (4B int32)
-        if (kw.TryGetValue("ERR", out var errTok))
-            _spec.WriteInt32(_labels.GetOrCreateRef(errTok.Value));
-        else
-            _spec.WriteInt32(0);
-
-        // [15] owner (5)
-        if (kw.TryGetValue("OWNER", out var ownerTok)) WriteTokenParam(ownerTok);
-        else _spec.WriteNullParam();
-
-        // [20] path (5)
-        if (kw.TryGetValue("PATH", out var pathTok)) WriteTokenParam(pathTok);
-        else _spec.WriteNullParam();
-
-        // [25] fd/schema (5)
-        if (kw.TryGetValue("FD", out var fdTok)) WriteTokenParam(fdTok);
-        else _spec.WriteNullParam();
-
-        // [30] file_type (1B char, default 'T' for BTRV)
-        if (kw.TryGetValue("TYPE", out var typeTok))
-            _spec.WriteByte((byte)char.ToUpperInvariant(typeTok.Value[0]));
-        else
-            _spec.WriteByte((byte)'T');
-
-        // [31] fnum handle (5)
-        if (kw.TryGetValue("FNUM", out var fnumTok)) WriteTokenParam(fnumTok);
-        else _spec.WriteNullParam();
-
-        // [36] size (5)
-        if (kw.TryGetValue("SIZE", out var sizeTok)) WriteTokenParam(sizeTok);
-        else _spec.WriteNullParam();
-
-        // [41] buf field (5)
-        if (kw.TryGetValue("BUF", out var bufTok)) WriteTokenParam(bufTok);
-        else _spec.WriteNullParam();
-
-        // [46] create flag (1B)
-        _spec.WriteByte(kw.ContainsKey("CREATE") ? (byte)'Y' : (byte)'N');
-
-        // [47] noclr flag (1B)
-        _spec.WriteByte(kw.ContainsKey("NOCLR") ? (byte)'Y' : (byte)'N');
-
-        // [48] update_udf (5) — emitted in 53B format, omitted in 48B format
-        if (_useLongOpenvSpec)
+        if (isPositional)
         {
-            if (kw.TryGetValue("UPDATE", out var updateTok)) WriteTokenParam(updateTok);
+            // Split at commas
+            var args = new List<Token>();
+            foreach (var t in toks)
+            {
+                if (t.Type != TokenType.Comma)
+                    args.Add(t);
+            }
+
+            // [0] filename
+            if (args.Count > 0) WriteTokenParam(args[0]); else _spec.WriteNullParam();
+            // [5] ext/cc
+            if (args.Count > 1) WriteTokenParam(args[1]); else _spec.WriteNullParam();
+            // [10] lock (1B flag)
+            if (args.Count > 2)
+            {
+                string lockVal = args[2].Value.ToUpperInvariant();
+                _spec.WriteByte((byte)(lockVal.Length > 0 ? lockVal[0] : 'N'));
+            }
+            else _spec.WriteByte((byte)'N');
+            // [11] err_label (4B)
+            _spec.WriteInt32(0);
+            // [15] owner (5)
+            _spec.WriteNullParam();
+            // [20] path (5)
+            _spec.WriteNullParam();
+            // [25] fd (5)
+            _spec.WriteNullParam();
+            // [30] type (1B, default 'T')
+            _spec.WriteByte((byte)'T');
+            // [31] fnum handle (5)
+            if (args.Count > 3) WriteTokenParam(args[3]); else _spec.WriteNullParam();
+            // [36] recsize (5)
+            if (args.Count > 4) WriteTokenParam(args[4]); else _spec.WriteNullParam();
+            // [41] bufname (5)
+            if (args.Count > 5) WriteTokenParam(args[5]); else _spec.WriteNullParam();
+            // [46] create (1B)
+            _spec.WriteByte((byte)'N');
+            // [47] noclr (1B)
+            _spec.WriteByte((byte)'N');
+            // [48] update (5) — 53B format
+            if (_useLongOpenvSpec)
+                _spec.WriteNullParam();
+
+            // Extract buffer name for the buffer list
+            if (args.Count > 0 && args[0].Type == TokenType.StringLiteral)
+            {
+                string bufName = args[0].Value.ToUpperInvariant();
+                if (bufName.Length <= 8 && !_buffers.Any(b => b.Name == bufName))
+                    _buffers.Add(new RunBufferEntry { Name = bufName.PadRight(8) });
+            }
+        }
+        else
+        {
+            // Keyword format: OPENV filename FNUM h EXT cc LOCK l ...
+            var kw = ParseKeywordTokens(gen.Tokens, "FNUM", "PATH", "BUF", "SIZE", "LOCK",
+                "CREATE", "ERR", "EXT", "OWNER", "FD", "TYPE", "NOCLR", "UPDATE");
+
+            // [0] filename (5)
+            if (toks.Count > 0) WriteTokenParam(toks[0]); else _spec.WriteNullParam();
+            // [5] ext/cc (5)
+            if (kw.TryGetValue("EXT", out var ext)) WriteTokenParam(ext);
             else _spec.WriteNullParam();
+            // [10] lock mode byte (1)
+            if (kw.TryGetValue("LOCK", out var lockTok))
+                _spec.WriteByte((byte)char.ToUpperInvariant(lockTok.Value[0]));
+            else
+                _spec.WriteByte((byte)'N');
+            // [11] err_label (4B int32)
+            if (kw.TryGetValue("ERR", out var errTok))
+                _spec.WriteInt32(_labels.GetOrCreateRef(errTok.Value));
+            else
+                _spec.WriteInt32(0);
+            // [15] owner (5)
+            if (kw.TryGetValue("OWNER", out var ownerTok)) WriteTokenParam(ownerTok);
+            else _spec.WriteNullParam();
+            // [20] path (5)
+            if (kw.TryGetValue("PATH", out var pathTok)) WriteTokenParam(pathTok);
+            else _spec.WriteNullParam();
+            // [25] fd/schema (5)
+            if (kw.TryGetValue("FD", out var fdTok)) WriteTokenParam(fdTok);
+            else _spec.WriteNullParam();
+            // [30] file_type (1B char, default 'T' for BTRV)
+            if (kw.TryGetValue("TYPE", out var typeTok))
+                _spec.WriteByte((byte)char.ToUpperInvariant(typeTok.Value[0]));
+            else
+                _spec.WriteByte((byte)'T');
+            // [31] fnum handle (5)
+            if (kw.TryGetValue("FNUM", out var fnumTok)) WriteTokenParam(fnumTok);
+            else _spec.WriteNullParam();
+            // [36] size (5)
+            if (kw.TryGetValue("SIZE", out var sizeTok)) WriteTokenParam(sizeTok);
+            else _spec.WriteNullParam();
+            // [41] buf field (5)
+            if (kw.TryGetValue("BUF", out var bufTok)) WriteTokenParam(bufTok);
+            else _spec.WriteNullParam();
+            // [46] create flag (1B)
+            _spec.WriteByte(kw.ContainsKey("CREATE") ? (byte)'Y' : (byte)'N');
+            // [47] noclr flag (1B)
+            _spec.WriteByte(kw.ContainsKey("NOCLR") ? (byte)'Y' : (byte)'N');
+            // [48] update_udf (5) — emitted in 53B format, omitted in 48B format
+            if (_useLongOpenvSpec)
+            {
+                if (kw.TryGetValue("UPDATE", out var updateTok)) WriteTokenParam(updateTok);
+                else _spec.WriteNullParam();
+            }
         }
 
         int specSize = _spec.GetSpecSize(specOff);
@@ -1332,29 +1563,61 @@ public sealed class TasCompiler
 
     private void EmitGenericChain(GenericCommandStmt gen, ushort opcode)
     {
-        // CHAIN spec layout: [param(5)] [6 zeros] [param2(5)] [flag(1) at offset 16] [zero(1)] = 18 bytes
+        // CHAIN spec: prg_name(0) + null(5) + flag(10,1B) + param_list(11) + noclr(16,1B) + wait(17,1B) = 18 bytes
         int specOff = _spec.BeginSpec();
 
-        // Check if the param is a simple value or an expression (has operators)
-        bool hasOperators = gen.Tokens.Any(t => t.Type == TokenType.Plus || t.Type == TokenType.Minus
+        // Split tokens at USING keyword
+        var allToks = FilterSignificantTokens(gen.Tokens);
+        int usingIdx = allToks.FindIndex(t => t.Type == TokenType.Identifier &&
+            t.Value.Equals("USING", StringComparison.OrdinalIgnoreCase));
+
+        var prgToks = usingIdx >= 0 ? allToks.Take(usingIdx).ToList() : allToks;
+        var paramToks = usingIdx >= 0 ? allToks.Skip(usingIdx + 1).ToList() : new List<Token>();
+
+        // [0-4]: program name
+        bool hasOperators = prgToks.Any(t => t.Type == TokenType.Plus || t.Type == TokenType.Minus
             || t.Type == TokenType.Star || t.Type == TokenType.Slash);
         if (hasOperators)
         {
-            // Compile as expression
-            var expr = ParseTokensAsExpression(gen.Tokens);
+            var expr = ParseTokensAsExpression(prgToks);
             WriteExprParam(expr);
         }
         else
         {
-            var toks = FilterSignificantTokens(gen.Tokens);
-            if (toks.Count >= 1) WriteTokenParam(toks[0]); else _spec.WriteNullParam();
+            if (prgToks.Count >= 1) WriteTokenParam(prgToks[0]); else _spec.WriteNullParam();
         }
 
+        // [5-9]: null param + [10]: flag byte
         _spec.WritePadding(6);
 
-        // [11-15]: second param — usually null or a copy of the current PARAM list
-        // For files with overlay, this references the PARAM list constant. For now, null.
-        _spec.WriteNullParam();
+        // [11-15]: USING param list — embedded params referencing fields
+        if (paramToks.Count > 0)
+        {
+            var paramList = new List<(byte Type, int Location)>();
+            foreach (var tok in paramToks)
+            {
+                if (tok.Type != TokenType.Identifier) continue;
+                int fldIdx = _fields.FindField(tok.Value);
+                if (fldIdx >= 0)
+                {
+                    int fldOffset = fldIdx * 48;
+                    paramList.Add(((byte)'F', fldOffset));
+                }
+            }
+            if (paramList.Count > 0)
+            {
+                int constOff = _constants.AddEmbeddedParams(paramList);
+                _spec.WriteConstParam(constOff);
+            }
+            else
+            {
+                _spec.WriteNullParam();
+            }
+        }
+        else
+        {
+            _spec.WriteNullParam();
+        }
 
         _spec.WriteByte((byte)'N');
         _spec.WriteByte(0);
@@ -1704,6 +1967,56 @@ public sealed class TasCompiler
             WriteTokenParam(tok);
     }
 
+    /// <summary>Resolve a token to a (type, location) param pair for embedding in constant pool.</summary>
+    private (byte Type, int Location) ResolveTokenToParam(Token tok)
+    {
+        switch (tok.Type)
+        {
+            case TokenType.Identifier:
+            {
+                int fieldIdx = _fields.FindField(tok.Value);
+                if (fieldIdx >= 0)
+                    return ((byte)'F', _fields.GetFieldSpecOffset(fieldIdx));
+                int constOff = _constants.AddString(tok.Value);
+                return ((byte)'C', constOff);
+            }
+            case TokenType.StringLiteral:
+            {
+                int constOff = _constants.AddString(tok.Value);
+                return ((byte)'C', constOff);
+            }
+            case TokenType.IntegerLiteral:
+            {
+                if (int.TryParse(tok.Value, out int val))
+                    return ((byte)'N', val);
+                int constOff = _constants.AddString(tok.Value);
+                return ((byte)'C', constOff);
+            }
+            default:
+            {
+                int fi = _fields.FindField(tok.Value);
+                if (fi >= 0)
+                    return ((byte)'F', _fields.GetFieldSpecOffset(fi));
+                int co = _constants.AddString(tok.Value);
+                return ((byte)'C', co);
+            }
+        }
+    }
+
+    /// <summary>Resolve a list of tokens (possibly an expression) to a (type, location) param pair.</summary>
+    private (byte Type, int Location) ResolveTokenListToParam(List<Token> tokens)
+    {
+        var sig = tokens.Where(t => t.Type != TokenType.Comma).ToList();
+        if (sig.Count == 1)
+            return ResolveTokenToParam(sig[0]);
+
+        // Multi-token: compile as expression
+        var expr = ParseTokensAsExpression(tokens);
+        var encoder = CreateExpressionEncoder();
+        var (type, loc) = encoder.CompileToParam(expr);
+        return ((byte)type, loc);
+    }
+
     private static List<Token> FilterSignificantTokens(List<Token> tokens)
     {
         return tokens.Where(t =>
@@ -1835,6 +2148,14 @@ public sealed class TasCompiler
         encoder.OverlayFieldOffset = _overlayFieldOffset;
         encoder.OverlayConstOffset = _overlayConstOffset;
         return encoder;
+    }
+
+    private GenericCompiler GetGenericCompiler()
+    {
+        return _genericCompiler ??= new GenericCompiler(
+            _spec, _constants, _fields, _labels,
+            CreateExpressionEncoder,
+            ParseTokensAsExpression);
     }
 
     private void PatchJump(int instrIdx, int specOffset, int targetByteOffset)
@@ -2095,60 +2416,113 @@ public sealed class TasCompiler
 
     private void EmitGenericPmsg(GenericCommandStmt gen)
     {
-        // PMSG (?) spec layout (29 bytes):
+        // PMSG spec layout (29 bytes) — matches decompiler DecompilePmsg:
         // [0] col (5B), [5] row (5B), [10] msg (5B),
         // [15] wait (1B), [16] ncr (1B), [17] ent (5B),
         // [22] whr (1B), [23] color (5B), [28] abs (1B)
+        //
+        // Decompiler output: PMSG msg [, msg2...] AT col,row [WAIT] [NOCR] [COLOR val] [ABS]
         int specOff = _spec.BeginSpec();
-        var kw = ParseKeywordTokens(gen.Tokens, "WAIT", "NCR", "ENT", "COLOR", "ABS");
-        var toks = FilterSignificantTokens(gen.Tokens);
 
-        // Decompiler outputs: ? row,col,[msg] wait ncr ent val color val abs
-        // [0] col
-        if (toks.Count >= 2) WriteTokenParam(toks[1]); else _spec.WriteNumericParam(0);
-        // [5] row
-        if (toks.Count >= 1) WriteTokenParam(toks[0]); else _spec.WriteNumericParam(0);
-        // [10] msg — could be a single value or concatenated expression
-        if (toks.Count >= 3)
+        // Split tokens at AT keyword to separate message from position
+        var allToks = gen.Tokens;
+        int atIdx = allToks.FindIndex(t => t.Value.Equals("AT", StringComparison.OrdinalIgnoreCase)
+            && (t.Type == TokenType.Identifier || t.Type == TokenType.At));
+
+        // Collect keyword flags from tokens AFTER AT
+        var afterAt = atIdx >= 0 ? allToks.Skip(atIdx + 1).ToList() : allToks;
+        var kw = ParseKeywordTokens(afterAt, "WAIT", "NOCR", "NCR", "ENT", "COLOR", "ABS", "PTW");
+
+        // Message tokens: everything before AT (or all tokens if no AT)
+        var msgToks = atIdx >= 0 ? allToks.Take(atIdx).ToList() : new List<Token>();
+        // Position tokens: between AT and first keyword, filtering keywords
+        Token? colTok = null, rowTok = null;
+        if (atIdx >= 0)
         {
-            // Check if there are operators (concatenation)
-            bool hasOps = gen.Tokens.Any(t => t.Type == TokenType.Plus || t.Type == TokenType.Minus
-                || t.Type == TokenType.Star || t.Type == TokenType.Slash);
-            if (hasOps && toks.Count > 3)
+            var posToks = FilterSignificantTokens(afterAt
+                .TakeWhile(t => !t.Value.Equals("WAIT", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("NOCR", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("NCR", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("COLOR", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("ABS", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("ENT", StringComparison.OrdinalIgnoreCase)
+                    && !t.Value.Equals("PTW", StringComparison.OrdinalIgnoreCase))
+                .ToList());
+            if (posToks.Count >= 1) colTok = posToks[0];
+            if (posToks.Count >= 2) rowTok = posToks[1];
+        }
+
+        // [0] col
+        if (colTok != null) WriteTokenParam(colTok); else _spec.WriteNumericParam(1);
+        // [5] row
+        if (rowTok != null) WriteTokenParam(rowTok); else _spec.WriteNumericParam(1);
+        // [10] msg — TAS wraps message params in an embedded param list constant
+        if (msgToks.Count > 0)
+        {
+            var sigMsg = msgToks.Where(t => t.Type != TokenType.Comma).ToList();
+            if (sigMsg.Count >= 1)
             {
-                // Find tokens after the second comma for the message expression
-                var msgTokens = new List<Token>();
-                int commaCount = 0;
-                foreach (var t in gen.Tokens)
+                // Build embedded param list: each message part is a 5-byte param
+                var paramList = new List<(byte Type, int Location)>();
+                if (sigMsg.Count == 1)
                 {
-                    if (t.Type == TokenType.Comma) { commaCount++; continue; }
-                    if (commaCount >= 2) msgTokens.Add(t);
-                }
-                if (msgTokens.Count > 0)
-                {
-                    var expr = ParseTokensAsExpression(msgTokens);
-                    WriteExprParam(expr);
+                    // Single string/field → one param in list
+                    var (ptype, ploc) = ResolveTokenToParam(sigMsg[0]);
+                    paramList.Add((ptype, ploc));
                 }
                 else
-                    WriteTokenParam(toks[2]);
+                {
+                    // Multiple parts (concatenation) - collect as individual params
+                    // Split on top-level commas only (respect parenthesis nesting)
+                    var currentExprParts = new List<Token>();
+                    int parenDepth = 0;
+                    foreach (var tok in msgToks)
+                    {
+                        if (tok.Type == TokenType.LeftParen) parenDepth++;
+                        else if (tok.Type == TokenType.RightParen) parenDepth--;
+
+                        if (tok.Type == TokenType.Comma && parenDepth == 0)
+                        {
+                            // Flush current expression
+                            if (currentExprParts.Count > 0)
+                            {
+                                var (pt, pl) = ResolveTokenListToParam(currentExprParts);
+                                paramList.Add((pt, pl));
+                                currentExprParts.Clear();
+                            }
+                        }
+                        else
+                            currentExprParts.Add(tok);
+                    }
+                    if (currentExprParts.Count > 0)
+                    {
+                        var (pt, pl) = ResolveTokenListToParam(currentExprParts);
+                        paramList.Add((pt, pl));
+                    }
+                }
+                int constOff = _constants.AddEmbeddedParams(paramList);
+                _spec.WriteConstParam(constOff);
             }
             else
-                WriteTokenParam(toks[2]);
+                _spec.WriteNullParam();
         }
         else
             _spec.WriteNullParam();
-        // [15] wait
-        _spec.WriteByte(kw.ContainsKey("WAIT") ? (byte)'Y' : (byte)0);
-        // [16] ncr
-        _spec.WriteByte(kw.ContainsKey("NCR") ? (byte)'Y' : (byte)0);
+        // [15] wait ('N' default, 'Y' if set)
+        _spec.WriteByte(kw.ContainsKey("WAIT") ? (byte)'Y' : (byte)'N');
+        // [16] ncr/nocr ('N' default, 'Y' if set)
+        _spec.WriteByte(kw.ContainsKey("NOCR") || kw.ContainsKey("NCR") ? (byte)'Y' : (byte)'N');
         // [17] ent
         if (kw.TryGetValue("ENT", out var entTok)) WriteTokenParam(entTok); else _spec.WriteNullParam();
-        // [22] whr
-        _spec.WriteByte(0);
+        // [22] whr ('D' default, 'P' printer, 'S' screen)
+        if (kw.TryGetValue("PTW", out var ptwTok))
+            _spec.WriteByte((byte)char.ToUpperInvariant(ptwTok.Value[0]));
+        else
+            _spec.WriteByte((byte)'D');
         // [23] color
         if (kw.TryGetValue("COLOR", out var colorTok)) WriteTokenParam(colorTok); else _spec.WriteNullParam();
-        // [28] abs
-        _spec.WriteByte(kw.ContainsKey("ABS") ? (byte)'Y' : (byte)0);
+        // [28] abs ('N' default, 'Y' if set)
+        _spec.WriteByte(kw.ContainsKey("ABS") ? (byte)'Y' : (byte)'N');
 
         int specSize = _spec.GetSpecSize(specOff);
         EmitInstruction(TasOpcode.PMSG, specOff, specSize);
@@ -2205,21 +2579,30 @@ public sealed class TasCompiler
         List<int> labelOffsets = _labels.GetAllOffsets();
         List<RunFieldSpec> fieldSpecs = _fields.GetAllSpecs();
 
+        // Calculate prg_names: count of non-temp, non-file field specs * 15 (name field width)
+        int memoryDefineCount = 0;
+        foreach (var f in fieldSpecs)
+        {
+            if (!f.IsTempField && f.FileFieldIndex == 0)
+                memoryDefineCount++;
+        }
+        int prgNames = memoryDefineCount * 15;
+
         var header = new RunFileHeader
         {
             CodeSize = codeSegment.Length,
             ConstSize = constSegment.Length,
             SpecSize = specSegment.Length,
             LabelSize = labelOffsets.Count * 4,
-            ScrnFldNum = _fields.ScreenFieldCount,
+            ScrnFldNum = 10, // standard TAS screen field count constant
             NumFlds = _fields.Count,
-            TempFlds = _fields.TempFieldAreaEnd,
+            TempFlds = _fields.TempFieldCount * _fields.FieldSpecSize,
             NumTempFlds = _fields.TempFieldCount,
             FldNameSize = _fields.Count * _fields.FieldSpecSize,
-            TempFldSize = _fields.TempFieldSize,
+            TempFldSize = _fields.TempFieldCount > 0 ? 65535 : 0,
             DefFldSegSize = _fields.DefinedDataSize,
             NumExtraFlds = 0,
-            PrgNames = 0,
+            PrgNames = prgNames,
             DebugFlg = false,
             ProType = "TAS32",
             NumLabels = labelOffsets.Count,
@@ -2228,9 +2611,8 @@ public sealed class TasCompiler
             IncLabels = false,
         };
 
-        // Build field spec segment
-        byte[] fieldSegment = new byte[fieldSpecs.Count * _fields.FieldSpecSize];
-        // Use RunFileWriter's field segment building (via Write method)
+        // Build field spec segment using RunFileWriter's proper encoder
+        byte[] fieldSegment = RunFileWriter.BuildFieldSpecSegment(fieldSpecs, _fields.FieldSpecSize);
 
         return RunFileWriter.Write(header, _buffers, codeSegment, constSegment, specSegment,
             labelOffsets, fieldSegment);

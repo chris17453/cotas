@@ -176,8 +176,8 @@ public sealed class RunFileDecompiler
             case TasOpcode.UDC: return DecompileUdc(spec);
 
             // Data commands
-            case TasOpcode.OPEN: return DecompileOpen(spec);
-            case TasOpcode.OPENV: return DecompileOpen(spec); // same layout
+            case TasOpcode.OPEN: return DecompileOpen(spec, "OPEN");
+            case TasOpcode.OPENV: return DecompileOpen(spec, "OPENV");
             case TasOpcode.OPNO: return DecompileOpeno(spec);
             case TasOpcode.CLOSE: return DecompileClose(spec);
             case TasOpcode.FIND: return DecompileFind(spec, "FIND");
@@ -270,8 +270,8 @@ public sealed class RunFileDecompiler
             case TasOpcode.POKE: return DecompilePeekPoke(spec, "POKE");
 
             // Chain / Exec / Run
-            case TasOpcode.CHAIN: return DecompileGenericVal1("CHAIN", spec);
-            case TasOpcode.CHAINR: return DecompileGenericVal1("CHAINR", spec);
+            case TasOpcode.CHAIN: return DecompileChain("CHAIN", spec);
+            case TasOpcode.CHAINR: return DecompileChain("CHAINR", spec);
             case TasOpcode.EXEC: return DecompileGenericVal1("EXEC", spec);
             case TasOpcode.RUN: return DecompileRunPrg(spec);
 
@@ -830,6 +830,16 @@ public sealed class RunFileDecompiler
         return Emit(name, P(spec, 0));
     }
 
+    private string DecompileChain(string name, byte[] spec)
+    {
+        // chain spec: prg_name(0) + null(5) + flag(10,1B) + param_list(11) + noclr(16,1B) + wait(17,1B)
+        var sb = new System.Text.StringBuilder();
+        sb.Append(Emit(name, P(spec, 0)));
+        string paramList = P(spec, 11);
+        if (!string.IsNullOrEmpty(paramList)) sb.Append($" WITH {paramList}");
+        return sb.ToString();
+    }
+
     private string DecompileGenericVal12(string name, byte[] spec)
     {
         return Emit(name, P(spec, 0), P(spec, 5));
@@ -837,20 +847,43 @@ public sealed class RunFileDecompiler
 
     // ===== Data Commands =====
 
-    private string DecompileOpen(byte[] spec)
+    private string DecompileOpen(byte[] spec, string cmd)
     {
-        // open_fn(0) + cc(5) + lok(10,1byte) + err_lbl(11,4byte) + owner(15) + path(20) + fd(25) + type(30,1byte) + hndl(31) + rsze(36) + bufnme(41) + create(46,1byte) + clear(47,1byte) + updt(48) + addflds(53,1byte)
+        // Emit with option keywords so the table-driven compiler can round-trip
         var parts = new List<string>();
-        parts.Add(P(spec, 0)); // filename
+        parts.Add(P(spec, 0)); // positional filename (OptionIndex=0)
         string cc = P(spec, 5);
-        if (!string.IsNullOrEmpty(cc)) parts.Add(cc);
+        if (!string.IsNullOrEmpty(cc)) { parts.Add("EXT"); parts.Add(cc); }
         byte lok = Flag(spec, 10);
-        if (lok != 0) parts.Add(lok == (byte)'T' ? "T" : $"{(char)lok}");
-        parts.Add(P(spec, 31)); // handle
-        parts.Add(P(spec, 36)); // recsize
+        if (lok != 0) { parts.Add("LOCK"); parts.Add(lok == (byte)'T' ? "T" : $"{(char)lok}"); }
+        string errLbl = P(spec, 11);
+        if (!string.IsNullOrEmpty(errLbl)) { parts.Add("ERR"); parts.Add(errLbl); }
+        string owner = P(spec, 15);
+        if (!string.IsNullOrEmpty(owner)) { parts.Add("OWNER"); parts.Add(owner); }
+        string path = P(spec, 20);
+        if (!string.IsNullOrEmpty(path)) { parts.Add("PATH"); parts.Add(path); }
+        string fd = P(spec, 25);
+        if (!string.IsNullOrEmpty(fd)) { parts.Add("FD"); parts.Add(fd); }
+        byte typ = Flag(spec, 30);
+        if (typ != 0) { parts.Add("TYPE"); parts.Add($"{(char)typ}"); }
+        string hndl = P(spec, 31);
+        if (!string.IsNullOrEmpty(hndl)) { parts.Add("FNUM"); parts.Add(hndl); }
+        string rsze = P(spec, 36);
+        if (!string.IsNullOrEmpty(rsze)) { parts.Add("SIZE"); parts.Add(rsze); }
         string bufnme = P(spec, 41);
-        if (!string.IsNullOrEmpty(bufnme)) parts.Add(bufnme);
-        return Emit("OPENV", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
+        if (!string.IsNullOrEmpty(bufnme)) { parts.Add("BUFF"); parts.Add(bufnme); }
+        byte create = Flag(spec, 46);
+        if (create == (byte)'Y') parts.Add("CREATE");
+        byte noclr = Flag(spec, 47);
+        if (noclr == (byte)'Y') parts.Add("NOCLR");
+        string updt = P(spec, 48);
+        if (!string.IsNullOrEmpty(updt)) { parts.Add("UPDATE"); parts.Add(updt); }
+        if (spec.Length > 53)
+        {
+            byte addflds = Flag(spec, 53);
+            if (addflds == (byte)'Y') parts.Add("ADDALLFLDS");
+        }
+        return Emit(cmd, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
     }
 
     private string DecompileOpeno(byte[] spec)
@@ -1047,8 +1080,7 @@ public sealed class RunFileDecompiler
     private string DecompilePmsg(byte[] spec)
     {
         // prtmsg: col(0) + row(5) + msg(10) + wait(15,1byte='Y') + ncr(16,1byte='Y') + ent(17) + whr(22,1byte) + color(23) + abs(28,1byte='Y')
-        // Syntax: PMSG message AT col,row WAIT NOCR PTW whr COLOR color ABS
-        // Flags use GetSLFlag which checks byte == 'Y'
+        // Syntax: PMSG message AT col,row [ENTER field] [WAIT] [NOCR] [PTW whr] [COLOR color] [ABS]
         var sb = new System.Text.StringBuilder("PMSG");
         string msg = P(spec, 10);
         if (!string.IsNullOrEmpty(msg)) sb.Append($" {msg}");
@@ -1056,6 +1088,8 @@ public sealed class RunFileDecompiler
         string row = P(spec, 5);
         if (!string.IsNullOrEmpty(col) && !string.IsNullOrEmpty(row) && (col != "0" || row != "0"))
             sb.Append($" AT {col},{row}");
+        string ent = P(spec, 17);
+        if (!string.IsNullOrEmpty(ent)) sb.Append($" ENTER {ent}");
         if (Flag(spec, 15) == (byte)'Y') sb.Append(" WAIT");
         if (Flag(spec, 16) == (byte)'Y') sb.Append(" NOCR");
         byte whr = Flag(spec, 22);
@@ -1800,10 +1834,21 @@ public sealed class RunFileDecompiler
                 _ => field.FieldType.ToString(),
             };
 
+            string line;
             if (field.ArrayCount > 1)
-                sb.AppendLine($"DEFINE {field.Name}, {typeName}, {field.DisplaySize}, {field.ArrayCount}");
+                line = $"DEFINE {field.Name}, {typeName}, {field.DisplaySize}, {field.ArrayCount}";
             else
-                sb.AppendLine($"DEFINE {field.Name}, {typeName}, {field.DisplaySize}");
+                line = $"DEFINE {field.Name}, {typeName}, {field.DisplaySize}";
+
+            // Emit file field metadata for round-trip fidelity
+            if (field.FileFieldIndex > 0)
+                line += $" FILEFLD {field.FileBufferNumber},{field.KeyNumber},{field.Offset},{field.FileFieldIndex}";
+
+            // Emit ForceUpperCase flag if set
+            if (field.ForceUpperCase)
+                line += " UPPER";
+
+            sb.AppendLine(line);
         }
 
         if (_run.Fields.Count > 0) sb.AppendLine();

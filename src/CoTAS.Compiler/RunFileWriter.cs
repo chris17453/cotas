@@ -113,6 +113,15 @@ public sealed class RunFileWriter
         w.Write((byte)(h.ChkUpVld ? 1 : 0)); // offset 63
         w.Write((byte)(h.IncLabels ? 1 : 0)); // offset 64
 
+        // Offsets 65, 69, 73: segment sizes + DOS base address for backward compatibility.
+        // The original TAS compiler stored these as size + internal memory base pointer.
+        // We use the most common base (0x7A121 = 500001) to match legacy .RUN files.
+        const int dosBase = 0x7A121;
+        ms.Position = 65;
+        w.Write(specSize + dosBase);    // offset 65
+        w.Write(constSize + dosBase);   // offset 69
+        w.Write(codeSize + dosBase);    // offset 73
+
         // Rest is zeros (already initialized)
         _writer.Write(header);
     }
@@ -177,11 +186,11 @@ public sealed class RunFileWriter
         // Detect if this should be ShortString format (temp fields) or fixed array
         if (field.IsTempField && field.Name.Length < 15)
         {
-            // Pascal ShortString: length prefix byte + name bytes
-            buf[offset] = (byte)field.Name.Length;
-            Encoding.ASCII.GetBytes(field.Name, 0, field.Name.Length, buf, offset + 1);
-            int nameEnd = 1 + field.Name.Length;
-            // TAS temp field pattern: '0' byte + index byte after name, then space-pad
+            // TAS temp field encoding: ShortString "TEMP0" (length=5) + '0' + binary index byte
+            string baseName = "TEMP0";
+            buf[offset] = (byte)baseName.Length;
+            Encoding.ASCII.GetBytes(baseName, 0, baseName.Length, buf, offset + 1);
+            int nameEnd = 1 + baseName.Length;
             buf[offset + nameEnd] = (byte)'0';
             buf[offset + nameEnd + 1] = (byte)fieldIndex;
             for (int j = nameEnd + 2; j < 15; j++)
@@ -213,8 +222,8 @@ public sealed class RunFileWriter
         // ArrayCount (4 bytes at +25)
         BitConverter.TryWriteBytes(buf.AsSpan(offset + 25), field.ArrayCount);
 
-        // IsFileField (byte at +29)
-        buf[offset + 29] = (byte)(field.IsFileField ? 1 : 0);
+        // FileFieldIndex (byte at +29) — 0=memory, N=buffer index (1-based)
+        buf[offset + 29] = field.FileFieldIndex;
 
         // PictureType (char at +30)
         buf[offset + 30] = (byte)field.PictureType;

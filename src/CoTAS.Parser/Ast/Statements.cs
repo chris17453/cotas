@@ -7,7 +7,12 @@ public sealed record DefineStmt(
     int? Decimals,
     int? ArraySize,
     bool Reset,
-    int Line) : Statement(Line);
+    int Line,
+    int? FileBufferNumber = null,
+    int? FileKeyNumber = null,
+    int? FileOffset = null,
+    int? FileFieldIndex = null,
+    bool ForceUpperCase = false) : Statement(Line);
 
 public sealed record AssignmentStmt(string Target, Expression? Index, Expression Value, int Line) : Statement(Line);
 

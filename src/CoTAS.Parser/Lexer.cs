@@ -253,7 +253,8 @@ public sealed class Lexer
         int startLine = _line, startCol = _col;
         var sb = new StringBuilder();
 
-        while (!IsAtEnd && (char.IsLetterOrDigit(Peek()) || Peek() == '_' || Peek() == '.'))
+        while (!IsAtEnd && (char.IsLetterOrDigit(Peek()) || Peek() == '_' || Peek() == '.'
+            || (Peek() == '@' && sb.Length > 0))) // Allow @ mid-identifier for FUNC@21, CONST@offset patterns
         {
             // Allow dots in identifiers like DICT.KEY but not .T. style
             if (Peek() == '.')
