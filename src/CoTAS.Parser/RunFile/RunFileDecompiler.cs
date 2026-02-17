@@ -24,6 +24,7 @@ public sealed class RunFileDecompiler
     private bool _thenIndent; // indent next line after IF...THEN
     private readonly Dictionary<int, List<string>> _closingKeywords = new();
     private readonly HashSet<int> _suppressedElse = new(); // ELSE inside SELECT (jump to ENDC, not real ELSE)
+    private readonly HashSet<int> _endsSetScanFlg = new(); // SET_SCAN_FLG that are ENDS (synthesized as closing keyword)
     private readonly List<MountInfo> _screenOffsets = new();
 
     private record MountInfo(int Offset, char MountType, byte[] Spec);
@@ -58,8 +59,10 @@ public sealed class RunFileDecompiler
             var instr = _run.Instructions[i];
 
             // Skip internal-only opcodes
-            if (instr.CommandNumber == TasOpcode.SET_SCAN_FLG ||
-                instr.CommandNumber == TasOpcode.START_SCAN)
+            if (instr.CommandNumber == TasOpcode.START_SCAN)
+                continue;
+            // Skip SET_SCAN_FLG only if it's an ENDS (synthesized as closing keyword)
+            if (instr.CommandNumber == TasOpcode.SET_SCAN_FLG && _endsSetScanFlg.Contains(i))
                 continue;
             // Skip ELSE opcodes that are just jump-to-ENDC inside SELECT blocks
             if (instr.CommandNumber == TasOpcode.ELSE && _suppressedElse.Contains(i))
@@ -143,6 +146,11 @@ public sealed class RunFileDecompiler
             case TasOpcode.ENDC: return "ENDC";
             case TasOpcode.SCAN: return DecompileScan(spec);
             case TasOpcode.ENDS: return "ENDS";
+            // SET_SCAN_FLG that isn't ENDS → SLOOP or SLOOP_IF
+            case TasOpcode.SET_SCAN_FLG:
+                if (spec.Length >= 5 && spec[4] == (byte)'X')
+                    return DecompileCondJump(spec, "SLOOP_IF");
+                return "SLOOP";
             case TasOpcode.LOOP: return "LOOP";
             case TasOpcode.EXIT_CMD: return "EXIT";
             case TasOpcode.LOOP_IF: return DecompileCondJump(spec, "LOOP_IF");
@@ -617,7 +625,9 @@ public sealed class RunFileDecompiler
 
     private string DecompileRet(byte[] spec)
     {
-        // ret: exit_byte(1) + address(4)
+        string p = P(spec, 0);
+        if (p.Length > 0)
+            return $"RET {p}";
         return "RET";
     }
 
@@ -908,25 +918,33 @@ public sealed class RunFileDecompiler
     private string DecompileFind(byte[] spec, string name)
     {
         // find_hndl(0) + key(5) + val(10) + typ(15,1byte) + err_lbl(16,4byte) + lock(20,1byte) + key_only(21,1byte) + for(22) + while(27) + no_clr(32,1byte)
-        // Syntax: FINDV typ FNUM hndl KEY key VAL val ERR lbl NLOCK KEYO NOCLR
-        var sb = new System.Text.StringBuilder(name);
+        // Emit with option keywords so the table-driven compiler can round-trip
+        var parts = new List<string>();
         byte typ = Flag(spec, 15);
-        if (typ >= 0x20 && typ < 0x7F) sb.Append($" {(char)typ}");
+        if (typ >= 0x20 && typ < 0x7F) parts.Add($"{(char)typ}");
         string hndl = P(spec, 0);
-        if (!string.IsNullOrEmpty(hndl)) sb.Append($", {hndl}");
+        if (!string.IsNullOrEmpty(hndl)) { parts.Add("FNUM"); parts.Add(hndl); }
         string key = P(spec, 5);
-        if (!string.IsNullOrEmpty(key)) sb.Append($", {key}");
+        if (!string.IsNullOrEmpty(key)) { parts.Add("KEY"); parts.Add(key); }
         string val = P(spec, 10);
-        if (!string.IsNullOrEmpty(val)) sb.Append($", {val}");
-        string errLbl = Lbl4(spec, 16);
-        if (!string.IsNullOrEmpty(errLbl)) sb.Append($", {errLbl}");
+        if (!string.IsNullOrEmpty(val)) { parts.Add("VAL"); parts.Add(val); }
+        // ERR label is a raw 4-byte value (not a 5-byte param). Only emit for non-zero values.
+        if (spec.Length >= 20)
+        {
+            int errVal = BitConverter.ToInt32(spec, 16);
+            if (errVal > 0) { parts.Add("ERR"); parts.Add(LabelName(errVal)); }
+        }
         byte noclr = Flag(spec, 32);
-        if (noclr == (byte)'Y') sb.Append(", NOCLR");
+        if (noclr == (byte)'Y') parts.Add("NOCLR");
         byte keyo = Flag(spec, 21);
-        if (keyo == (byte)'Y') sb.Append(", KEYO");
+        if (keyo == (byte)'Y') parts.Add("KEYO");
         byte nlock = Flag(spec, 20);
-        if (nlock == (byte)'Y') sb.Append(", NLOCK");
-        return sb.ToString();
+        if (nlock == (byte)'Y') parts.Add("NLOCK");
+        string forExpr = P(spec, 22);
+        if (!string.IsNullOrEmpty(forExpr)) { parts.Add("FOR"); parts.Add(forExpr); }
+        string whileExpr = P(spec, 27);
+        if (!string.IsNullOrEmpty(whileExpr)) { parts.Add("WHILE"); parts.Add(whileExpr); }
+        return Emit(name, parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
     }
 
     private string DecompileSave(byte[] spec)
@@ -1057,11 +1075,11 @@ public sealed class RunFileDecompiler
         parts.Add(P(spec, 5)); // row
         parts.Add(P(spec, 10)); // field
         string msk = P(spec, 15);
-        if (!string.IsNullOrEmpty(msk)) parts.Add(msk);
+        if (!string.IsNullOrEmpty(msk)) parts.Add($"MASK={msk}");
         string hlp = P(spec, 20);
-        if (!string.IsNullOrEmpty(hlp)) parts.Add(hlp);
+        if (!string.IsNullOrEmpty(hlp)) parts.Add($"HELP={hlp}");
         string valid = P(spec, 29);
-        if (!string.IsNullOrEmpty(valid)) parts.Add(valid);
+        if (!string.IsNullOrEmpty(valid)) parts.Add($"VLD={valid}");
         string pre = P(spec, 42);
         if (!string.IsNullOrEmpty(pre)) parts.Add($"PRE={pre}");
         string post = P(spec, 47);
@@ -1075,10 +1093,17 @@ public sealed class RunFileDecompiler
 
     private string DecompileMsg(byte[] spec)
     {
-        // msg: fld(0) + no_wait(5,1byte)
+        // msg: fld(0) + no_wait(5,1byte) + pad(6-9) + win(10,5B)
         string fld = P(spec, 0);
         byte noWait = Flag(spec, 5);
-        if (noWait != 0) return Emit("MSG", fld, "NOWAIT");
+        if (noWait != 0)
+        {
+            // Check for WIN param at offset 10 (15B long format)
+            string win = spec.Length >= 15 ? P(spec, 10) : "";
+            if (!string.IsNullOrEmpty(win))
+                return $"MSG {fld} NOWAIT WIN {win}";
+            return Emit("MSG", fld, "NOWAIT");
+        }
         return Emit("MSG", fld);
     }
 
@@ -1405,7 +1430,13 @@ public sealed class RunFileDecompiler
     private string DecompileXfer(byte[] spec)
     {
         // xfer: ffld(0) + tfld(5) + numchr(10) + fmem(15) + tmem(20) + rec_buff(25,1byte)
-        return Emit("XFER", P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20));
+        // Must preserve all 5 positions (including null) for round-trip fidelity
+        var parts = new[] { P(spec, 0), P(spec, 5), P(spec, 10), P(spec, 15), P(spec, 20) };
+        // Trim trailing empty params
+        int last = 4;
+        while (last >= 0 && string.IsNullOrEmpty(parts[last])) last--;
+        if (last < 0) return "XFER";
+        return "XFER " + string.Join(", ", parts.Take(last + 1).Select(p => p ?? ""));
     }
 
     private string DecompileSorta(byte[] spec)
@@ -1437,7 +1468,24 @@ public sealed class RunFileDecompiler
     private string DecompileRap(byte[] spec)
     {
         // rap: name(0) + num(5) + in_mem(10,1byte) + with(11) + no_base_wind(16,1byte) + new_runtime(17,1byte) + no_delete(18,1byte) + no_save(19,1byte)
-        return Emit("RAP", P(spec, 0), P(spec, 5), P(spec, 11));
+        // Emit with option keywords so the table-driven compiler can round-trip
+        var parts = new List<string>();
+        parts.Add(P(spec, 0)); // positional filename (OptionIndex=0)
+        string num = P(spec, 5);
+        if (!string.IsNullOrEmpty(num)) { parts.Add("NUM"); parts.Add(num); }
+        byte inmem = Flag(spec, 10);
+        if (inmem == (byte)'Y') parts.Add("INMEM");
+        string with_ = P(spec, 11);
+        if (!string.IsNullOrEmpty(with_)) { parts.Add("WITH"); parts.Add(with_); }
+        byte nobase = Flag(spec, 16);
+        if (nobase == (byte)'Y') parts.Add("NOBASEWIND");
+        byte newrt = Flag(spec, 17);
+        if (newrt == (byte)'Y') parts.Add("NEWRUNTIME");
+        byte nodel = Flag(spec, 18);
+        if (nodel == (byte)'Y') parts.Add("NODELETE");
+        byte nosave = Flag(spec, 19);
+        if (nosave == (byte)'Y') parts.Add("NOSAVE");
+        return Emit("RAP", parts.Where(p => !string.IsNullOrEmpty(p)).ToArray());
     }
 
     // ===== Clock / Trace / Sound / Error =====
@@ -1729,7 +1777,14 @@ public sealed class RunFileDecompiler
                     if (spec.Length < 4) break;
                     int endLine = BitConverter.ToInt32(spec, 0) / instrSize - ovlInstrs;
                     if (endLine > 0 && endLine <= n)
+                    {
                         AddClosing(endLine, "ENDS");
+                        // The SET_SCAN_FLG at endLine-1 is the ENDS (unconditional loop-back)
+                        int endsIdx = endLine - 1;
+                        if (endsIdx > i && endsIdx < n &&
+                            _run.Instructions[endsIdx].CommandNumber == TasOpcode.SET_SCAN_FLG)
+                            _endsSetScanFlg.Add(endsIdx);
+                    }
                     break;
                 }
             }

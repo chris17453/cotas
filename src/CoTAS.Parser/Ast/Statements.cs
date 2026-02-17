@@ -53,6 +53,7 @@ public sealed record ScanStmt(List<Token> Options, List<Statement> Body, int Lin
 // Captures the command name and all tokens until end of line.
 public sealed record GenericCommandStmt(string CommandName, List<Token> Tokens, int Line) : Statement(Line);
 
-// Loop control
-public sealed record ExitStmt(int Line) : Statement(Line);
-public sealed record LoopStmt(int Line) : Statement(Line);
+// Loop control - Keyword preserves the variant (EXIT, EXIT_IF, FEXIT, FEXIT_IF, SEXIT, SEXIT_IF, etc.)
+// Condition holds tokens for _IF variants
+public sealed record ExitStmt(string Keyword, List<Token> Condition, int Line) : Statement(Line);
+public sealed record LoopStmt(string Keyword, List<Token> Condition, int Line) : Statement(Line);

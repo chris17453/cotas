@@ -43,8 +43,14 @@ public sealed class RunFieldSpec
     /// <summary>Whether this field was inherited from a parent program (via CHAIN).</summary>
     public bool IsReset { get; set; }
 
+    /// <summary>Raw byte value at offset 35 (IsReset flag), preserved for round-trip fidelity.</summary>
+    public byte RawIsReset { get; set; }
+
     /// <summary>Whether to force uppercase input.</summary>
     public bool ForceUpperCase { get; set; }
+
+    /// <summary>Raw byte value at offset 36 (ForceUpperCase flag), preserved for round-trip fidelity.</summary>
+    public byte RawForceUpperCase { get; set; }
 
     /// <summary>Allocation flag.</summary>
     public byte AllocFlag { get; set; }

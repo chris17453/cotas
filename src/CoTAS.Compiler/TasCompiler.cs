@@ -27,7 +27,20 @@ public sealed class TasCompiler
     private int _overlaySpecOffset;
     private int _overlayConstOffset;
     private int _overlayFieldOffset;
+    private int _overlayCodeOffset;
 
+    // Structure context stack for SCAN/FOR blocks
+    // Tracks the instruction index of the SCAN/FOR so that SLOOP/FLOOP can jump back
+    // and the spec patch offset so that SEXIT/FEXIT can jump past the end
+    private readonly Stack<StructureContext> _structureStack = new();
+
+    private sealed class StructureContext
+    {
+        public required string Type; // "SCAN" or "FOR"
+        public int RunInstrIdx;      // Instruction index of SCAN or FOR (for SLOOP/FLOOP jump back)
+        public int JumpPatchOff;     // Spec offset to patch with end address (for SEXIT/FEXIT)
+        public List<int> ExitPatches = []; // Spec offsets in SEXIT/FEXIT specs that need patching
+    }
 
     // Map from GenericCommandStmt name → opcode
     private static readonly Dictionary<string, ushort> _commandOpcodes = BuildCommandOpcodeMap();
@@ -100,24 +113,30 @@ public sealed class TasCompiler
         // Import from overlay-loaded reader so overlay field names resolve for compilation
         compiler._fields.ImportFromReader(runForDecompile);
         // Labels: import from overlay reader so global label names (LABEL_61 etc.) resolve
-        compiler._labels.ImportOffsets(runForDecompile.LabelOffsets, runForDecompile.Header.NumLabels);
-        compiler._overlayLabelCount = 0;
+        // LabelOffsets now includes overlay labels prepended, so total count = overlay + program
+        int totalLabels = runForDecompile.LabelOffsets.Count;
+        compiler._labels.ImportOffsets(runForDecompile.LabelOffsets, totalLabels);
+        compiler._overlayLabelCount = runForDecompile.OverlayLabelCount;
 
-        // No overlay offsets needed — spec/const/labels are program-relative only.
-        // Overlay only affects fields (prepended to field list).
-        compiler._overlaySpecOffset = 0;
-        compiler._overlayConstOffset = 0;
+        // Overlay offsets: when ObjUsed=true, SLPtr and constant offsets
+        // in the .RUN file reference the combined overlay+local space.
+        // - SpecOffset: added to SLPtr in code segment (overlay spec prepended at runtime)
+        // - ConstOffset: added to constant refs in spec params and expressions
+        // - FieldOffset: NOT needed — ImportFromReader already prepends overlay fields,
+        //   so field indices and byte offsets are already in combined space.
+        compiler._overlaySpecOffset = runForDecompile.OverlaySpecSize;
+        compiler._overlayConstOffset = runForDecompile.OverlayConstSize;
+        compiler._overlayCodeOffset = runForDecompile.OverlayCodeSize;
         compiler._overlayFieldOffset = 0;
         compiler._spec.OverlayFieldOffset = 0;
-        compiler._spec.OverlayConstOffset = 0;
+        compiler._spec.OverlayConstOffset = runForDecompile.OverlayConstSize;
         compiler._constants.OverlayFieldOffset = 0;
-        compiler._constants.OverlayConstOffset = 0;
+        compiler._constants.OverlayConstOffset = runForDecompile.OverlayConstSize;
 
         // Detect MSG spec format from original (6B short or 15B long)
         var firstMsg = run.Instructions.FirstOrDefault(i => i.CommandNumber == TasOpcode.MSG);
         if (firstMsg != null && firstMsg.SpecLineSize == 6)
             compiler._useLongMsgSpec = false;
-
         // Detect OPENV spec format from original (48B short or 53B long)
         var firstOpenv = run.Instructions.FirstOrDefault(i => i.CommandNumber == TasOpcode.OPENV || i.CommandNumber == TasOpcode.OPEN);
         if (firstOpenv != null && firstOpenv.SpecLineSize == 48)
@@ -127,7 +146,7 @@ public sealed class TasCompiler
         if (run.ConstantSegment.Length >= 5 && run.ConstantSegment[0] == 0x49) // 'I' = integer
         {
             compiler._constants.AddIntegerZero();
-            compiler._constants.AddRaw(new byte[] { 0x00, 0x00 }); // TAS convention padding
+            compiler._constants.AddRaw(new byte[] { 0x00, 0x00 }); // TAS convention: 2 null bytes after integer zero
         }
 
         // Step 6: Compile AST → instructions + constants + spec
@@ -171,6 +190,33 @@ public sealed class TasCompiler
         byte[] binary = ms.ToArray();
 
         report.AppendLine($"  GENERATED: code={codeSegment.Length}B const={constSegment.Length}B spec={specSegment.Length}B labels={labelSegment.Length}B fields={fieldSpecSegment.Length}B");
+        report.AppendLine($"  ORIGINAL:  code={run.Header.CodeSize}B const={run.Header.ConstSize}B spec={run.Header.SpecSize}B labels={run.Header.LabelSize}B fields={run.Header.FldNameSize}B");
+        if (codeSegment.Length != run.Header.CodeSize) report.AppendLine($"  DIFF code: {run.Header.CodeSize} -> {codeSegment.Length} ({codeSegment.Length - run.Header.CodeSize:+#;-#;0})");
+        if (constSegment.Length != run.Header.ConstSize) report.AppendLine($"  DIFF const: {run.Header.ConstSize} -> {constSegment.Length} ({constSegment.Length - run.Header.ConstSize:+#;-#;0})");
+        if (specSegment.Length != run.Header.SpecSize) report.AppendLine($"  DIFF spec: {run.Header.SpecSize} -> {specSegment.Length} ({specSegment.Length - run.Header.SpecSize:+#;-#;0})");
+        if (labelSegment.Length != run.Header.LabelSize) report.AppendLine($"  DIFF labels: {run.Header.LabelSize} -> {labelSegment.Length} ({labelSegment.Length - run.Header.LabelSize:+#;-#;0})");
+        if (fieldSpecSegment.Length != run.Header.FldNameSize) report.AppendLine($"  DIFF fields: {run.Header.FldNameSize} -> {fieldSpecSegment.Length} ({fieldSpecSegment.Length - run.Header.FldNameSize:+#;-#;0})");
+
+        // Hex diff: show first differing bytes in each segment
+        void DumpSegDiff(string name, byte[] orig, byte[] gen)
+        {
+            int maxLen = Math.Max(orig.Length, gen.Length);
+            int shown = 0;
+            for (int i = 0; i < maxLen && shown < 10; i++)
+            {
+                byte o = i < orig.Length ? orig[i] : (byte)0;
+                byte g = i < gen.Length ? gen[i] : (byte)0;
+                if (o != g)
+                {
+                    report.AppendLine($"    {name}[{i}]: orig=0x{o:X2} gen=0x{g:X2}");
+                    shown++;
+                }
+            }
+        }
+        if (constSegment.Length != run.ConstantSegment.Length || !constSegment.AsSpan().SequenceEqual(run.ConstantSegment))
+            DumpSegDiff("const", run.ConstantSegment, constSegment);
+        if (specSegment.Length != run.SpecSegment.Length || !specSegment.AsSpan().SequenceEqual(run.SpecSegment))
+            DumpSegDiff("spec", run.SpecSegment, specSegment);
 
         return (binary, report.ToString());
     }
@@ -216,12 +262,24 @@ public sealed class TasCompiler
 
         // Offsets 65, 69, 73: segment sizes + DOS base address for backward compatibility.
         // The original TAS compiler stored these as size + internal memory base pointer.
-        // We use the most common base (0x7A121 = 500001) to match legacy .RUN files.
-        const int dosBase = 0x7A121;
+        // Extract the dosBase from the original header (it varies per compilation).
+        // dosBase = original_value_at_65 - original_spec_size
+        int origSpecPlusDos = BitConverter.ToInt32(originalRawHeader, 65);
+        int dosBase = origSpecPlusDos - originalHeader.SpecSize;
         ms.Position = 65;
         w.Write(specSize + dosBase);    // offset 65
         w.Write(constSize + dosBase);   // offset 69
         w.Write(codeSize + dosBase);    // offset 73
+
+        // Copy any remaining original header bytes after offset 77 that we don't generate
+        for (int i = 77; i < RunFileHeader.Size && i < originalRawHeader.Length; i++)
+        {
+            if (originalRawHeader[i] != 0)
+            {
+                ms.Position = i;
+                w.Write(originalRawHeader[i]);
+            }
+        }
 
         return header;
     }
@@ -513,12 +571,12 @@ public sealed class TasCompiler
                 EmitScan(scan);
                 break;
 
-            case ExitStmt:
-                EmitSimple(TasOpcode.EXIT_CMD, 0);
+            case ExitStmt exit:
+                EmitExit(exit);
                 break;
 
-            case LoopStmt:
-                EmitSimple(TasOpcode.LOOP, 0);
+            case LoopStmt loop:
+                EmitLoop(loop);
                 break;
 
             case ExpressionStmt exprStmt:
@@ -624,7 +682,7 @@ public sealed class TasCompiler
         // MSG spec: 6B short [msg(5)+nowait(1)] or 15B long [msg(5)+nowait(1)+pad(4)+win(5)]
         int specOff = _spec.BeginSpec();
         WriteExprParam(msg.Text);
-        _spec.WriteByte(msg.NoWait ? (byte)'Y' : (byte)'N');
+        _spec.WriteByte(msg.NoWait ? (byte)'N' : (byte)0);
         if (_useLongMsgSpec || msg.WindowsParam != null)
         {
             _spec.WritePadding(4);
@@ -731,8 +789,19 @@ public sealed class TasCompiler
         EmitInstruction(TasOpcode.WHILE, specOff, specSize);
         int whileInstrIdx = _instructions.Count - 1;
 
+        // Push WHILE context for LOOP/EXIT inside body
+        var whileCtx = new StructureContext
+        {
+            Type = "WHILE",
+            RunInstrIdx = whileInstrIdx,
+            JumpPatchOff = jumpPatchOffset
+        };
+        _structureStack.Push(whileCtx);
+
         // Body
         EmitPass(wh.Body);
+
+        _structureStack.Pop();
 
         // ENDW (back-jump to loop start)
         int endwSpecOff = _spec.BeginSpec();
@@ -741,7 +810,181 @@ public sealed class TasCompiler
         EmitInstruction(TasOpcode.ENDW, endwSpecOff, endwSpecSize);
 
         // Patch WHILE exit jump
-        PatchJump(whileInstrIdx, jumpPatchOffset, CurrentByteOffset);
+        int afterEndwOffset = CurrentByteOffset;
+        PatchJump(whileInstrIdx, jumpPatchOffset, afterEndwOffset);
+
+        // Patch all EXIT jump targets to point past ENDW
+        foreach (int patchOff in whileCtx.ExitPatches)
+            _spec.PatchInt32(patchOff, afterEndwOffset);
+    }
+
+    private void EmitLoop(LoopStmt loop)
+    {
+        string kw = loop.Keyword;
+
+        // SLOOP/SLOOP_IF → SET_SCAN_FLG inside SCAN context
+        if (kw == "SLOOP" || kw == "SLOOP_IF")
+        {
+            var ctx = FindStructure("SCAN");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                if (kw == "SLOOP_IF" && loop.Condition.Count > 0)
+                    WriteTokensAsExprParam(loop.Condition);
+                else
+                    _spec.WriteNullParam();
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.SET_SCAN_FLG, specOff, specSize);
+                return;
+            }
+        }
+
+        // FLOOP/FLOOP_IF → ENDW/LOOP_IF inside FOR context
+        if (kw == "FLOOP" || kw == "FLOOP_IF")
+        {
+            var ctx = FindStructure("FOR");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32((ctx.RunInstrIdx + 1) * _instrSize);
+                if (kw == "FLOOP_IF" && loop.Condition.Count > 0)
+                {
+                    WriteTokensAsExprParam(loop.Condition);
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.LOOP_IF, specOff, specSize);
+                }
+                else
+                {
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.ENDW, specOff, specSize);
+                }
+                return;
+            }
+        }
+
+        // LOOP_IF → LOOP_IF inside WHILE context
+        if (kw == "LOOP_IF")
+        {
+            var ctx = FindStructure("WHILE");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                WriteTokensAsExprParam(loop.Condition);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.LOOP_IF, specOff, specSize);
+                return;
+            }
+        }
+
+        // LOOP → AbsDirectJmp (ENDW=69): jump back to WHILE start
+        if (kw == "LOOP" || kw == "ENDW")
+        {
+            var ctx = FindStructure("WHILE");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.ENDW, specOff, specSize);
+                return;
+            }
+        }
+
+        // Fallback: emit source-level opcode
+        EmitSimple(TasOpcode.LOOP, 0);
+    }
+
+    private void EmitExit(ExitStmt exit)
+    {
+        string kw = exit.Keyword;
+
+        // SEXIT/SEXIT_IF → ELSE/EXIT_IF inside SCAN context
+        if (kw == "SEXIT" || kw == "SEXIT_IF")
+        {
+            var ctx = FindStructure("SCAN");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after ENDS
+                ctx.ExitPatches.Add(patchOff);
+                if (kw == "SEXIT_IF" && exit.Condition.Count > 0)
+                {
+                    WriteTokensAsExprParam(exit.Condition);
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                }
+                else
+                {
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.ELSE, specOff, specSize);
+                }
+                return;
+            }
+        }
+
+        // FEXIT/FEXIT_IF → ELSE/EXIT_IF inside FOR context
+        if (kw == "FEXIT" || kw == "FEXIT_IF")
+        {
+            var ctx = FindStructure("FOR");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after NEXT
+                ctx.ExitPatches.Add(patchOff);
+                if (kw == "FEXIT_IF" && exit.Condition.Count > 0)
+                {
+                    WriteTokensAsExprParam(exit.Condition);
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                }
+                else
+                {
+                    int specSize = _spec.GetSpecSize(specOff);
+                    EmitInstruction(TasOpcode.ELSE, specOff, specSize);
+                }
+                return;
+            }
+        }
+
+        // EXIT_IF → EXIT_IF inside WHILE context
+        if (kw == "EXIT_IF")
+        {
+            var ctx = FindStructure("WHILE");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after ENDW
+                ctx.ExitPatches.Add(patchOff);
+                WriteTokensAsExprParam(exit.Condition);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                return;
+            }
+        }
+
+        // EXIT → AbsJmp (ELSE=66): jump to WHILE exit (patched later)
+        if (kw == "EXIT")
+        {
+            var ctx = FindStructure("WHILE");
+            if (ctx != null)
+            {
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after ENDW
+                ctx.ExitPatches.Add(patchOff);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.ELSE, specOff, specSize);
+                return;
+            }
+        }
+
+        // Fallback: emit source-level opcode
+        EmitSimple(TasOpcode.EXIT_CMD, 0);
     }
 
     private void EmitFor(ForStmt forStmt)
@@ -770,8 +1013,19 @@ public sealed class TasCompiler
 
         int loopStart = CurrentByteOffset;
 
+        // Push FOR context for FLOOP/FEXIT inside body
+        var forCtx = new StructureContext
+        {
+            Type = "FOR",
+            RunInstrIdx = forInstrIdx,
+            JumpPatchOff = jumpPatchOffset
+        };
+        _structureStack.Push(forCtx);
+
         // Body
         EmitPass(forStmt.Body);
+
+        _structureStack.Pop();
 
         // NEXT (back-jump)
         int nextSpecOff = _spec.BeginSpec();
@@ -780,7 +1034,12 @@ public sealed class TasCompiler
         EmitInstruction(TasOpcode.NEXT, nextSpecOff, nextSpecSize);
 
         // Patch FOR exit jump
-        PatchJump(forInstrIdx, jumpPatchOffset, CurrentByteOffset);
+        int afterNextOffset = CurrentByteOffset;
+        PatchJump(forInstrIdx, jumpPatchOffset, afterNextOffset);
+
+        // Patch all FEXIT jump targets to point past NEXT too
+        foreach (int patchOff in forCtx.ExitPatches)
+            _spec.PatchInt32(patchOff, afterNextOffset);
     }
 
     private void EmitSelect(SelectStmt sel)
@@ -834,7 +1093,7 @@ public sealed class TasCompiler
         // [42]    reverse flag ('Y'/'N')
         //
         // Decompiler output: SCAN handle, key [, startval] [, WHILE|FOR, expr] [, additional...]
-        // The runtime sequence is: START_SCAN (no spec) → SCAN (43B) → body → SET_SCAN_FLG (9B)
+        // The runtime sequence is: START_SCAN → SCAN (43B) → SET_SCAN_FLG (9B) → body → SET_SCAN_FLG (9B)
 
         // Emit START_SCAN (no spec, but spec ptr = SCAN's spec offset — will be patched)
         int startScanIdx = _instructions.Count;
@@ -965,10 +1224,21 @@ public sealed class TasCompiler
         EmitInstruction(TasOpcode.SCAN, specOff, specSize);
         int scanInstrIdx = _instructions.Count - 1;
 
+        // Push SCAN context for SLOOP/SEXIT inside body
+        var scanCtx = new StructureContext
+        {
+            Type = "SCAN",
+            RunInstrIdx = scanInstrIdx,
+            JumpPatchOff = jumpPatchOff
+        };
+        _structureStack.Push(scanCtx);
+
         // Emit body
         EmitPass(scan.Body);
 
-        // Emit SET_SCAN_FLG with 9-byte spec: jump_back_addr(4) + null_param(5)
+        _structureStack.Pop();
+
+        // Emit SET_SCAN_FLG (ENDS) with 9-byte spec: jump_back_addr(4) + null_param(5)
         int endSpecOff = _spec.BeginSpec();
         int scanCodeOffset = scanInstrIdx * _instrSize; // byte offset of SCAN instruction
         _spec.WriteInt32(scanCodeOffset);
@@ -979,6 +1249,175 @@ public sealed class TasCompiler
         // Patch SCAN's jump target to point to the instruction AFTER SET_SCAN_FLG
         int afterEndsOffset = _instructions.Count * _instrSize;
         _spec.PatchInt32(jumpPatchOff, afterEndsOffset);
+
+        // Patch all SEXIT jump targets to point past ENDS too
+        foreach (int patchOff in scanCtx.ExitPatches)
+            _spec.PatchInt32(patchOff, afterEndsOffset);
+    }
+
+    /// <summary>
+    /// Handle SCAN/FOR structure-related commands that remap to different runtime opcodes.
+    /// Returns true if the command was handled.
+    /// </summary>
+    private bool EmitStructureCommand(string upper, GenericCommandStmt gen)
+    {
+        switch (upper)
+        {
+            case "SLOOP":
+            {
+                // SLOOP → SET_SCAN_FLG (138): jump back to SCAN instruction
+                var ctx = FindStructure("SCAN");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                _spec.WriteNullParam();
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.SET_SCAN_FLG, specOff, specSize);
+                return true;
+            }
+            case "SLOOP_IF":
+            {
+                // SLOOP_IF → SET_SCAN_FLG (138): jump back + condition expression
+                var ctx = FindStructure("SCAN");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                // Condition expression at while_typ offset (byte 4)
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.SET_SCAN_FLG, specOff, specSize);
+                return true;
+            }
+            case "SEXIT":
+            {
+                // SEXIT → AbsJmp (ELSE=66): jump to SCAN exit (patched later)
+                var ctx = FindStructure("SCAN");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size; // remember where to patch
+                _spec.WriteInt32(0); // placeholder — patched after ENDS
+                ctx.ExitPatches.Add(patchOff);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.ELSE, specOff, specSize);
+                return true;
+            }
+            case "SEXIT_IF":
+            {
+                // SEXIT_IF → EXIT_IF (71): jump to SCAN exit + condition expression
+                var ctx = FindStructure("SCAN");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after ENDS
+                ctx.ExitPatches.Add(patchOff);
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                return true;
+            }
+            case "FLOOP":
+            {
+                // FLOOP → AbsDirectJmp (ENDW=69): jump back to FOR's run (loop start)
+                var ctx = FindStructure("FOR");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                // Jump to the byte offset right after FOR instruction (loop body start)
+                _spec.WriteInt32((ctx.RunInstrIdx + 1) * _instrSize);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.ENDW, specOff, specSize);
+                return true;
+            }
+            case "FEXIT":
+            {
+                // FEXIT → AbsJmp (ELSE=66): jump to FOR exit (patched later)
+                var ctx = FindStructure("FOR");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after NEXT
+                ctx.ExitPatches.Add(patchOff);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.ELSE, specOff, specSize);
+                return true;
+            }
+            case "FLOOP_IF":
+            {
+                // FLOOP_IF → LOOP_IF (70): jump back to FOR's run + condition
+                var ctx = FindStructure("FOR");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32((ctx.RunInstrIdx + 1) * _instrSize);
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.LOOP_IF, specOff, specSize);
+                return true;
+            }
+            case "FEXIT_IF":
+            {
+                // FEXIT_IF → EXIT_IF (71): jump to FOR exit + condition
+                var ctx = FindStructure("FOR");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after NEXT
+                ctx.ExitPatches.Add(patchOff);
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                return true;
+            }
+            case "LOOP_IF":
+            {
+                // LOOP_IF (70): jump back to WHILE + condition expression
+                var ctx = FindStructure("WHILE");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                _spec.WriteInt32(ctx.RunInstrIdx * _instrSize);
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.LOOP_IF, specOff, specSize);
+                return true;
+            }
+            case "EXIT_IF":
+            {
+                // EXIT_IF (71): jump to WHILE exit + condition expression
+                var ctx = FindStructure("WHILE");
+                if (ctx == null) break;
+                int specOff = _spec.BeginSpec();
+                int patchOff = _spec.Size;
+                _spec.WriteInt32(0); // placeholder — patched after ENDW
+                ctx.ExitPatches.Add(patchOff);
+                WriteTokensAsExprParam(gen.Tokens);
+                int specSize = _spec.GetSpecSize(specOff);
+                EmitInstruction(TasOpcode.EXIT_IF, specOff, specSize);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>Find the nearest enclosing structure of the given type.</summary>
+    private StructureContext? FindStructure(string type)
+    {
+        foreach (var ctx in _structureStack)
+            if (ctx.Type == type) return ctx;
+        return null;
+    }
+
+    /// <summary>Write gen.Tokens as a single expression param (for SLOOP_IF etc.).</summary>
+    private void WriteTokensAsExprParam(List<Token> tokens)
+    {
+        var significant = FilterSignificantTokens(tokens);
+        if (significant.Count > 0)
+        {
+            var encoder = CreateExpressionEncoder();
+            var parsed = new TasParser(significant).ParseExpression();
+            encoder.CompileToParam(parsed);
+        }
+        else
+        {
+            _spec.WriteNullParam();
+        }
     }
 
     /// <summary>
@@ -1085,6 +1524,10 @@ public sealed class TasCompiler
     {
         string upper = gen.CommandName.ToUpperInvariant();
 
+        // Handle SCAN/FOR structure commands that remap to different runtime opcodes
+        if (EmitStructureCommand(upper, gen))
+            return;
+
         if (!_commandOpcodes.TryGetValue(upper, out ushort opcode))
         {
             // FIELD[N] = expr — direct field index assignment from decompiler output
@@ -1142,10 +1585,26 @@ public sealed class TasCompiler
             return;
         }
 
+        // Commands with positional params that the generic compiler can't handle
+        if (upper == "XFER")
+        {
+            EmitGenericXfer(gen);
+            return;
+        }
+
+        // OPENV/OPEN: GenericCompiler handles both 48B and 53B formats via UseShortOpenvSpec
+
         // Table-driven compiler handles ALL non-special commands
         var result = GetGenericCompiler().CompileCommand(gen);
         if (result.HasValue)
         {
+            // CO/DATE: infer return type flag at spec offset 5 from the expression
+            if (opcode is TasOpcode.CO or TasOpcode.DATE && gen.Tokens.Count > 0)
+            {
+                char flag = InferCoReturnType(gen.Tokens);
+                _spec.SetByte(result.Value.SpecOffset + 5, (byte)flag);
+            }
+
             EmitInstruction(opcode, result.Value.SpecOffset, result.Value.SpecSize);
 
             // Register buffer name for OPENV/OPEN commands
@@ -1156,6 +1615,13 @@ public sealed class TasCompiler
                 if (bufName.Length <= 8 && !_buffers.Any(b => b.Name == bufName))
                     _buffers.Add(new RunBufferEntry { Name = bufName.PadRight(8) });
             }
+            return;
+        }
+
+        // FUNC/CMD/UDC — special 9-byte spec: label(4) + field_list(5)
+        if (opcode is TasOpcode.FUNC or TasOpcode.CMD or TasOpcode.UDC)
+        {
+            EmitGenericUdfc(gen, opcode);
             return;
         }
 
@@ -1391,7 +1857,8 @@ public sealed class TasCompiler
         else
         {
             // Keyword format: OPENV filename FNUM h EXT cc LOCK l ...
-            var kw = ParseKeywordTokens(gen.Tokens, "FNUM", "PATH", "BUF", "SIZE", "LOCK",
+            // Use filtered tokens (no commas) since decompiler may output commas between keyword-value pairs
+            var kw = ParseKeywordTokens(toks, "FNUM", "PATH", "BUF", "SIZE", "LOCK",
                 "CREATE", "ERR", "EXT", "OWNER", "FD", "TYPE", "NOCLR", "UPDATE");
 
             // [0] filename (5)
@@ -1441,6 +1908,14 @@ public sealed class TasCompiler
             {
                 if (kw.TryGetValue("UPDATE", out var updateTok)) WriteTokenParam(updateTok);
                 else _spec.WriteNullParam();
+            }
+
+            // Register buffer name for the buffer list
+            if (toks.Count > 0 && toks[0].Type == TokenType.StringLiteral)
+            {
+                string bufName = toks[0].Value.ToUpperInvariant();
+                if (bufName.Length <= 8 && !_buffers.Any(b => b.Name == bufName))
+                    _buffers.Add(new RunBufferEntry { Name = bufName.PadRight(8) });
             }
         }
 
@@ -1685,34 +2160,55 @@ public sealed class TasCompiler
 
     private void EmitGenericXfer(GenericCommandStmt gen)
     {
-        // XFER spec layout (26 bytes):
-        // [0]from(5) [5]to(5) [10]numchr(5) [15]fmem(5) [20]tmem(5) [25]rec_buff(1)
+        // XFER spec layout (25 bytes for TAS 5.1):
+        // [0]from(5) [5]to(5) [10]numchr(5) [15]fmem(5) [20]tmem(5)
+        // Decompiler emits positional: XFER from, to, numchr, fmem, tmem
+        // Empty positions appear as consecutive commas: XFER A, 1, 15, , 2
         int specOff = _spec.BeginSpec();
-        var kw = ParseKeywordTokens(gen.Tokens, "TO", "NUMCHR", "FMEM", "TMEM");
-        var toks = FilterSignificantTokens(gen.Tokens);
 
-        // [0] from field (5)
-        if (toks.Count >= 1) WriteTokenParam(toks[0]); else _spec.WriteNullParam();
+        // Split tokens by commas to preserve empty positions
+        var slots = SplitByComma(gen.Tokens);
 
-        // [5] to field (5)
-        if (kw.TryGetValue("TO", out var toTok)) WriteTokenParam(toTok);
-        else _spec.WriteNullParam();
+        // Positional params: from, to, numchr, fmem, tmem
+        for (int i = 0; i < 5; i++)
+        {
+            if (i < slots.Count && slots[i] != null) WriteTokenParam(slots[i]);
+            else _spec.WriteNullParam();
+        }
 
-        // [10] numchr (5)
-        if (kw.TryGetValue("NUMCHR", out var numchrTok)) WriteTokenParam(numchrTok);
-        else _spec.WriteNullParam();
-
-        // [15] fmem (5)
-        if (kw.TryGetValue("FMEM", out var fmemTok)) WriteTokenParam(fmemTok);
-        else _spec.WriteNullParam();
-
-        // [20] tmem (5)
-        if (kw.TryGetValue("TMEM", out var tmemTok)) WriteTokenParam(tmemTok);
-        else _spec.WriteNullParam();
-
-        // TAS 5.1: 25 bytes total (no rec_buff byte)
         int specSize = _spec.GetSpecSize(specOff);
         EmitInstruction(TasOpcode.XFER, specOff, specSize);
+    }
+
+    /// <summary>
+    /// Split token list by commas, returning one significant token per slot (or null for empty slots).
+    /// E.g. tokens [A, ',', 1, ',', 15, ',', ',', 2] → [A, 1, 15, null, 2]
+    /// </summary>
+    private static List<Token?> SplitByComma(List<Token> tokens)
+    {
+        var result = new List<Token?>();
+        Token? current = null;
+        bool hadValue = false;
+        foreach (var t in tokens)
+        {
+            if (t.Type == TokenType.Comma)
+            {
+                result.Add(hadValue ? current : null);
+                current = null;
+                hadValue = false;
+            }
+            else if (t.Type is TokenType.Identifier or TokenType.StringLiteral or
+                     TokenType.IntegerLiteral or TokenType.NumericLiteral or
+                     TokenType.True or TokenType.False)
+            {
+                current = t;
+                hadValue = true;
+            }
+        }
+        // Add the last slot (after last comma or if no commas)
+        if (hadValue || result.Count > 0)
+            result.Add(hadValue ? current : null);
+        return result;
     }
 
     private void EmitGenericInifle(GenericCommandStmt gen)
@@ -2105,6 +2601,27 @@ public sealed class TasCompiler
         EmitInstruction(TasOpcode.QUIT, specOff, specSize);
     }
 
+    /// <summary>
+    /// Infer the CO/DATE return type flag from command tokens.
+    /// Looks for a function call in the expression and returns its return type flag.
+    /// </summary>
+    private static char InferCoReturnType(List<Token> tokens)
+    {
+        // Look for a function call pattern: IDENTIFIER(...)
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Type == TokenType.Identifier &&
+                i + 1 < tokens.Count && tokens[i + 1].Type == TokenType.LeftParen)
+            {
+                string funcName = tokens[i].Value;
+                if (ExpressionEncoder.IsBuiltinFunction(funcName))
+                    return ExpressionEncoder.InferFunctionReturnTypeFlag(funcName);
+            }
+        }
+        // Default: string
+        return 'S';
+    }
+
     private static char InferResultTypeFlag(Expression expr)
     {
         return expr switch
@@ -2152,6 +2669,7 @@ public sealed class TasCompiler
         var encoder = new ExpressionEncoder(_fields, _constants, _labels, GetTempBase());
         encoder.OverlayFieldOffset = _overlayFieldOffset;
         encoder.OverlayConstOffset = _overlayConstOffset;
+        encoder.IsTas51 = _isTas51;
         return encoder;
     }
 
@@ -2165,13 +2683,15 @@ public sealed class TasCompiler
                 ParseTokensAsExpression);
         }
         _genericCompiler.UseTas51Sizes = _isTas51;
+        _genericCompiler.UseShortOpenvSpec = !_useLongOpenvSpec;
         return _genericCompiler;
     }
 
     private void PatchJump(int instrIdx, int specOffset, int targetByteOffset)
     {
-        // Patch the 4-byte jump target directly in the spec segment
-        _spec.PatchInt32(specOffset, targetByteOffset);
+        // Patch the 4-byte jump target directly in the spec segment.
+        // For programs with overlays, jump targets are in combined code space.
+        _spec.PatchInt32(specOffset, targetByteOffset + _overlayCodeOffset);
     }
 
     private static bool IsComparisonOp(string op) =>

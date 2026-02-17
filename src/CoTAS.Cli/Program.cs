@@ -58,6 +58,27 @@ if (args[0] == "--full-roundtrip" && args.Length >= 2)
         if (original.Length != recompiled.Length)
         {
             Console.Error.WriteLine($"FAIL {Path.GetFileName(runFile)}: size mismatch ({original.Length} vs {recompiled.Length} bytes)");
+            // Show segment comparison
+            if (original.Length >= 128 && recompiled.Length >= 128)
+            {
+                int oCode = BitConverter.ToInt32(original, 0);
+                int oConst = BitConverter.ToInt32(original, 4);
+                int oSpec = BitConverter.ToInt32(original, 8);
+                int oLabels = BitConverter.ToInt32(original, 12);
+                int oFlds = BitConverter.ToUInt16(original, 16);
+                int nCode = BitConverter.ToInt32(recompiled, 0);
+                int nConst = BitConverter.ToInt32(recompiled, 4);
+                int nSpec = BitConverter.ToInt32(recompiled, 8);
+                int nLabels = BitConverter.ToInt32(recompiled, 12);
+                int nFlds = BitConverter.ToUInt16(recompiled, 16);
+                int oFldBytes = original.Length - (1728 + oCode + oConst + oSpec + oLabels);
+                int nFldBytes = recompiled.Length - (1728 + nCode + nConst + nSpec + nLabels);
+                Console.Error.WriteLine($"  code: {oCode} vs {nCode} ({nCode - oCode:+#;-#;0})");
+                Console.Error.WriteLine($"  const: {oConst} vs {nConst} ({nConst - oConst:+#;-#;0})");
+                Console.Error.WriteLine($"  spec: {oSpec} vs {nSpec} ({nSpec - oSpec:+#;-#;0})");
+                Console.Error.WriteLine($"  labels: {oLabels} vs {nLabels} ({nLabels - oLabels:+#;-#;0})");
+                Console.Error.WriteLine($"  flds: {oFlds} vs {nFlds} ({nFlds - oFlds:+#;-#;0}), bytes: {oFldBytes} vs {nFldBytes} ({nFldBytes - oFldBytes:+#;-#;0})");
+            }
             return 1;
         }
 

@@ -38,9 +38,9 @@ public sealed class ConstantPool
 
     /// <summary>
     /// Add an integer constant in TAS compact binary format.
-    /// Format: 'I'(1) + int16_value(2) = 3 bytes total.
+    /// Format: 'I'(1) + uint16_value(2) = 3 bytes total.
     /// Original TAS uses compact format for B/L/I/R types: type(1) + raw_value(N),
-    /// with no dec/displaySize header. Integer values are always stored as 2-byte words.
+    /// with no dec/displaySize header. Integer values are stored as 2-byte words.
     /// </summary>
     public int AddInteger(int value)
     {

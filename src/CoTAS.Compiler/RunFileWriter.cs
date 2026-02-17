@@ -231,11 +231,11 @@ public sealed class RunFileWriter
         // PictureLocation (4 bytes at +31)
         BitConverter.TryWriteBytes(buf.AsSpan(offset + 31), field.PictureLocation);
 
-        // IsReset (byte at +35)
-        buf[offset + 35] = (byte)(field.IsReset ? 1 : 0);
+        // IsReset (byte at +35) — use raw byte for round-trip fidelity
+        buf[offset + 35] = field.RawIsReset != 0 ? field.RawIsReset : (byte)(field.IsReset ? 1 : 0);
 
-        // ForceUpperCase (byte at +36)
-        buf[offset + 36] = (byte)(field.ForceUpperCase ? 1 : 0);
+        // ForceUpperCase (byte at +36) — use raw byte for round-trip fidelity
+        buf[offset + 36] = field.RawForceUpperCase != 0 ? field.RawForceUpperCase : (byte)(field.ForceUpperCase ? 1 : 0);
 
         // AllocFlag (byte at +37)
         buf[offset + 37] = field.AllocFlag;

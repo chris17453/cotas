@@ -201,6 +201,14 @@ public sealed class SpecDecoder
         if (cTypeByte < 0x20 || cTypeByte >= 0x7F)
             return $"CONST@{offset}";
 
+        // Handle compact types that don't have the standard 4-byte header
+        // L: type(1) + value(1) = 2 bytes
+        // I: type(1) + uint16(2) = 3 bytes
+        if (cType == 'L' && offset + 2 <= cs.Length)
+            return cs[offset + 1] != 0 ? ".T." : ".F.";
+        if (cType == 'I' && offset + 3 <= cs.Length)
+            return BitConverter.ToUInt16(cs, offset + 1).ToString();
+
         // byte decimals = cs[offset + 1]; // not used in display
         int displaySize = offset + 4 <= cs.Length
             ? BitConverter.ToUInt16(cs, offset + 2)

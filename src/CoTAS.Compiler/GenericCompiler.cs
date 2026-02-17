@@ -28,6 +28,9 @@ public sealed class GenericCompiler
     /// <summary>Use TAS 5.1 (TAS32) spec sizes when true, TAS 6.0+ when false.</summary>
     public bool UseTas51Sizes { get; set; } = true;
 
+    /// <summary>When true, use 48B OPENV format (short). Default false = 53B (long).</summary>
+    public bool UseShortOpenvSpec { get; set; }
+
     public GenericCompiler(
         SpecBuilder spec,
         ConstantPool constants,
@@ -67,6 +70,9 @@ public sealed class GenericCompiler
     public (int SpecOffset, int SpecSize) CompileSpecLine(CommandDef cmd, List<Token> tokens)
     {
         int effectiveSize = cmd.GetSpecSize(UseTas51Sizes);
+        // Override OPENV spec size for short (48B) format when flagged
+        if (UseShortOpenvSpec && cmd.Name is "OPENV" or "OPEN")
+            effectiveSize = 48;
         _specLine = new byte[Math.Max(effectiveSize, 256)];
         _tokens = tokens;
         _nextPos = 0;
@@ -101,13 +107,14 @@ public sealed class GenericCompiler
                 if (matchedOpt.HasValue)
                 {
                     _nextPos++; // consume the keyword
+                    // Skip '=' separator after keyword (e.g., DFLT=value, VMSG='text')
+                    if (_nextPos < _tokens.Count && _tokens[_nextPos].Type == TokenType.Equal)
+                        _nextPos++;
                     DoCompile(matchedOpt.Value);
                 }
                 else
                 {
-                    // Not a keyword — if we haven't consumed the first positional arg
-                    // and there's an OptionIndex=0 entry, it was already handled above.
-                    // Otherwise skip unrecognized tokens.
+                    // Not a keyword — skip unrecognized tokens
                     _nextPos++;
                 }
             }
@@ -142,6 +149,12 @@ public sealed class GenericCompiler
         }
         return null;
     }
+
+    /// <summary>Actions that only make sense when triggered by keyword presence (no value consumed).</summary>
+    private static bool IsKeywordOnlyAction(CompileAction action) =>
+        action is CompileAction.SetY or CompileAction.SetN
+             or CompileAction.ChkYn or CompileAction.ChkNy
+             or CompileAction.ChkChr1 or CompileAction.CUfc;
 
     /// <summary>
     /// Execute a compilation primitive. Mirrors Pascal's DoComps.
@@ -186,7 +199,6 @@ public sealed class GenericCompiler
             case CompileAction.ChkChr1: // set single char and consume keyword
                 if (opt.CharList is { Length: > 0 })
                     SetSpecChar(opt.SpecOffset, opt.CharList[0]);
-                _nextPos--; // Pascal does dec(NextPos) — keyword itself IS the value
                 break;
 
             case CompileAction.ChkChr2: // set single char from next token
@@ -211,12 +223,10 @@ public sealed class GenericCompiler
 
             case CompileAction.SetY: // set 'Y'
                 SetSpecChar(opt.SpecOffset, 'Y');
-                _nextPos--; // keyword presence = flag set, no value consumed
                 break;
 
             case CompileAction.SetN: // set 'N'
                 SetSpecChar(opt.SpecOffset, 'N');
-                _nextPos--; // keyword presence = flag set, no value consumed
                 break;
 
             case CompileAction.CScope: // compile scope (A/R/N/F)
@@ -347,15 +357,20 @@ public sealed class GenericCompiler
             _specLine[offset] = (byte)ch;
     }
 
-    /// <summary>Write a 5-byte param (type + 4-byte location) into the spec line.</summary>
+    /// <summary>Write a 5-byte param (type + 4-byte location) into the spec line.
+    /// Adds overlay const offset for constant-referencing types (C, X, Y, M).</summary>
     private void WriteParamAt(int offset, char type, int location)
     {
         if (offset + 4 >= _specLine.Length) return;
+        int loc = location;
+        // Add overlay offset for constant-pool-referencing param types
+        if (type is 'C' or 'X' or 'Y' or 'M')
+            loc += _spec.OverlayConstOffset;
         _specLine[offset] = (byte)type;
-        _specLine[offset + 1] = (byte)(location & 0xFF);
-        _specLine[offset + 2] = (byte)((location >> 8) & 0xFF);
-        _specLine[offset + 3] = (byte)((location >> 16) & 0xFF);
-        _specLine[offset + 4] = (byte)((location >> 24) & 0xFF);
+        _specLine[offset + 1] = (byte)(loc & 0xFF);
+        _specLine[offset + 2] = (byte)((loc >> 8) & 0xFF);
+        _specLine[offset + 3] = (byte)((loc >> 16) & 0xFF);
+        _specLine[offset + 4] = (byte)((loc >> 24) & 0xFF);
     }
 
     /// <summary>Compile an expression and write at spec offset.</summary>
@@ -442,12 +457,16 @@ public sealed class GenericCompiler
             return;
         }
 
-        // Split on commas and compile each part separately
+        // Split on commas (only at paren depth 0) and compile each part separately
         var parts = new List<(char Type, int Loc)>();
         var partTokens = new List<Token>();
+        int parenDepth = 0;
         foreach (var tok in allTokens)
         {
-            if (tok.Type == TokenType.Comma)
+            if (tok.Type == TokenType.LeftParen) parenDepth++;
+            else if (tok.Type == TokenType.RightParen) parenDepth--;
+
+            if (tok.Type == TokenType.Comma && parenDepth == 0)
             {
                 if (partTokens.Count > 0)
                 {
@@ -787,9 +806,10 @@ public sealed class GenericCompiler
         var result = new List<Token>();
         int parenDepth = 0;
 
-        // Skip leading commas/whitespace before the value
+        // Skip leading commas/whitespace/equals before the value
+        // (handles KEYWORD=value syntax like DFLT=expr, VMSG='text')
         while (_nextPos < _tokens.Count &&
-               _tokens[_nextPos].Type is TokenType.Comma or TokenType.Semicolon)
+               _tokens[_nextPos].Type is TokenType.Comma or TokenType.Semicolon or TokenType.Equal)
             _nextPos++;
 
         while (_nextPos < _tokens.Count)

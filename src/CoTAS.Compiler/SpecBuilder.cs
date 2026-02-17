@@ -166,6 +166,17 @@ public sealed class SpecBuilder
     }
 
     /// <summary>
+    /// Set a single byte at the given absolute offset in the spec segment.
+    /// </summary>
+    public void SetByte(int offset, byte value)
+    {
+        long savedPos = _stream.Position;
+        _stream.Position = offset;
+        _stream.WriteByte(value);
+        _stream.Position = savedPos;
+    }
+
+    /// <summary>
     /// Patch a 4-byte int32 at the given absolute offset in the spec segment.
     /// Used for jump target fixups after the target instruction is known.
     /// </summary>

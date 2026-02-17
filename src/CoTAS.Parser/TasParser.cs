@@ -132,11 +132,13 @@ public sealed class TasParser
                  || nextVal.StartsWith("T")))
             {
                 // Check if followed by comma+number (positional) or end of line
+                // Also handle type with decimals: N(2) is tokenized as N, (, 2, )
                 int peekPos = _pos + 1;
                 if (peekPos < _tokens.Count
                     && (_tokens[peekPos].Type == TokenType.Comma
                      || _tokens[peekPos].Type == TokenType.Newline
-                     || _tokens[peekPos].Type == TokenType.Eof))
+                     || _tokens[peekPos].Type == TokenType.Eof
+                     || _tokens[peekPos].Type == TokenType.LeftParen))
                 {
                     isPositional = true;
                 }
@@ -148,12 +150,20 @@ public sealed class TasParser
                 string typeStr = Current.Value.ToUpperInvariant();
                 Advance(); // consume type
 
-                // Parse type with optional decimals: "N(2)" or just "N"
+                // Parse type with optional decimals: "N(2)" as single token or N ( 2 ) as separate tokens
                 if (typeStr.StartsWith("N(") && typeStr.EndsWith(")"))
                 {
                     fieldType = "N";
                     if (int.TryParse(typeStr.AsSpan(2, typeStr.Length - 3), out int d))
                         decimals = d;
+                }
+                else if (typeStr.Length == 1 && Check(TokenType.LeftParen))
+                {
+                    // Type letter followed by (decimals) as separate tokens: N ( 2 )
+                    fieldType = typeStr;
+                    Advance(); // consume (
+                    decimals = ExpectInteger("decimals");
+                    if (Check(TokenType.RightParen)) Advance(); // consume )
                 }
                 else
                 {
@@ -531,17 +541,19 @@ public sealed class TasParser
     private ExitStmt ParseExit()
     {
         int line = Current.Line;
+        string keyword = Current.Value.ToUpperInvariant();
         Advance(); // consume EXIT/EXIT_IF/FEXIT/FEXIT_IF/SEXIT/SEXIT_IF
-        SkipToEndOfLine(); // skip optional condition
-        return new ExitStmt(line);
+        var condition = CollectRestOfLine();
+        return new ExitStmt(keyword, condition, line);
     }
 
     private LoopStmt ParseLoop()
     {
         int line = Current.Line;
+        string keyword = Current.Value.ToUpperInvariant();
         Advance(); // consume LOOP/LOOP_IF/FLOOP/FLOOP_IF/SLOOP/SLOOP_IF
-        SkipToEndOfLine(); // skip optional condition
-        return new LoopStmt(line);
+        var condition = CollectRestOfLine();
+        return new LoopStmt(keyword, condition, line);
     }
 
     private Statement ParseIdentifierStatement()
@@ -695,9 +707,27 @@ public sealed class TasParser
                 Advance(); // consume @
                 return ParseIdentifierExpr(indirect: true);
 
+            // Unknown param type from decompiler: ?0x41:value — treat as literal string
+            case TokenType.Question:
+                return ParseQuestionLiteral();
+
             default:
                 throw new ParseException($"Unexpected token {token.Type}({token.Value}) at line {token.Line}:{token.Column}");
         }
+    }
+
+    /// <summary>Parse ?hex:value literals emitted by decompiler for unknown param types.</summary>
+    private Expression ParseQuestionLiteral()
+    {
+        var qToken = Advance(); // consume '?'
+        // Collect everything until comma, newline, or end as a raw string
+        var sb = new System.Text.StringBuilder("?");
+        while (!IsAtEnd && !IsAtEndOfExpression && !Check(TokenType.Comma))
+        {
+            sb.Append(Current.Value);
+            Advance();
+        }
+        return new LiteralExpr(sb.ToString(), qToken.Line);
     }
 
     private Expression ParseIdentifierExpr(bool indirect = false)

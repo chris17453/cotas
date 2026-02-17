@@ -39,6 +39,9 @@ public sealed class ExpressionEncoder
     // Flag: true when compiling a node that is the left child of a '+' BinaryExpr
     private bool _insidePlusChain;
 
+    /// <summary>Whether to use TAS 5.1 format (1-byte funcNum, UDF base=10) vs TAS 6.0+ (2-byte funcNum, UDF base=20).</summary>
+    public bool IsTas51 { get; set; }
+
     public ExpressionEncoder(FieldTable fields, ConstantPool constants, LabelTable labels, int tempBase)
     {
         _fields = fields;
@@ -142,6 +145,14 @@ public sealed class ExpressionEncoder
                 return ('Y', arrayRefOff2);
             }
 
+            case UnaryExpr { Operator: "-", Operand: LiteralExpr { Value: int iv } }:
+                return ('N', -iv);
+            case UnaryExpr { Operator: "-", Operand: LiteralExpr { Value: long lv } }:
+                return ('N', (int)-lv);
+            case UnaryExpr { Operator: "-", Operand: LiteralExpr { Value: double dv } }
+                when dv == Math.Floor(dv) && -dv >= int.MinValue && -dv <= int.MaxValue:
+                return ('N', (int)-dv);
+
             case BinaryExpr:
             case UnaryExpr:
             case FunctionCallExpr:
@@ -236,7 +247,7 @@ public sealed class ExpressionEncoder
                 var operand = CompileNode(unary.Operand);
                 byte opByte = unary.Operator.ToUpperInvariant() switch
                 {
-                    "NOT" or ".NOT." or ".N." => 0x0F,
+                    "NOT" or ".NOT." or ".N." => 0x0E,
                     "-" => 0x02, // negate: 0 - operand
                     _ => throw new InvalidOperationException($"Unknown unary operator: {unary.Operator}")
                 };
@@ -248,14 +259,13 @@ public sealed class ExpressionEncoder
                     EmitBinaryOp(opByte, zeroRef, operand, resultOff);
                     return new OperandRef('F', resultOff);
                 }
-                else // NOT: standalone comparison op
+                else // NOT: binary op format — 00 0E const_zero operand result (16 bytes)
                 {
+                    // TAS encodes .NOT. X as BinaryOp(0x0E, const_zero, X, result)
+                    // LHS is always the integer zero constant at pool offset 0
+                    var zeroRef = new OperandRef('C', 0);
                     int resultOff = AllocTemp();
-                    // NOT uses the 13-byte standalone format
-                    _ops.WriteByte(opByte);
-                    WriteInt32(operand.Location);
-                    WriteInt32(0); // rhs unused for NOT
-                    WriteInt32(resultOff);
+                    EmitBinaryOp(opByte, zeroRef, operand, resultOff);
                     return new OperandRef('F', resultOff);
                 }
             }
@@ -266,7 +276,7 @@ public sealed class ExpressionEncoder
                 if (normOp is "AND" or ".AND." or ".A." or "OR" or ".OR." or ".O.")
                     return CompileLogicalOp(bin);
 
-                // For + chains: set flag so inner + nodes use CONCAT (0x03)
+                // For + chains: inner + nodes use CONCAT (0x03), outermost uses ADD (0x01)
                 bool savedFlag = _insidePlusChain;
                 if (bin.Operator == "+")
                     _insidePlusChain = bin.Left is BinaryExpr lb && lb.Operator == "+";
@@ -370,7 +380,7 @@ public sealed class ExpressionEncoder
 
     private OperandRef CompileFunctionCall(FunctionCallExpr func)
     {
-        // UDF call: opType = argCount + 20 (matching original TAS: CFPCntr+20)
+        // UDF call: opType = argCount + udfBase (TAS 5.1: +10, TAS 6.0+: +20)
         // Format: opType(1) + labelIdx(4) + tempBase(4) + args(5*N) + result(4)
         int labelIdx = _labels.FindLabel(func.Name);
         if (labelIdx >= 0)
@@ -378,7 +388,8 @@ public sealed class ExpressionEncoder
             var args = func.Arguments.Select(a => CompileNode(a)).ToList();
             int resultOff = AllocTemp();
 
-            _ops.WriteByte((byte)(args.Count + 20));
+            int udfBase = IsTas51 ? 10 : 20;
+            _ops.WriteByte((byte)(args.Count + udfBase));
             WriteInt32(labelIdx);
             int tempCtrHldr = _nextTempOffset;
             WriteInt32(tempCtrHldr);
@@ -627,11 +638,8 @@ public sealed class ExpressionEncoder
         string norm = op.Trim().ToUpperInvariant();
         return norm switch
         {
-            "+" => 0x01,
+            "+" => 0x01,  // numeric add (TAS 5.1); string concat uses 0x03
             "-" => 0x02,
-            // String concatenation uses 0x03, but + is overloaded.
-            // The compiler typically uses 0x01 for numeric add and 0x03 for string concat.
-            // We use 0x01 by default and let context determine.
             "*" => 0x04,
             "/" => 0x05,
             "^" => 0x06,
@@ -642,8 +650,8 @@ public sealed class ExpressionEncoder
             ">=" => 0x0B,
             "<=" => 0x0C,
             "AND" or ".AND." or ".A." => 0x0D,
-            "OR" or ".OR." or ".O." => 0x0E,
-            "NOT" or ".NOT." or ".N." => 0x0F,
+            "NOT" or ".NOT." or ".N." => 0x0E,
+            "OR" or ".OR." or ".O." => 0x0F,
             _ => throw new InvalidOperationException($"Unknown binary operator: {op}")
         };
     }
@@ -687,139 +695,267 @@ public sealed class ExpressionEncoder
         return _functionNumbers.ContainsKey(name.ToUpperInvariant());
     }
 
-    // Complete reverse mapping of ExpressionDecoder._functionNames
+    // Auto-generated reverse mapping of ExpressionDecoder._functionNames.
+    // Values are sequential function IDs (NOT hex opcodes).
     private static readonly Dictionary<string, byte> _functionNumbers = new(StringComparer.OrdinalIgnoreCase)
     {
-        // System functions
-        ["DATE"] = 0x01,
-        ["TIME"] = 0x02,
-        ["CO"] = 0x0A,
-        ["PRGNME"] = 0x36,
-        ["PRGLNE"] = 0x94,
-        ["OS"] = 0x80,
-        ["VER"] = 0x9F,
-
-        // String functions
-        ["LEN"] = 0x0B,
-        ["JUSTIFY"] = 0x0C,
-        ["TRC"] = 0x0D,
-        ["UP"] = 0x0E,
-        ["LOW"] = 0x0F,
-        ["TRIM"] = 0x10,
-        ["STR"] = 0x11,
-        ["CHR"] = 0x12,
-        ["ASC"] = 0x13,
-        ["ISAL"] = 0x14,
-        ["ISUP"] = 0x15,
-        ["ISLO"] = 0x16,
-        ["ISNUM"] = 0x17,
-        ["NULL"] = 0x18,
-        ["LSTCHR"] = 0x19,
-        ["SNDX"] = 0x1A,
-        ["MID"] = 0x1C,
-        ["SEG"] = 0x1D,
-        ["LOC"] = 0x1E,
-        ["IIF"] = 0x23,
-        ["REPLACE"] = 0x24,
-        ["DIFF"] = 0x27,
-        ["VAL"] = 0x2A,
-        ["CCR"] = 0x2B,
-        ["INT"] = 0x2E,
-
-        // Math functions
-        ["ABS"] = 0x20,
-        ["ROUND"] = 0x21,
-        ["SQRT"] = 0x22,
-        ["SIGN"] = 0x25,
-        ["MOD"] = 0x26,
-        ["CEIL"] = 0x28,
-        ["FLOOR"] = 0x29,
-        ["RNDM"] = 0x2C,
-        ["PI"] = 0x2D,
-        ["EXP"] = 0x2F,
-        ["LOG"] = 0x30,
-        ["LOG10"] = 0x31,
-        ["SIN"] = 0x32,
-        ["COS"] = 0x33,
-        ["TAN"] = 0x34,
-
-        // Date/Time functions
-        ["DTOC"] = 0x1F,
-        ["CDOW"] = 0x43,
-        ["DOW"] = 0x44,
-        ["DOM"] = 0x45,
-        ["MNTH"] = 0x46,
-        ["CMNTH"] = 0x47,
-        ["YEAR"] = 0x48,
-        ["DTOS"] = 0x49,
-        ["CTOD"] = 0x4A,
-        ["TTOC"] = 0x51,
-        ["TTOF"] = 0x52,
-        ["TTOR"] = 0x53,
-        ["RTOT"] = 0x54,
-
-        // File functions
-        ["FLERR"] = 0x35,
-        ["EOF"] = 0x37,
-        ["BOF"] = 0x38,
-        ["FNUM"] = 0x39,
-        ["RCN"] = 0x3A,
-        ["RSIZE"] = 0x3B,
-        ["FTYP"] = 0x3D,
-        ["FLDNME"] = 0x3E,
-        ["CREC"] = 0x3F,
-        ["FLSZE"] = 0x40,
-        ["NUMFLDS"] = 0x41,
-        ["NUMLBLS"] = 0x42,
-        ["TPATH"] = 0x4B,
-        ["CPATH"] = 0x4C,
-        ["DPATH"] = 0x64,
-        ["GETENV"] = 0x4E,
-        ["FFILE"] = 0x5C,
-        ["FFLD"] = 0x5D,
-        ["FARRAY"] = 0x5F,
-        ["OPEN"] = 0x69,
-
-        // Conversion functions
-        ["DTOR"] = 0x55,
-        ["RTOD"] = 0x56,
-        ["CBYT"] = 0x57,
-        ["CFLT"] = 0x58,
-        ["CINT"] = 0x59,
-        ["LTOC"] = 0x5A,
-        ["CTOL"] = 0x5B,
-
-        // Screen functions
-        ["ROW"] = 0x78,
-        ["COL"] = 0x79,
-        ["LROW"] = 0x7A,
-        ["MCOL"] = 0x7B,
-        ["MROW"] = 0x7C,
-        ["PCOL"] = 0x7D,
-        ["PROW"] = 0x7E,
-
-        // Runtime/UI functions
-        ["AVAIL"] = 0xA0,
-        ["MEM"] = 0xA4,
-        ["ESC"] = 0xAD,
-        ["ENTER"] = 0xAE,
-        ["INKEY"] = 0xAF,
-        ["VARREAD"] = 0xB0,
-        ["ASK"] = 0xB1,
-        ["PSTAT"] = 0xB7,
-        ["PROP"] = 0xBE,
-        ["EXEC"] = 0xC2,
-        ["TEST"] = 0xC5,
-
-        // Alternate entries
-        ["MDY"] = 0x1F,   // alias for DTOC
-        ["FLDATE"] = 0x43, // alias
-        ["FLTIME"] = 0x51, // alias
-        ["FLDFDNUM"] = 0x3E, // alias for FLDNME
-        ["FLSZE"] = 0x40,
-        ["LBLNME"] = 0x42,
-        ["GFL"] = 0x5C,    // alias for FFILE
-        ["GFLD"] = 0x5D,   // alias for FFLD
+        ["NOP"] = 0,
+        ["DATE"] = 1,
+        ["COL"] = 2,
+        ["ROW"] = 3,
+        ["PCOL"] = 4,
+        ["PROW"] = 5,
+        ["SQRT"] = 6,
+        ["DSPCE"] = 7,
+        ["INKEY"] = 8,
+        ["TIME"] = 9,
+        ["CO"] = 10,
+        ["FILL"] = 11,
+        ["JUST"] = 12,
+        ["TRIM"] = 13,
+        ["UP"] = 14,
+        ["LOW"] = 15,
+        ["PROP"] = 16,
+        ["CHR"] = 17,
+        ["ASC"] = 18,
+        ["GFL"] = 19,
+        ["SIZE"] = 20,
+        ["FTYP"] = 21,
+        ["DOW"] = 22,
+        ["CDOW"] = 23,
+        ["MNTH"] = 24,
+        ["CMNTH"] = 25,
+        ["YEAR"] = 26,
+        ["LOC"] = 27,
+        ["MID"] = 28,
+        ["FFLD"] = 29,
+        ["FARRAY"] = 30,
+        ["DTOC"] = 31,
+        ["CTOD"] = 32,
+        ["DTOR"] = 33,
+        ["RTOD"] = 34,
+        ["IIF"] = 35,
+        ["ISAL"] = 36,
+        ["ISUP"] = 37,
+        ["ISLO"] = 38,
+        ["MAX"] = 39,
+        ["MIN"] = 40,
+        ["XFORM"] = 41,
+        ["VAL"] = 42,
+        ["STR"] = 43,
+        ["RNDM"] = 44,
+        ["ISCLR"] = 45,
+        ["FLSZE"] = 46,
+        ["EOF"] = 47,
+        ["BOF"] = 48,
+        ["LROW"] = 49,
+        ["LCKD"] = 50,
+        ["ESC"] = 51,
+        ["GSCHR"] = 52,
+        ["FLERR"] = 53,
+        ["PWHR"] = 54,
+        ["CFLT"] = 55,
+        ["CINT"] = 56,
+        ["CBYT"] = 57,
+        ["CREC"] = 58,
+        ["CCH"] = 59,
+        ["CPATH"] = 60,
+        ["IFCR"] = 61,
+        ["RCN"] = 62,
+        ["TRC"] = 63,
+        ["PERR"] = 64,
+        ["ALOCARY"] = 65,
+        ["AVAIL"] = 66,
+        ["ASK"] = 67,
+        ["ETYP"] = 68,
+        ["LSTCHR"] = 69,
+        ["RENF"] = 70,
+        ["WRAP"] = 71,
+        ["IFNA"] = 72,
+        ["LOG"] = 73,
+        ["LOG10"] = 74,
+        ["TPATH"] = 75,
+        ["CCE"] = 76,
+        ["FCHR"] = 77,
+        ["CC"] = 78,
+        ["PSTAT"] = 79,
+        ["FNUM"] = 80,
+        ["TTOC"] = 81,
+        ["CTOT"] = 82,
+        ["TTOR"] = 83,
+        ["RTOT"] = 84,
+        ["EXP"] = 85,
+        ["CCF"] = 86,
+        ["CCR"] = 87,
+        ["FTOT"] = 88,
+        ["TTOF"] = 89,
+        ["RTP"] = 90,
+        ["ALC_FLD"] = 91,
+        ["FFILE"] = 92,
+        ["PSET"] = 93,
+        ["AEV"] = 94,
+        ["LCHR"] = 95,
+        ["MOD"] = 96,
+        ["FLDATE"] = 97,
+        ["DELF"] = 98,
+        ["MID_REC"] = 99,
+        ["DPATH"] = 100,
+        ["DIFF"] = 101,
+        ["SNDX"] = 102,
+        ["PI"] = 103,
+        ["ACOS"] = 104,
+        ["ASIN"] = 105,
+        ["ATAN"] = 106,
+        ["COS"] = 107,
+        ["SIN"] = 108,
+        ["TAN"] = 109,
+        ["ATAN2"] = 110,
+        ["ABS"] = 111,
+        ["CEIL"] = 112,
+        ["FLOOR"] = 113,
+        ["OS"] = 114,
+        ["VER"] = 115,
+        ["DMY"] = 116,
+        ["DTOS"] = 117,
+        ["NUMFLDS"] = 118,
+        ["FLDNME"] = 119,
+        ["GETENV"] = 120,
+        ["INT"] = 121,
+        ["LIKE"] = 122,
+        ["MDY"] = 123,
+        ["RSIZE"] = 124,
+        ["MEM"] = 125,
+        ["ROUND"] = 126,
+        ["SIGN"] = 127,
+        ["VARREAD"] = 128,
+        ["NULL"] = 129,
+        ["ELOC"] = 130,
+        ["ENTER"] = 131,
+        ["MOUSE_ACT"] = 132,
+        ["ACS"] = 133,
+        ["HEX"] = 134,
+        ["LTOC"] = 135,
+        ["CTOL"] = 136,
+        ["CLNUM"] = 137,
+        ["ALOC"] = 138,
+        ["FLTIME"] = 139,
+        ["WRAPO"] = 140,
+        ["WRAPL"] = 141,
+        ["WRAPS"] = 142,
+        ["FLDFNUM"] = 143,
+        ["GFLD"] = 144,
+        ["SYSOPS"] = 145,
+        ["CRSU"] = 146,
+        ["EXEC"] = 147,
+        ["OPEN"] = 148,
+        ["DOM"] = 149,
+        ["NUMLBLS"] = 150,
+        ["LBLNME"] = 151,
+        ["LBL_LNE"] = 152,
+        ["PRGNME"] = 153,
+        ["PRGLNE"] = 154,
+        ["PRG_OFST"] = 155,
+        ["MOUSE_ROW"] = 156,
+        ["MOUSE_COL"] = 157,
+        ["TEST"] = 158,
+        ["ISNUM"] = 159,
+        ["RETVAL"] = 160,
+        ["TRAP_LABEL"] = 161,
+        ["TRAP_DO"] = 162,
+        ["REC_PTR"] = 163,
+        ["GET_REC"] = 164,
+        ["CUR_PRG"] = 165,
+        ["RECORD_CHR"] = 166,
+        ["OFFSET3"] = 167,
+        ["MEMO_COL"] = 168,
+        ["MEMO_ROW"] = 169,
+        ["LISTF_CHRS"] = 170,
+        ["MOUSE_ON"] = 171,
+        ["SERIAL_PORT"] = 172,
+        ["REC_CHANGED"] = 173,
+        ["COMP_BIN"] = 174,
+        ["ACTIVE"] = 175,
+        ["WINDOWS"] = 176,
+        ["PRINT_CANCEL"] = 177,
+        ["PRINTER_NAME"] = 178,
+        ["SROK"] = 179,
+        ["DATE_TYPE"] = 180,
+        ["DATE_SEPARATOR"] = 181,
+        ["LOAD_OVL"] = 182,
+        ["CHK_PSC"] = 183,
+        ["LOAD_OBJ"] = 184,
+        ["LPATH"] = 185,
+        ["WINDOW_PTR"] = 186,
+        ["MAKE_DIR"] = 187,
+        ["COPY_FILE"] = 188,
+        ["EDIT"] = 189,
+        ["GET_WCOLOR"] = 190,
+        ["REGEDIT"] = 191,
+        ["SETUP_PRINTER"] = 192,
+        ["CHOOSE_COLOR"] = 193,
+        ["WQUIT"] = 194,
+        ["GET_ELEM_NUM"] = 195,
+        ["CLICKED_ON"] = 196,
+        ["WLASER_PRT"] = 197,
+        ["MAX_ROWS"] = 198,
+        ["MAX_COLS"] = 199,
+        ["DIRECT"] = 200,
+        ["DSROK"] = 201,
+        ["WHICH_SIZE"] = 202,
+        ["NUM_USERS"] = 203,
+        ["END_DATE"] = 204,
+        ["GET_OBJ_PROP"] = 205,
+        ["LOAD_MODAL_FORM"] = 206,
+        ["REG_CODE"] = 207,
+        ["GET_FORM_NAME"] = 208,
+        ["GET_PATH"] = 209,
+        ["RESET_FIELD"] = 210,
+        ["STRINGS"] = 211,
+        ["CREATE_DBF"] = 212,
+        ["CONVERT_TO_DBF"] = 213,
+        ["LOAD_PRG"] = 214,
+        ["CALL_PRG"] = 215,
+        ["FORM_PTR"] = 216,
+        ["IS_PRG_LOADED"] = 217,
+        ["REMOVE_PRG"] = 218,
+        ["DUAL_LIST_EXEC"] = 219,
+        ["FILE_EXISTS"] = 220,
+        ["TEXT_WIDTH"] = 221,
+        ["GET_RUN_PRG"] = 222,
+        ["STATUS_BAR"] = 223,
+        ["GET_FILE"] = 224,
+        ["XPATH"] = 225,
+        ["WHOAMI"] = 226,
+        ["PARSEFILE"] = 227,
+        ["OPEN_FILE_NAME"] = 228,
+        ["MAKE_PATH"] = 229,
+        ["LAST_FILE"] = 230,
+        ["LAST_OBJ"] = 231,
+        ["VALID_CHECK"] = 232,
+        ["GRID_VALID_CHECK"] = 233,
+        ["SET_OBJ_PROP"] = 234,
+        ["SETENV"] = 235,
+        ["USECODEBASE"] = 236,
+        ["CRLF"] = 237,
+        ["GET_COMP_NAME"] = 238,
+        ["GET_USER_NAME"] = 239,
+        ["GET_BUFF_NAME"] = 240,
+        ["REC_PERCENTAGE"] = 241,
+        ["GET_INI_PATH"] = 242,
+        ["EMAIL"] = 243,
+        ["TLLFC"] = 244,
+        ["RESTRUCTURE_DBF"] = 245,
+        ["IFDUPCB"] = 246,
+        ["DFM_TO_TXT"] = 247,
+        ["TXT_TO_DFM"] = 248,
+        ["ADD_OBJECT"] = 249,
+        ["ENCRYPT"] = 250,
+        ["PACK_DBF"] = 251,
+        ["REINDEX_DBF"] = 252,
+        ["LOAD_DLL"] = 253,
+        ["DLLFC"] = 254,
+        ["REMOVE_DLL"] = 255,
+        // Functions > 255 are TAS 6.0+ only (2-byte funcNum)
     };
 
     private record OperandRef(char Type, int Location);

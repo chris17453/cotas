@@ -50,6 +50,7 @@ public sealed class FieldTable
 
         int index = _fields.Count;
 
+
         // Calculate internal size if not specified
         if (internalSize == 0)
             internalSize = CalculateInternalSize(fieldType, displaySize, decimals, arrayCount);
@@ -120,6 +121,7 @@ public sealed class FieldTable
             return existing;
 
         int index = _fields.Count;
+
         int dataOffset = _nextDefinedOffset;
         _nextDefinedOffset += internalSize * Math.Max(1, arrayCount);
 

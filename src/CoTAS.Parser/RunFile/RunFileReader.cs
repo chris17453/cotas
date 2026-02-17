@@ -127,6 +127,7 @@ public sealed class RunFileReader
     private void PrependOverlay(RunFileReader ovl)
     {
         OverlayFieldCount = ovl.Fields.Count;
+        OverlayLabelCount = ovl.LabelOffsets.Count;
 
         // Prepend overlay fields (runtime: FFieldList[0..OvlFlds-1] = OVL, [OvlFlds..] = program)
         var combinedFields = new List<RunFieldSpec>(ovl.Fields.Count + Fields.Count);
@@ -134,6 +135,13 @@ public sealed class RunFileReader
         combinedFields.AddRange(Fields);
         Fields.Clear();
         Fields.AddRange(combinedFields);
+
+        // Prepend overlay labels so expression UDF references resolve correctly
+        var combinedLabels = new List<int>(ovl.LabelOffsets.Count + LabelOffsets.Count);
+        combinedLabels.AddRange(ovl.LabelOffsets);
+        combinedLabels.AddRange(LabelOffsets);
+        LabelOffsets.Clear();
+        LabelOffsets.AddRange(combinedLabels);
 
         if (Header.ObjUsed)
         {
@@ -159,6 +167,9 @@ public sealed class RunFileReader
 
     /// <summary>Number of fields from the overlay (0 if no overlay loaded).</summary>
     public int OverlayFieldCount { get; private set; }
+
+    /// <summary>Number of labels from the overlay (0 if no overlay loaded).</summary>
+    public int OverlayLabelCount { get; private set; }
 
     /// <summary>Size of the overlay spec segment (0 if no overlay or ObjUsed=false).</summary>
     public int OverlaySpecSize { get; private set; }
@@ -325,7 +336,9 @@ public sealed class RunFileReader
                 PictureType = (char)_data[offset + 30],
                 PictureLocation = ReadInt32(offset + 31),
                 IsReset = _data[offset + 35] != 0,
+                RawIsReset = _data[offset + 35],
                 ForceUpperCase = _data[offset + 36] != 0,
+                RawForceUpperCase = _data[offset + 36],
                 AllocFlag = _data[offset + 37],
                 InternalSize = ReadInt32(offset + 38),
                 KeyNumber = _data[offset + 42],
