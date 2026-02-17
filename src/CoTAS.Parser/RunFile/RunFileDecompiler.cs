@@ -43,6 +43,11 @@ public sealed class RunFileDecompiler
     {
         var sb = new StringBuilder();
 
+        // Emit spec version pragma from ProType header
+        string proType = _run.Header.ProType?.Trim('\0') ?? "";
+        if (!string.IsNullOrEmpty(proType))
+            sb.AppendLine($"#spec_version {proType}");
+
         // Emit field definitions
         EmitFieldDefinitions(sb);
 

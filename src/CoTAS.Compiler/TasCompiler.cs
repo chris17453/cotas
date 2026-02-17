@@ -18,7 +18,7 @@ public sealed class TasCompiler
     private readonly SpecBuilder _spec = new();
     private readonly List<RunBytecodeInstruction> _instructions = [];
     private readonly List<RunBufferEntry> _buffers = [];
-    private readonly bool _isTas51 = true;
+    private bool _isTas51 = true;
     private GenericCompiler? _genericCompiler;
     private int _instrSize = RunFileHeader.Tas51InstructionSize;
     private bool _useLongMsgSpec = true; // 15B MSG format (default for most files)
@@ -529,7 +529,12 @@ public sealed class TasCompiler
                 EmitGenericCommand(gen);
                 break;
 
-            case PreprocessorStmt:
+            case PreprocessorStmt pp:
+                if (pp.Text.StartsWith("#spec_version ", StringComparison.OrdinalIgnoreCase))
+                {
+                    string ver = pp.Text[14..].Trim();
+                    _isTas51 = ver.Equals("TAS32", StringComparison.OrdinalIgnoreCase);
+                }
                 // Preprocessor directives don't generate code
                 break;
         }
@@ -2152,10 +2157,15 @@ public sealed class TasCompiler
 
     private GenericCompiler GetGenericCompiler()
     {
-        return _genericCompiler ??= new GenericCompiler(
-            _spec, _constants, _fields, _labels,
-            CreateExpressionEncoder,
-            ParseTokensAsExpression);
+        if (_genericCompiler == null)
+        {
+            _genericCompiler = new GenericCompiler(
+                _spec, _constants, _fields, _labels,
+                CreateExpressionEncoder,
+                ParseTokensAsExpression);
+        }
+        _genericCompiler.UseTas51Sizes = _isTas51;
+        return _genericCompiler;
     }
 
     private void PatchJump(int instrIdx, int specOffset, int targetByteOffset)
@@ -2604,7 +2614,7 @@ public sealed class TasCompiler
             NumExtraFlds = 0,
             PrgNames = prgNames,
             DebugFlg = false,
-            ProType = "TAS32",
+            ProType = _isTas51 ? "TAS32" : "TAS50",
             NumLabels = labelOffsets.Count,
             NewFldSpec = false,
             ChkUpVld = false,

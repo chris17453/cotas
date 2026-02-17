@@ -104,8 +104,15 @@ public sealed class CommandDef
 {
     public required string Name { get; init; }
     public required int Opcode { get; init; }
+    /// <summary>Spec size for TAS 6.0+ (current Pascal source).</summary>
     public required int SpecSize { get; init; }
+    /// <summary>Spec size for TAS 5.1 (TAS32 ProType). -1 means same as SpecSize.</summary>
+    public int Tas51SpecSize { get; init; } = -1;
     public OptionDef[] Options { get; init; } = [];
     public DefaultDef[] Defaults { get; init; } = [];
     public bool IsSpecial { get; init; }
+
+    /// <summary>Get the effective spec size for the given format version.</summary>
+    public int GetSpecSize(bool tas51) =>
+        tas51 && Tas51SpecSize >= 0 ? Tas51SpecSize : SpecSize;
 }

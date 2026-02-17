@@ -25,6 +25,9 @@ public sealed class GenericCompiler
     private int _nextPos;
     private CommandDef _currentCmd = default;
 
+    /// <summary>Use TAS 5.1 (TAS32) spec sizes when true, TAS 6.0+ when false.</summary>
+    public bool UseTas51Sizes { get; set; } = true;
+
     public GenericCompiler(
         SpecBuilder spec,
         ConstantPool constants,
@@ -63,7 +66,8 @@ public sealed class GenericCompiler
     /// </summary>
     public (int SpecOffset, int SpecSize) CompileSpecLine(CommandDef cmd, List<Token> tokens)
     {
-        _specLine = new byte[Math.Max(cmd.SpecSize, 256)];
+        int effectiveSize = cmd.GetSpecSize(UseTas51Sizes);
+        _specLine = new byte[Math.Max(effectiveSize, 256)];
         _tokens = tokens;
         _nextPos = 0;
         _currentCmd = cmd;
@@ -111,8 +115,8 @@ public sealed class GenericCompiler
 
         ApplyDefaults(cmd);
 
-        if (cmd.SpecSize > 0)
-            _spec.WriteRaw(_specLine.AsSpan(0, cmd.SpecSize));
+        if (effectiveSize > 0)
+            _spec.WriteRaw(_specLine.AsSpan(0, effectiveSize));
 
         int specSize = _spec.GetSpecSize(specOff);
         return (specOff, specSize);
